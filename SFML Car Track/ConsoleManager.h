@@ -8,6 +8,8 @@
 class ConsoleManager
 {	
 	sf::Font *font;
+	bool display = true;
+	bool isPressing = false;
 
 	struct cMessage {
 		void UpdateDisplay() {
@@ -34,6 +36,7 @@ public:
 	ConsoleManager(sf::Font* f);	
 	void AddMessage(std::string message, std::string value = "");
 	void UpdateMessageValue(std::string key, std::string value);
+	void Update();
 	void Draw(sf::RenderWindow& window);
 };
 

@@ -6,6 +6,7 @@
 #include "ConsoleManager.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
+#include "Minimap.h"
 
 //game clock
 sf::Clock clk;
@@ -16,10 +17,10 @@ int main()
     //window setups
     sf::ContextSettings settings;
     settings.antialiasingLevel = 8;
-    sf::RenderWindow window(sf::VideoMode(1500, 1000), "Track Testing", sf::Style::Default, settings);            
+    sf::RenderWindow window(sf::VideoMode(1500, 1000), "Track Testing", sf::Style::Default, settings);                
     sf::View camera;
-    camera.setSize(750, 500);    
-    
+    camera.setSize(750, 500);
+
     //managers 
     ResourceManager resourceManager = ResourceManager();
     ConsoleManager consoleManager(resourceManager.GetConsoleFont());
@@ -29,6 +30,10 @@ int main()
     Track track = Track(&resourceManager);    
     Car car(sf::Vector2f(216.0f, 400.0f), &inputManager, &consoleManager, &resourceManager, track.GetTrackShapes());
 
+    std::vector<Car*> cars;
+    cars.push_back(&car);
+
+    Minimap minimap = Minimap(cars, &track);
     while (window.isOpen())
     {
         dt = clk.restart();        
@@ -37,10 +42,18 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::Resized)
+            {
+                // update the view to the new size of the window
+                sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
+                window.setView(sf::View(visibleArea));
+            }
         }
         
         //update 
         inputManager.Update();
+        consoleManager.Update();
         car.Update(dt.asSeconds());
         camera.setCenter(car.getPosition());
         
@@ -54,7 +67,11 @@ int main()
 
         //console
         window.setView(window.getDefaultView());
-        consoleManager.Draw(window);
+        consoleManager.Draw(window);      
+
+        //minimap
+        minimap.Draw(window);
+
         window.display();
     }
 

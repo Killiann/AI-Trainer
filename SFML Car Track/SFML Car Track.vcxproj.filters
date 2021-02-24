@@ -51,6 +51,9 @@
     <ClCompile Include="TrackPiece.cpp">
       <Filter>Source Files\World</Filter>
     </ClCompile>
+    <ClCompile Include="Minimap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MousePoint.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="Track.h">
       <Filter>Header Files\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimap.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

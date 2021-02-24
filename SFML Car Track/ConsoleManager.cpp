@@ -29,13 +29,27 @@ void ConsoleManager::UpdateMessageValue(std::string key, std::string value) {
 		std::cout << "Console message with key: " << key << " not found." << std::endl;	
 }
 
-void ConsoleManager::Draw(sf::RenderWindow& window) {    
-	window.draw(background);
+void ConsoleManager::Update() {
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
+		if (!isPressing) {
+			display = !display;
+			isPressing = true;
+		}
+	}
+	if (isPressing)
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
+			isPressing = false;
+}
 
-	int yOffset = 0;
-	for (cMessage &m :messages) {
-		m.display.setPosition(sf::Vector2f(position.x + 5, position.y + 5 + yOffset));
-		yOffset += m.display.getCharacterSize() + 2;
-		window.draw(m.display);
+void ConsoleManager::Draw(sf::RenderWindow& window) {    
+	if (display) {
+		window.draw(background);
+
+		int yOffset = 0;
+		for (cMessage& m : messages) {
+			m.display.setPosition(sf::Vector2f(position.x + 5, position.y + 5 + yOffset));
+			yOffset += m.display.getCharacterSize() + 2;
+			window.draw(m.display);
+		}
 	}
 }
