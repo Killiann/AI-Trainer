@@ -152,7 +152,6 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Minimap.cpp" />
-    <ClCompile Include="MousePoint.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPiece.cpp" />
@@ -162,7 +161,6 @@
     <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Minimap.h" />
-    <ClInclude Include="MousePoint.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPiece.h" />

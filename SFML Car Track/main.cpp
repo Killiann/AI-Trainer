@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Track.h"
-#include "MousePoint.h";
 #include "Car.h"
 #include "ConsoleManager.h"
 #include "InputManager.h"

@@ -30,9 +30,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MousePoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ConsoleManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
@@ -56,9 +53,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MousePoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ConsoleManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
