@@ -52,7 +52,7 @@
       <Filter>Source Files\World</Filter>
     </ClCompile>
     <ClCompile Include="Minimap.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -78,7 +78,7 @@
       <Filter>Header Files\World</Filter>
     </ClInclude>
     <ClInclude Include="Minimap.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

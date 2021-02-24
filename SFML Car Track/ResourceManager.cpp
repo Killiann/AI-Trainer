@@ -18,5 +18,8 @@ ResourceManager::ResourceManager() {
     if (!consoleFont.loadFromFile("Resources/Roboto-Black.ttf")) {
         std::cout << "Could not get Console Font." << std::endl;
     }
+    if (!pixelFont.loadFromFile("Resources/DotGothic.ttf")) {
+        std::cout << "Could not get Pixel Font (DotGothic)" << std::endl;
+    }    
     std::cout << "Done." << std::endl;
 }

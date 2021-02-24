@@ -48,6 +48,8 @@ void Minimap::Draw(sf::RenderWindow& window) {
 			pos.y = boundingRectangle.getPosition().y + boundingRectangle.getSize().y;
 
 		mapMarkers[i].setPosition(pos);
+		if (cars[i]->isSelected() && mapMarkers[i].getOutlineColor() == sf::Color::Red)mapMarkers[i].setOutlineColor(sf::Color::Green);
+		else if (!cars[i]->isSelected() && mapMarkers[i].getOutlineColor() == sf::Color::Green) mapMarkers[i].setOutlineColor(sf::Color::Red);
 		window.draw(mapMarkers[i]);
 	}
 	window.setView(window.getDefaultView());

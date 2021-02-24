@@ -9,6 +9,8 @@ class InputManager
 	float steerLeft = 0;
 	float steerRight = 0;	
 
+	int selectedCarID = 0;
+
 	ConsoleManager *consoleManager;
 public:
 	InputManager(ConsoleManager* c);
@@ -19,5 +21,7 @@ public:
 	float GetEBrake() { return ebrake; }
 	float GetSteerLeft() { return steerLeft; }
 	float GetSteerRight() { return steerRight; }
+
+	void changeSelected(int newID) { selectedCarID = newID; }	
 };
 

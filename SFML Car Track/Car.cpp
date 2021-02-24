@@ -11,9 +11,22 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi)
 	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
-Car::Car(sf::Vector2f pos, InputManager *input, ConsoleManager *console, ResourceManager *resource, std::vector<sf::ConvexShape> *tS) 
-	: position(pos), inputManager(input), consoleManager(console), resourceManager(resource), trackShapes(tS){
-	
+Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console, ResourceManager *resource, Track* trk) 
+	:ID(id), position(pos), inputManager(input), consoleManager(console), resourceManager(resource), track(trk){
+
+	//track info
+	trackShapes = track->GetTrackShapes();
+	tileSize = track->GetTileWidth();
+	infoFont = resourceManager->GetPixelFont();
+	infoText.reserve(lineCount);
+	for (int i = 0; i < lineCount; ++i) {
+		sf::Text text;
+		text.setFont(*infoFont);
+		text.scale(0.3f, 0.3f);
+		text.setFillColor(sf::Color::Blue);		
+		infoText.push_back(text);
+	}
+
 	//car sprite
 	carBody.setTexture(*resourceManager->GetCarTexture());
 	carBody.setScale(sf::Vector2f((cgToRear + cgToFront) / carBody.getTextureRect().width, (halfWidth * 2.0) / carBody.getTextureRect().height));		
@@ -66,8 +79,11 @@ void Car::DoPhysics(float dt) {
 	float frictionForceRear_cy = clamp(-cornerStiffnessRear * slipAngleRear, -tireGripRear, tireGripRear) * axleWeightRear;
 
 	//get amount of brake/throttle from inputs
-	float brake = std::min(inputManager->GetBrake() * brakeForce + inputManager->GetEBrake() *eBrakeForce, brakeForce);
-	float throttle = inputManager->GetThrottle() * engineForce;
+	float brake(0), throttle(0);
+	if (selected) {
+		brake = std::min(inputManager->GetBrake() * brakeForce + inputManager->GetEBrake() * eBrakeForce, brakeForce);
+		throttle = inputManager->GetThrottle() * engineForce;
+	}
 
 	//resulting force in local car coordinates
 	float tractionForce_cx = throttle - brake * sgn(velocity_c.x);
@@ -137,7 +153,9 @@ float Car::ApplySafeSteer(float steerInput) {
 void Car::Update(float dt) {
 	
 	//inputs	
-	float steerInput = inputManager->GetSteerRight() - inputManager->GetSteerLeft();
+	float steerInput = 0;
+	if(selected)
+		steerInput = inputManager->GetSteerRight() - inputManager->GetSteerLeft();
 
 	if (smoothSteer)
 		steer = ApplySmoothSteer(steerInput, dt);
@@ -148,7 +166,8 @@ void Car::Update(float dt) {
 
 	steerAngle = steer * maxSteer;
 
-	DoPhysics(dt);
+	DoPhysics(dt);	
+	CalculateDistances();
 
 	consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));	
 	consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
@@ -158,8 +177,21 @@ void Car::Update(float dt) {
 
 void Car::Draw(sf::RenderWindow& window){
 	
+	//dev mode
+	if (consoleManager->IsDisplayed()) {
+		//distance lines
+		for (auto& l : distanceLines)
+			window.draw(l);
+
+		//line distances
+		for (auto& t : infoText) {
+			window.draw(t);
+		}
+	}
+
+	//skid marks
 	for (sf::Sprite& c : skidMarks) 
-		window.draw(c); //draw skid marks	
+		window.draw(c);
 
 	sf::Transform transform;	
 	transform.translate(position);	
@@ -189,6 +221,8 @@ void Car::Draw(sf::RenderWindow& window){
 	carBody.setOrigin(carBody.getTextureRect().width / 2.0, carBody.getTextureRect().height / 2.0);
 	carBody.setRotation(heading * (180 / M_PI));
 	window.draw(carBody, transform2);		
+
+
 }
 
 void Car::addSkidMarks() {
@@ -215,5 +249,53 @@ void Car::addSkidMarks() {
 }
 
 void Car::CalculateDistances() {
+	distanceLines.clear();
+	for (int i = 0; i < lineCount; ++i) {
+		sf::VertexArray newLine = sf::VertexArray(sf::LinesStrip);
+		newLine.append(sf::Vertex(position, lineColor));
 
+		const float theta = (M_PI * 2) / lineCount;
+		const float angle = (theta * i);
+
+		Line line1 = Line(position, sf::Vector2f(position.x + (lineLength * cos(angle + heading)),
+												 position.y + (lineLength * sin(angle + heading))));
+
+		float shortestDistance = lineLength;
+		for (auto& trackShape : *trackShapes) {
+			bool intersecting = false;
+
+			for (int i = 0; i < trackShape.getPointCount(); ++i) {
+				Line line2;
+				if (i == trackShape.getPointCount() - 1) line2 = Line(trackShape.getPoint(i), trackShape.getPoint(0));
+				else line2 = Line(trackShape.getPoint(i), trackShape.getPoint(i + 1));
+
+				float testLen = std::sqrt(std::pow(line2.p1.x - line2.p2.x, 2) + std::pow(line2.p1.y - line2.p2.y, 2));
+				float trackWidth = (tileSize / 8) * 4;
+				if (testLen < tileSize * 0.2 || testLen > tileSize * 0.9) {
+					float det = (line1.A * line2.B) - (line2.A * line1.B);
+					if (det != 0) { //if not parallel
+						float x = (line2.B * line1.C - line1.B * line2.C) / det;
+						float y = (line1.A * line2.C - line2.A * line1.C) / det;
+						if ((std::min(line2.p1.x, line2.p2.x) <= x + 1) && (x - 1 <= std::max(line2.p1.x, line2.p2.x)) &&
+							(std::min(line2.p1.y, line2.p2.y) <= y + 1) && (y - 1 <= std::max(line2.p1.y, line2.p2.y)) &&
+							(std::min(line1.p1.x, line1.p2.x) <= x + 1) && (x - 1 <= std::max(line1.p1.x, line1.p2.x)) &&
+							(std::min(line1.p1.y, line1.p2.y) <= y + 1) && (y - 1 <= std::max(line1.p1.y, line1.p2.y))) {
+							float length = std::sqrt(std::pow(line1.p1.x - x, 2) + std::pow(line1.p1.y - y, 2));
+							if (shortestDistance > length) {								
+								line1.p2 = sf::Vector2f(x, y);
+								shortestDistance = length;
+							}
+						}
+					}
+				}
+			}
+		}
+		int text_x = line1.p2.x;
+		int text_y = line1.p2.y;
+		infoText[i].setPosition(sf::Vector2f(text_x, text_y));
+		std::string dist = std::to_string(shortestDistance);
+		infoText[i].setString(dist.substr(0, dist.find_first_of('.') + 2));
+		newLine.append(sf::Vertex(line1.p2, lineColor));
+		distanceLines.push_back(newLine);
+	}	
 }

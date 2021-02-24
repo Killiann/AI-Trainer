@@ -3,6 +3,7 @@
 #include "InputManager.h"
 #include "ConsoleManager.h"
 #include "ResourceManager.h"
+#include "Track.h"
 #include <vector>
 
 #define _USE_MATH_DEFINES
@@ -45,7 +46,7 @@ class Car
 	const float cgHeight = 0.55 * scale;
 	const float wheelRadius = 0.3 * scale;
 	const float wheelWidth = 0.2 * scale;
-	const float tireGrip = 3.8; //og:2.0
+	const float tireGrip = 3.3; //og:2.0
 	const float lockGrip = 0.7; //og:0.7 
 	const float engineForce = 50000.0 * scale; //og:8000
 	const float brakeForce = 22000.0 * scale;
@@ -67,21 +68,14 @@ class Car
 	sf::Texture* driftTexture;
 	sf::Sprite carBody;
 	std::vector<sf::RectangleShape> wheels;
-	std::vector<sf::Sprite> skidMarks;
-
-	//-->Distance Lines
-	sf::Color lineColor = sf::Color::Black;
-	sf::Color medDistColor = sf::Color(255, 165, 0); //orange
-	sf::Color warning = sf::Color::Red;
-	std::vector<sf::VertexArray> distanceLines;
-	std::vector<sf::ConvexShape>* trackShapes;
-	const int lineCount = 8;
-	const int lineLength = 300;
+	std::vector<sf::Sprite> skidMarks;	
 
 	//manage
 	ConsoleManager* consoleManager;
 	InputManager* inputManager;
 	ResourceManager* resourceManager;
+	Track* track;
+	int tileSize;
 
 	//private functions			
 	void DoPhysics(float dt);
@@ -89,12 +83,43 @@ class Car
 	float ApplySafeSteer(float steerInput);
 	void addSkidMarks();
 	void CalculateDistances();
-	
+
+	//Distance Lines
+	sf::Color lineColor = sf::Color::Black;
+	sf::Color medDistColor = sf::Color(255, 165, 0); //orange
+	sf::Color warning = sf::Color::Red;
+	std::vector<sf::VertexArray> distanceLines;
+	std::vector<sf::ConvexShape>* trackShapes;
+	const int lineCount = 8;
+	const int lineLength = 300;
+	struct Line {
+		sf::Vector2f p1;
+		sf::Vector2f p2;		
+		Line() { A = B = C = 0.f; }
+		Line(sf::Vector2f _p1, sf::Vector2f _p2) : p1(_p1), p2(_p2) {
+			A = p2.y - p1.y;
+			B = p1.x - p2.x;
+			C = (A * p1.x) + (B * p1.y);
+		}
+		float A, B, C;
+	};
+	sf::Font* infoFont;
+	std::vector<sf::Text> infoText;
+
+	bool selected = false;
+	int ID;
+
 public:	
-	Car(sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, std::vector<sf::ConvexShape> *trackShapes);
+	Car(int id, sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, Track* track);
 	void Update(float dt);
 	void Draw(sf::RenderWindow& window);
 	sf::Vector2f getPosition() { return position; }
-	float GetRotation() { return heading * (180 / M_PI); }
+	float GetRotation() { return heading * (180 / M_PI); }	
+
+	void Select() { 			
+		selected = true; 
+	}
+	void Deselect() { selected = false; }
+	bool isSelected() { return selected; }
 };
 

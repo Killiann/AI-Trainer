@@ -38,5 +38,6 @@ public:
 	void UpdateMessageValue(std::string key, std::string value);
 	void Update();
 	void Draw(sf::RenderWindow& window);
+	bool IsDisplayed() { return display; }
 };
 

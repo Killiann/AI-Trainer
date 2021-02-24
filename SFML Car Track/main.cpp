@@ -28,10 +28,22 @@ int main()
     
     //world 
     Track track = Track(&resourceManager);    
-    Car car(sf::Vector2f(216.0f, 400.0f), &inputManager, &consoleManager, &resourceManager, track.GetTrackShapes());
+    Car car(0, sf::Vector2f(216.0f, 385.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car1(1, sf::Vector2f(266.0f, 385.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car2(2, sf::Vector2f(316.0f, 385.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car3(3, sf::Vector2f(216.0f, 435.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car4(4, sf::Vector2f(266.0f, 435.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car5(5, sf::Vector2f(316.0f, 435.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    car.Select();
 
     std::vector<Car*> cars;
     cars.push_back(&car);
+    cars.push_back(&car1);
+    cars.push_back(&car2);
+    cars.push_back(&car3);
+    cars.push_back(&car4);
+    cars.push_back(&car5);
+    
 
     Minimap minimap = Minimap(cars, &track);
     while (window.isOpen())
@@ -54,6 +66,8 @@ int main()
         //update 
         inputManager.Update();
         consoleManager.Update();
+        /*for (auto& c : cars)
+            c->Update(dt.asSeconds());*/
         car.Update(dt.asSeconds());
         camera.setCenter(car.getPosition());
         
@@ -63,7 +77,8 @@ int main()
 
         //world
         track.Draw(window);        
-        car.Draw(window);
+        for (auto& c : cars)
+            c->Draw(window);
 
         //console
         window.setView(window.getDefaultView());
@@ -71,7 +86,6 @@ int main()
 
         //minimap
         minimap.Draw(window);
-
         window.display();
     }
 

@@ -11,6 +11,8 @@ class ResourceManager
 
 	//fonts
 	sf::Font consoleFont;
+	sf::Font pixelFont;
+
 public:
 	ResourceManager();
 	
@@ -19,5 +21,6 @@ public:
 	sf::Texture* GetTrackTexture() { return &trackTexture; }
 
 	sf::Font* GetConsoleFont() { return &consoleFont; }
+	sf::Font* GetPixelFont() { return &pixelFont; }
 };
 
