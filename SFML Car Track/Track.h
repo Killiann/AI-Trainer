@@ -1,6 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "TrackPiece.h"
+#include "ResourceManager.h"
 
 class Track
 {
@@ -21,8 +23,8 @@ class Track
 		DOUBLE_CORNER_RIGHT, //14		
 	};
 
-	sf::Texture trackTexture;
 	std::vector<TrackPiece> trackPieces;
+	std::vector<sf::ConvexShape> trackShapes;
 
 	static const int trackGridH = 4, trackGridW = 6;
 	int gridVals[trackGridH][trackGridW] = {
@@ -36,10 +38,12 @@ class Track
 	static const int pieceDivisions = 8;
 	static const int trackWidth = 4;
 
+	ResourceManager* resourceManager;
 public:
-	Track();
+	
+	Track(ResourceManager *resourceManager);
 	inline int GetTileWidth() { return tileSize; }
 	void Draw(sf::RenderWindow& window);
-	std::vector<sf::ConvexShape> GetTrackShapes();
+	inline std::vector<sf::ConvexShape>* GetTrackShapes() { return &trackShapes; }
 };
 

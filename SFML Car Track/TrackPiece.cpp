@@ -9,12 +9,12 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gri
 	incr = (float)tileS / 8;
 
 	//rotation = 0;
-	float texTileW = trackTexture.getSize().x / 5;
+	int texTileW = trackTexture.getSize().x / 5;
 	trackSprite.setTexture(trackTexture);		
-	trackSprite.setScale((float)tileS / texTileW, (float)tileS / texTileW);
+	//trackSprite.setScale((float)atileS / texTileW, (float)tileS / texTileW);
 	trackSprite.setPosition(xPos, yPos);
 	trackSprite.setOrigin(texTileW / 2, texTileW / 2);
-	trackSprite.setRotation(rotation);
+	trackSprite.setRotation(rotation);	
 
 	//setup track collision shapes
 	switch(trackType){
@@ -61,11 +61,11 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gri
 }
 
 void TrackPiece::Draw(sf::RenderWindow& window) {	
-	for (auto& s : accessibleTrack)
+/*	for (auto& s : accessibleTrack)
 		window.draw(s);
 
 	for (auto& s : innerBounds)
-		window.draw(s);			
+		window.draw(s);		*/	
 
 	window.draw(trackSprite);
 }

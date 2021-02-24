@@ -147,13 +147,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Car.cpp" />
+    <ClCompile Include="ConsoleManager.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MousePoint.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPiece.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Car.h" />
+    <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="MousePoint.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPiece.h" />
   </ItemGroup>

@@ -62,5 +62,5 @@ void MousePoint::Draw(sf::RenderWindow& window) {
 	for (auto& l : distanceLines)
 		window.draw(l);
 
-	window.draw(interactionPoint);
+	//window.draw(interactionPoint);
 }
