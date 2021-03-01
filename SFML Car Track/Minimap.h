@@ -12,8 +12,10 @@ class Minimap
 	sf::RectangleShape bg;
 
 	sf::RectangleShape boundingRectangle;
+
+	ConsoleManager* consoleManager;
 public:
-	Minimap(std::vector<Car*> c, Track* t);
-	void Draw(sf::RenderWindow& window);
+	Minimap(std::vector<Car*> c, Track* t, ConsoleManager *cm);
+	void Draw(sf::RenderWindow& window);		
 };
 

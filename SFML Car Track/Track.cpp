@@ -18,7 +18,20 @@ Track::Track(ResourceManager *resource) : resourceManager(resource){
 	}
 }
 
-void Track::Draw(sf::RenderWindow& window) {
+void Track::Draw(sf::RenderWindow& window, bool devOverview) {
 	for (auto& t : trackPieces)
 		t.Draw(window);
+	
+	if (devOverview) {
+		for (auto& c : checkedArea)
+			window.draw(c);
+	}
+}
+
+void Track::addCheckedArea(sf::ConvexShape trackShape) {
+	sf::RectangleShape rect;
+	rect.setFillColor(sf::Color(25, 255, 25, 100));
+	rect.setPosition(trackShape.getGlobalBounds().left, trackShape.getGlobalBounds().top);
+	rect.setSize(sf::Vector2f(trackShape.getGlobalBounds().width, trackShape.getGlobalBounds().height));
+	checkedArea.push_back(rect);
 }

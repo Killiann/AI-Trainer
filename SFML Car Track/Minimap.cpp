@@ -1,13 +1,13 @@
 #include "Minimap.h"
 
-Minimap::Minimap(std::vector<Car*> c, Track* t) : cars(c), track(t) {
+Minimap::Minimap(std::vector<Car*> c, Track* t, ConsoleManager* cm) : cars(c), track(t), consoleManager(cm){
 	//setup map markers
 	for (auto& i : cars) {
 		sf::CircleShape circle;
 		circle.setOutlineThickness(15.0f);
 		circle.setOutlineColor(sf::Color::Red);
 		circle.setFillColor(sf::Color::Transparent);
-		float radius = 20;
+		float radius = 40;
 		circle.setRadius(radius);
 		circle.setOrigin(radius, radius);
 		mapMarkers.push_back(circle);
@@ -19,9 +19,9 @@ Minimap::Minimap(std::vector<Car*> c, Track* t) : cars(c), track(t) {
 	bg.setFillColor(sf::Color::White);
 
 	//init view
-	miniMap.setSize(1500, 1000);
+	miniMap.setSize(3000, 2000);
 	miniMap.setViewport(sf::FloatRect(0.75f, 0.0f, 0.25f, 0.25f));	
-	miniMap.setCenter(550, 300);
+	miniMap.setCenter(1100, 600);
 	
 	int padding = mapMarkers[0].getRadius() + mapMarkers[0].getOutlineThickness();
 
@@ -35,8 +35,11 @@ void Minimap::Draw(sf::RenderWindow& window) {
 	window.setView(miniMap);
 	//window.draw(bg);
 	window.draw(boundingRectangle);
-	track->Draw(window);
+	track->Draw(window, consoleManager->IsDisplayed());
 	for (int i = 0; i < cars.size(); ++i) {
+		if (cars[i]->isSelected() && consoleManager->IsDisplayed())
+			window.draw(cars[i]->getCollisionRect());
+			
 		sf::Vector2f pos = cars[i]->getPosition();
 		if (pos.x < boundingRectangle.getPosition().x)
 			pos.x = boundingRectangle.getPosition().x;

@@ -11,7 +11,7 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gri
 	//rotation = 0;
 	int texTileW = trackTexture.getSize().x / 5;
 	trackSprite.setTexture(trackTexture);		
-	//trackSprite.setScale((float)atileS / texTileW, (float)tileS / texTileW);
+	trackSprite.setScale((float)tileS / texTileW, (float)tileS / texTileW);
 	trackSprite.setPosition(xPos, yPos);
 	trackSprite.setOrigin(texTileW / 2, texTileW / 2);
 	trackSprite.setRotation(rotation);	

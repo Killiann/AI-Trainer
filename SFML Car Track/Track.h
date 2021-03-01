@@ -34,16 +34,20 @@ class Track
 		{ 10,3 ,9 ,10 ,3,9 }
 	};
 
-	static const int tileSize = 216;
+	static const int tileSize= 432; //texture rect size * 2
 	static const int pieceDivisions = 8;
 	static const int trackWidth = 4;
 
+	std::vector<sf::RectangleShape> checkedArea;
 	ResourceManager* resourceManager;
+
 public:
-	
-	Track(ResourceManager *resourceManager);
-	inline int GetTileWidth() { return tileSize; }
-	void Draw(sf::RenderWindow& window);
+	Track(ResourceManager *resourceManager);	
+	void Draw(sf::RenderWindow& window, bool devOverview);
+
 	inline std::vector<sf::ConvexShape>* GetTrackShapes() { return &trackShapes; }
+	inline void clearCheckedArea() { checkedArea.clear(); }
+	inline int GetTileWidth() { return tileSize; }
+	inline void addCheckedArea(sf::ConvexShape trackShape);
 };
 
