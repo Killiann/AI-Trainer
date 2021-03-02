@@ -8,6 +8,7 @@ class ResourceManager
 	sf::Texture carTexture;
 	sf::Texture driftTexture;
 	sf::Texture trackTexture;
+	sf::Texture checkpointTexture;
 
 	//fonts
 	sf::Font consoleFont;
@@ -19,6 +20,7 @@ public:
 	sf::Texture* GetCarTexture() { return &carTexture; }
 	sf::Texture* GetDriftTexture() { return &driftTexture; }
 	sf::Texture* GetTrackTexture() { return &trackTexture; }
+	sf::Texture* GetCheckpointTexture() { return &checkpointTexture; }
 
 	sf::Font* GetConsoleFont() { return &consoleFont; }
 	sf::Font* GetPixelFont() { return &pixelFont; }

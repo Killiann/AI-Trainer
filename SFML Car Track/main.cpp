@@ -6,6 +6,7 @@
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "Minimap.h"
+#include "CheckPointManager.h"
 #include <algorithm>
 #include <numeric>
 
@@ -13,6 +14,8 @@
 sf::Clock clk;
 sf::Time dt;
 std::vector<float> allFPS;
+
+bool isCycleDown = false;
 
 int main()
 {
@@ -28,15 +31,16 @@ int main()
     ResourceManager resourceManager = ResourceManager();
     ConsoleManager consoleManager(resourceManager.GetConsoleFont());
     InputManager inputManager(&consoleManager);    
-    
+    CheckPointManager checkpointManager(resourceManager.GetCheckpointTexture());
+
     //world 
     Track track = Track(&resourceManager);    
-    Car car(0, sf::Vector2f(216.0f, 385.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car1(1, sf::Vector2f(266.0f, 385.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car2(2, sf::Vector2f(316.0f, 385.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car3(3, sf::Vector2f(216.0f, 435.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car4(4, sf::Vector2f(266.0f, 435.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car5(5, sf::Vector2f(316.0f, 435.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car(0, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car1(1, sf::Vector2f(532.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car2(2, sf::Vector2f(432.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car3(3, sf::Vector2f(432.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car4(4, sf::Vector2f(332.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car5(5, sf::Vector2f(332.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &track);
     car.Select();
 
     int currentID = 0;
@@ -108,6 +112,23 @@ int main()
                     }
                 }
             }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Key::Num1) {
+                    if (!isCycleDown) {
+                        isCycleDown = true;
+                        cars[currentID]->Deselect();
+                        if (currentID == (cars.size() - 1))
+                            currentID = 0;
+                        else ++currentID;
+                        cars[currentID]->Select();
+                    }
+                }
+            }
+            if (event.type == sf::Event::KeyReleased) {
+                if (event.key.code == sf::Keyboard::Key::Num1) {
+                    if (isCycleDown) isCycleDown = false;
+                }
+            }
         }
         
         //update 
@@ -125,6 +146,8 @@ int main()
 
         //world
         track.Draw(window, false);        
+        checkpointManager.Draw(window);
+
         for (auto& c : cars)
             c->Draw(window);
 

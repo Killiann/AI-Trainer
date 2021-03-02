@@ -22,13 +22,14 @@ Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console,
 	tileSize = track->GetTileWidth();
 	infoFont = resourceManager->GetPixelFont();
 	infoText.reserve(lineCount);
-	for (int i = 0; i < lineCount; ++i) {
+	for (int i = 0; i <= lineCount; ++i) {
 		sf::Text text;
 		text.setFont(*infoFont);
-		text.scale(0.3f, 0.3f);
+		text.scale(0.5f, 0.5f);
 		text.setFillColor(sf::Color::Blue);		
 		infoText.push_back(text);
-	}
+	}	
+	infoText[infoText.size() - 1].setString("ID: " + std::to_string(ID));
 
 	//car sprite
 	carBody.setTexture(*resourceManager->GetCarTexture());
@@ -196,6 +197,8 @@ void Car::Update(float dt) {
 		if(selected)
 			CalculateDistances();
 	}
+
+	infoText[infoText.size() - 1].setPosition(collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3)));
 
 	consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));	
 	consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));

@@ -44,10 +44,10 @@ class Track
 public:
 	Track(ResourceManager *resourceManager);	
 	void Draw(sf::RenderWindow& window, bool devOverview);
+	void addCheckedArea(sf::ConvexShape trackShape);
 
 	inline std::vector<sf::ConvexShape>* GetTrackShapes() { return &trackShapes; }
 	inline void clearCheckedArea() { checkedArea.clear(); }
 	inline int GetTileWidth() { return tileSize; }
-	inline void addCheckedArea(sf::ConvexShape trackShape);
 };
 

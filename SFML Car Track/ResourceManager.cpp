@@ -12,6 +12,9 @@ ResourceManager::ResourceManager() {
     if (!trackTexture.loadFromFile("Resources/tracksheet.png")) {
         std::cout << "Could not get tracksheet.png.\n";
     }
+    if (!checkpointTexture.loadFromFile("Resources/checkpoints.png")) {
+        std::cout << "Could not get checkpoints.png";
+    }
     std::cout << "Done. \nLoading fonts..." << std::endl;
     
     //load fonts
