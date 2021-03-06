@@ -47,3 +47,16 @@ void CheckPoint::Draw(sf::RenderTarget& window){
 	window.draw(sprite);
 }
 
+CheckPointTracker::CheckPointTracker(CheckPointManager *manager, Car* c){
+	checkpoints = *(manager->GetCheckpoints());
+	car = c;
+
+	//setup segments
+	for (int i = 0; i < checkpoints.size() - 1; ++i) {
+		segments.emplace_back(i, &checkpoints[i], &checkpoints[i + 1]);
+	}
+}
+
+void CheckPointTracker::Update() {
+
+}

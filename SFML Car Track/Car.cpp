@@ -65,11 +65,6 @@ Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console,
 	checkArea.setOrigin(sf::Vector2f(track->GetTileWidth(), track->GetTileWidth()));
 	checkArea.setPosition(position);
 	checkArea.setFillColor(sf::Color(255, 0, 0, 100));
-
-	consoleManager->AddMessage("steer angle");
-	consoleManager->AddMessage("velocity.x");
-	consoleManager->AddMessage("velocity.y");
-	consoleManager->AddMessage("skid count");
 }
 
 void Car::DoPhysics(float dt) {
@@ -176,10 +171,10 @@ float Car::ApplySafeSteer(float steerInput) {
 }
 
 void Car::Update(float dt) {
-	
+
 	//inputs	
 	float steerInput = 0;
-	if(selected)
+	if (selected)
 		steerInput = inputManager->GetSteerRight() - inputManager->GetSteerLeft();
 
 	if (smoothSteer)
@@ -194,16 +189,18 @@ void Car::Update(float dt) {
 	if (velocity != sf::Vector2f(0, 0) || inputManager->GetThrottle() != 0) {
 		DoPhysics(dt);
 		checkArea.setPosition(position.x * scale, position.y * scale);
-		if(selected)
+		if (selected)
 			CalculateDistances();
 	}
 
 	infoText[infoText.size() - 1].setPosition(collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3)));
 
-	consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));	
-	consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
-	consoleManager->UpdateMessageValue("velocity.y", std::to_string(velocity.y));
-	consoleManager->UpdateMessageValue("skid count", std::to_string(skidMarks.size()));
+	if (selected) {
+		consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));
+		consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
+		consoleManager->UpdateMessageValue("velocity.y", std::to_string(velocity.y));
+		consoleManager->UpdateMessageValue("skid count", std::to_string(skidMarks.size()));
+	}
 }
 
 void Car::Draw(sf::RenderWindow& window){
@@ -303,7 +300,7 @@ void Car::CalculateDistances() {
 		const float theta = (M_PI * 2) / lineCount;
 		const float angle = (theta * i);
 
-		Line line1 = Line(sf::Vector2f(position.x * scale, position.y * scale), sf::Vector2f((position.x * scale) + (lineLength * cos(angle + heading)),
+		lin::Line line1 = lin::Line(sf::Vector2f(position.x * scale, position.y * scale), sf::Vector2f((position.x * scale) + (lineLength * cos(angle + heading)),
 												 (position.y * scale) + (lineLength * sin(angle + heading))));
 
 		if(consoleManager->IsDisplayed())track->clearCheckedArea();
@@ -313,9 +310,9 @@ void Car::CalculateDistances() {
 				if(consoleManager->IsDisplayed()) track->addCheckedArea(trackShape);				
 
 				for (int i = 0; i < trackShape.getPointCount(); ++i) {
-					Line line2;
-					if (i == trackShape.getPointCount() - 1) line2 = Line(trackShape.getPoint(i), trackShape.getPoint(0));
-					else line2 = Line(trackShape.getPoint(i), trackShape.getPoint(i + 1));
+					lin::Line line2;
+					if (i == trackShape.getPointCount() - 1) line2 = lin::Line(trackShape.getPoint(i), trackShape.getPoint(0));
+					else line2 = lin::Line(trackShape.getPoint(i), trackShape.getPoint(i + 1));
 
 					float testLen = std::sqrt(std::pow(line2.p1.x - line2.p2.x, 2) + std::pow(line2.p1.y - line2.p2.y, 2));
 					float trackWidth = (tileSize / 8) * 4;
@@ -349,21 +346,11 @@ void Car::CalculateDistances() {
 	}	
 }
 
-
-bool isToLeft(sf::Vector2f A, sf::Vector2f B, sf::Vector2f P) {
-	return ((B.x - A.x) * (P.y - A.y) - (P.x - A.x) * (B.y - A.y)) > 0;
-}
-
 bool Car::containsPoint(sf::Vector2f P) {
 	sf::Vector2f A = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(0));
 	sf::Vector2f B = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(1));
 	sf::Vector2f C = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(2));
-	sf::Vector2f D = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3));		
+	sf::Vector2f D = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3));
 
-	bool AD = isToLeft(A, D, P);
-	bool DC = isToLeft(D, C, P);
-	bool CB = isToLeft(C, B, P);
-	bool BA = isToLeft(B, A, P);
-	return (AD && DC && CB && BA);
+	return lin::doesRectContainPoint(P, A, B, C, D);
 }
-

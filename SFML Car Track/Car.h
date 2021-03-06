@@ -1,10 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <linearAlgebra.h>
+
 #include "InputManager.h"
 #include "ConsoleManager.h"
 #include "ResourceManager.h"
 #include "Track.h"
-#include <vector>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -93,17 +94,7 @@ class Car
 	sf::RectangleShape checkArea;
 	const int lineCount = 8;
 	const int lineLength = 500;
-	struct Line {
-		sf::Vector2f p1;
-		sf::Vector2f p2;		
-		Line() { A = B = C = 0.f; }
-		Line(sf::Vector2f _p1, sf::Vector2f _p2) : p1(_p1), p2(_p2) {
-			A = p2.y - p1.y;
-			B = p1.x - p2.x;
-			C = (A * p1.x) + (B * p1.y);
-		}
-		float A, B, C;
-	};
+	
 	sf::Font* infoFont;
 	std::vector<sf::Text> infoText;
 

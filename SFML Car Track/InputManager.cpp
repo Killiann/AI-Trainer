@@ -8,7 +8,6 @@ InputManager::InputManager(ConsoleManager *c) : consoleManager(c){
 	consoleManager->AddMessage("ebrake");
 	consoleManager->AddMessage("left steer");
 	consoleManager->AddMessage("right steer");
-	consoleManager->AddMessage("====================");
 }
 
 void InputManager:: Update(){

@@ -57,11 +57,19 @@ int main()
     //dev
     sf::Vector2i mousePos;
     sf::Vector2f mouseCoords;    
+
+    consoleManager.AddMessage("=========CAR========");
+    consoleManager.AddMessage("steer angle");
+    consoleManager.AddMessage("velocity.x");
+    consoleManager.AddMessage("velocity.y");
+    consoleManager.AddMessage("skid count");
+    consoleManager.AddMessage("========DATA========");    
     consoleManager.AddMessage("mousePos");
     consoleManager.AddMessage("mouseCoords");
     consoleManager.AddMessage("dt");
     consoleManager.AddMessage("framerate");
     consoleManager.AddMessage("average framerate");
+    consoleManager.AddMessage("====================");
 
     allFPS.reserve(100000);
     while (window.isOpen())
@@ -71,12 +79,12 @@ int main()
         mousePos = sf::Vector2i(mousePos.x - window.getPosition().x, mousePos.y - window.getPosition().y);
         mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);
         consoleManager.UpdateMessageValue("mousePos", std::to_string(mousePos.x) + " " + std::to_string(mousePos.y));
-        consoleManager.UpdateMessageValue("mouseCoords", std::to_string(mouseCoords.x) + " " + std::to_string(mouseCoords.y));
+        consoleManager.UpdateMessageValue("mouseCoords", "x:" + std::to_string((int)mouseCoords.x) + "  y:" + std::to_string((int)mouseCoords.y));
 
         //handle framerate - avg fps can be added but is limited to vector size (just for testing)
         float fps = 1.f / clk.getElapsedTime().asSeconds();
         allFPS.push_back(fps);
-        consoleManager.UpdateMessageValue("average framerate", std::to_string(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size()));        
+        consoleManager.UpdateMessageValue("average framerate", std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size())));        
         consoleManager.UpdateMessageValue("framerate", std::to_string(fps));
         
         //time between loops

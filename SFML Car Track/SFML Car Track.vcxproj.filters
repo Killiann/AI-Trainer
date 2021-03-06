@@ -25,6 +25,12 @@
     <Filter Include="Source Files\World">
       <UniqueIdentifier>{4b951a16-d8dc-4abe-a9da-e20b58c1366a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{3e341d28-8592-4fce-b4a7-4b7736f800bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{9f336535-c30b-43e1-be50-f361aa8f73fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
