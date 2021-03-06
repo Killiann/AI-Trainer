@@ -5,8 +5,8 @@
 #include "ConsoleManager.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
-#include "Minimap.h"
 #include "CheckPointManager.h"
+#include "Minimap.h"
 #include <algorithm>
 #include <numeric>
 
@@ -31,16 +31,16 @@ int main()
     ResourceManager resourceManager = ResourceManager();
     ConsoleManager consoleManager(resourceManager.GetConsoleFont());
     InputManager inputManager(&consoleManager);    
-    CheckPointManager checkpointManager(resourceManager.GetCheckpointTexture());
+    CheckPointManager checkPointManager(resourceManager.GetCheckpointTexture(), &consoleManager);
 
     //world 
     Track track = Track(&resourceManager);    
-    Car car(0, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car1(1, sf::Vector2f(532.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car2(2, sf::Vector2f(432.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car3(3, sf::Vector2f(432.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car4(4, sf::Vector2f(332.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &track);
-    Car car5(5, sf::Vector2f(332.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &track);
+    Car car(0, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
+    Car car1(1, sf::Vector2f(532.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
+    Car car2(2, sf::Vector2f(432.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
+    Car car3(3, sf::Vector2f(432.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
+    Car car4(4, sf::Vector2f(332.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
+    Car car5(5, sf::Vector2f(332.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
     car.Select();
 
     int currentID = 0;
@@ -63,6 +63,9 @@ int main()
     consoleManager.AddMessage("velocity.x");
     consoleManager.AddMessage("velocity.y");
     consoleManager.AddMessage("skid count");
+    consoleManager.AddMessage("current segment");
+    consoleManager.AddMessage("fastest time");
+    consoleManager.AddMessage("last lap");
     consoleManager.AddMessage("========DATA========");    
     consoleManager.AddMessage("mousePos");
     consoleManager.AddMessage("mouseCoords");
@@ -154,7 +157,7 @@ int main()
 
         //world
         track.Draw(window, false);        
-        checkpointManager.Draw(window);
+        checkPointManager.Draw(window);
 
         for (auto& c : cars)
             c->Draw(window);

@@ -25,11 +25,11 @@
     <Filter Include="Source Files\World">
       <UniqueIdentifier>{4b951a16-d8dc-4abe-a9da-e20b58c1366a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Helpers">
-      <UniqueIdentifier>{3e341d28-8592-4fce-b4a7-4b7736f800bf}</UniqueIdentifier>
+    <Filter Include="Source Files\Managers\Checkpoints">
+      <UniqueIdentifier>{c2d3423d-249f-4089-b87a-783455333804}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Helpers">
-      <UniqueIdentifier>{9f336535-c30b-43e1-be50-f361aa8f73fb}</UniqueIdentifier>
+    <Filter Include="Header Files\Managers\Checkpoints">
+      <UniqueIdentifier>{1c615004-0b22-4007-8d73-6dfa3ff7f9de}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,8 +57,14 @@
     <ClCompile Include="Minimap.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="CheckPoint.cpp">
+      <Filter>Source Files\Managers\Checkpoints</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckPointTracker.cpp">
+      <Filter>Source Files\Managers\Checkpoints</Filter>
+    </ClCompile>
     <ClCompile Include="CheckPointManager.cpp">
-      <Filter>Source Files\Managers</Filter>
+      <Filter>Source Files\Managers\Checkpoints</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,8 +89,14 @@
     <ClInclude Include="Minimap.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="CheckPoint.h">
+      <Filter>Header Files\Managers\Checkpoints</Filter>
+    </ClInclude>
     <ClInclude Include="CheckPointManager.h">
-      <Filter>Header Files\Managers</Filter>
+      <Filter>Header Files\Managers\Checkpoints</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckPointTracker.h">
+      <Filter>Header Files\Managers\Checkpoints</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

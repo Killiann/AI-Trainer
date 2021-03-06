@@ -5,6 +5,8 @@
 #include "InputManager.h"
 #include "ConsoleManager.h"
 #include "ResourceManager.h"
+#include "CheckPointManager.h"
+#include "CheckPointTracker.h"
 #include "Track.h"
 
 #define _USE_MATH_DEFINES
@@ -14,7 +16,7 @@
 #include <cassert>
 
 class Car
-{
+{ 
 	//physics + rendering
 	sf::Vector2f position;
 	sf::Vector2f velocity;
@@ -84,14 +86,13 @@ class Car
 	float ApplySafeSteer(float steerInput);
 	void addSkidMarks();
 	void CalculateDistances();
+	void CheckPointHandling();
 
 	//Distance Lines
 	sf::Color lineColor = sf::Color::Black;
-	//sf::Color medDistColor = sf::Color(255, 165, 0); //orange
-	//sf::Color warning = sf::Color::Red;
 	std::vector<sf::VertexArray> distanceLines;
 	std::vector<sf::ConvexShape>* trackShapes;
-	sf::RectangleShape checkArea;
+	sf::RectangleShape scanArea;
 	const int lineCount = 8;
 	const int lineLength = 500;
 	
@@ -99,12 +100,16 @@ class Car
 	std::vector<sf::Text> infoText;
 
 	sf::ConvexShape collisionBounds;
+	sf::RectangleShape globalBounds;
+
 	float collisionArea;
 	bool selected = false;
 	int ID;
 
+	CheckPointTracker checkPointTracker;
+	sf::FloatRect nextCheckpointBounds;
 public:	
-	Car(int id, sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, Track* track);
+	Car(int id, sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, CheckPointManager *checkpointManager, Track* track);
 	void Update(float dt);
 	void Draw(sf::RenderWindow& window);
 	bool containsPoint(sf::Vector2f);
@@ -112,7 +117,8 @@ public:
 	inline sf::Vector2f getPosition() { return sf::Vector2f(position.x * scale, position.y * scale); }
 	inline float GetRotation() { return heading * (180 / M_PI); }		
 	inline bool isSelected() { return selected; }
-	inline sf::RectangleShape getCollisionRect() { return checkArea; }
+	inline sf::RectangleShape getScanArea() { return scanArea; }
+	inline sf::RectangleShape getGlobalBounds() { return globalBounds; }
 	inline int getID() { return ID; }
 	inline void Select() {
 		selected = true;

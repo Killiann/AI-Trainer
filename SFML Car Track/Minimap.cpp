@@ -38,7 +38,7 @@ void Minimap::Draw(sf::RenderWindow& window) {
 	track->Draw(window, consoleManager->IsDisplayed());
 	for (int i = 0; i < cars.size(); ++i) {
 		if (cars[i]->isSelected() && consoleManager->IsDisplayed())
-			window.draw(cars[i]->getCollisionRect());
+			window.draw(cars[i]->getScanArea());
 			
 		sf::Vector2f pos = cars[i]->getPosition();
 		if (pos.x < boundingRectangle.getPosition().x)

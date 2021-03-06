@@ -150,7 +150,9 @@
   <ItemGroup>
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="CheckPointManager.cpp" />
+    <ClCompile Include="CheckPointTracker.cpp" />
     <ClCompile Include="ConsoleManager.cpp" />
+    <ClCompile Include="CheckPoint.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Minimap.cpp" />
@@ -161,7 +163,9 @@
   <ItemGroup>
     <ClInclude Include="Car.h" />
     <ClInclude Include="CheckPointManager.h" />
+    <ClInclude Include="CheckPointTracker.h" />
     <ClInclude Include="ConsoleManager.h" />
+    <ClInclude Include="CheckPoint.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Minimap.h" />
     <ClInclude Include="ResourceManager.h" />

@@ -11,8 +11,13 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi)
 	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
-Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console, ResourceManager *resource, Track* trk) 
+Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console, ResourceManager *resource, CheckPointManager* checkpoint, Track* trk)
 	:ID(id), inputManager(input), consoleManager(console), resourceManager(resource), track(trk){
+
+	//CheckPointTracker tracker(checkpoint);
+	checkPointTracker = CheckPointTracker(checkpoint);
+	nextCheckpointBounds = checkPointTracker.GetNextCheckpointBounds();
+
 	//position setup
 	position.x = pos.x / scale;
 	position.y = pos.y / scale;	
@@ -61,10 +66,16 @@ Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console,
 	}		
 
 	//distance lines checking area
-	checkArea = sf::RectangleShape(sf::Vector2f(track->GetTileWidth() * 2, track->GetTileWidth() * 2));
-	checkArea.setOrigin(sf::Vector2f(track->GetTileWidth(), track->GetTileWidth()));
-	checkArea.setPosition(position);
-	checkArea.setFillColor(sf::Color(255, 0, 0, 100));
+	scanArea = sf::RectangleShape(sf::Vector2f(track->GetTileWidth() * 2, track->GetTileWidth() * 2));
+	scanArea.setOrigin(sf::Vector2f(track->GetTileWidth(), track->GetTileWidth()));
+	scanArea.setPosition(position);
+	scanArea.setFillColor(sf::Color(255, 0, 0, 100));
+
+	//global bounds
+	globalBounds.setFillColor(sf::Color::Transparent);
+	globalBounds.setOutlineColor(sf::Color::Blue);
+	globalBounds.setOutlineThickness(1);
+	
 }
 
 void Car::DoPhysics(float dt) {
@@ -188,18 +199,23 @@ void Car::Update(float dt) {
 
 	if (velocity != sf::Vector2f(0, 0) || inputManager->GetThrottle() != 0) {
 		DoPhysics(dt);
-		checkArea.setPosition(position.x * scale, position.y * scale);
+		scanArea.setPosition(position.x * scale, position.y * scale);
 		if (selected)
 			CalculateDistances();
 	}
 
 	infoText[infoText.size() - 1].setPosition(collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3)));
 
+	CheckPointHandling();
+
 	if (selected) {
 		consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));
 		consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
 		consoleManager->UpdateMessageValue("velocity.y", std::to_string(velocity.y));
 		consoleManager->UpdateMessageValue("skid count", std::to_string(skidMarks.size()));
+		consoleManager->UpdateMessageValue("current segment", std::to_string(checkPointTracker.getCurrentSegmentTime() / 1000.f));
+		consoleManager->UpdateMessageValue("fastest time", std::to_string(checkPointTracker.getFastestTime() / 1000.f));
+		consoleManager->UpdateMessageValue("last lap", std::to_string(checkPointTracker.getLastLapTime() / 1000.f));
 	}
 }
 
@@ -254,16 +270,21 @@ void Car::Draw(sf::RenderWindow& window){
 	collisionBounds.setPosition((int)(position.x * scale), (int)(position.y * scale));
 	collisionBounds.setRotation(heading * (180 / M_PI));	
 
+	sf::FloatRect glbl = collisionBounds.getGlobalBounds();
+	globalBounds.setPosition(glbl.left+5, glbl.top+5);
+	globalBounds.setSize(sf::Vector2f(glbl.width-10, glbl.height-10));
+
 	window.draw(carBody, transform2);		
 
 	//devmode (above car)
 	if (consoleManager->IsDisplayed()) {
 		//line distances
-		if(selected)
+		if (selected) {
 			for (auto& t : infoText) {
 				window.draw(t);
-			}	
-		
+			}
+			window.draw(globalBounds);
+		}
 		window.draw(collisionBounds);
 	}
 }
@@ -306,7 +327,7 @@ void Car::CalculateDistances() {
 		if(consoleManager->IsDisplayed())track->clearCheckedArea();
 		float shortestDistance = lineLength;
 		for (auto& trackShape : *trackShapes) {	
-			if (trackShape.getGlobalBounds().intersects(checkArea.getGlobalBounds())) {								
+			if (trackShape.getGlobalBounds().intersects(scanArea.getGlobalBounds())) {								
 				if(consoleManager->IsDisplayed()) track->addCheckedArea(trackShape);				
 
 				for (int i = 0; i < trackShape.getPointCount(); ++i) {
@@ -353,4 +374,11 @@ bool Car::containsPoint(sf::Vector2f P) {
 	sf::Vector2f D = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3));
 
 	return lin::doesRectContainPoint(P, A, B, C, D);
+}
+
+void Car::CheckPointHandling() {
+	if (globalBounds.getGlobalBounds().intersects(nextCheckpointBounds)) {
+		checkPointTracker.CompleteSegment();
+		nextCheckpointBounds = checkPointTracker.GetNextCheckpointBounds();
+	}
 }
