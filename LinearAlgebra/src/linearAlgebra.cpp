@@ -39,4 +39,31 @@ namespace lin {
 		bool BA = isPointToLeft(rB, rA, P);
 		return (AD && DC && CB && BA);
 	}	
+
+	/// <summary>
+	/// Checks whether point (P) lies within ConvexShape(s)
+	/// </summary>
+	/// <param name="P"></param>
+	/// <param name="shape"></param>
+	/// <returns></returns>
+	bool doesConvexShapeContainPoint(sf::Vector2f P, sf::ConvexShape S) {
+		bool res = true;
+		for (int i = 0; i < S.getPointCount(); ++i) {
+			int a, b;
+			if (i == S.getPointCount() - 1) {
+				a = i;
+				b = 0;
+			}
+			else {
+				a = i;
+				b = i + 1;
+			}
+			if (!isPointToLeft(S.getTransform().transformPoint(S.getPoint(a)), S.getTransform().transformPoint(S.getPoint(b)), P))
+			{
+				res = false;
+				break;
+			}
+		}
+		return res;
+	}
 }

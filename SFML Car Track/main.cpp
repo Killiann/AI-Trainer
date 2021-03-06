@@ -66,6 +66,7 @@ int main()
     consoleManager.AddMessage("current segment");
     consoleManager.AddMessage("fastest time");
     consoleManager.AddMessage("last lap");
+    consoleManager.AddMessage("on track");
     consoleManager.AddMessage("========DATA========");    
     consoleManager.AddMessage("mousePos");
     consoleManager.AddMessage("mouseCoords");

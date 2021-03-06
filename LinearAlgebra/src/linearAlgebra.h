@@ -6,7 +6,7 @@ namespace lin {
 	bool isPointToRight(sf::Vector2f A, sf::Vector2f B, sf::Vector2f P);
 
 	bool doesRectContainPoint(sf::Vector2f P, sf::Vector2f A, sf::Vector2f B, sf::Vector2f C, sf::Vector2f D);
-
+	bool doesConvexShapeContainPoint(sf::Vector2f P, sf::ConvexShape shape);
 	/// <summary>
 	/// Line Structure in the form Ax + By = C
 	/// </summary>

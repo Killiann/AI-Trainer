@@ -216,6 +216,7 @@ void Car::Update(float dt) {
 		consoleManager->UpdateMessageValue("current segment", std::to_string(checkPointTracker.getCurrentSegmentTime() / 1000.f));
 		consoleManager->UpdateMessageValue("fastest time", std::to_string(checkPointTracker.getFastestTime() / 1000.f));
 		consoleManager->UpdateMessageValue("last lap", std::to_string(checkPointTracker.getLastLapTime() / 1000.f));
+		consoleManager->UpdateMessageValue("on track", std::to_string(IsOnTrack()));
 	}
 }
 
@@ -381,4 +382,21 @@ void Car::CheckPointHandling() {
 		checkPointTracker.CompleteSegment();
 		nextCheckpointBounds = checkPointTracker.GetNextCheckpointBounds();
 	}
+}
+
+bool Car::IsOnTrack() {
+	bool res = false;
+	sf::Vector2f pos = sf::Vector2f(position.x * scale, position.y * scale);
+	for (auto s : *trackShapes) {
+		if (s.getGlobalBounds().intersects(scanArea.getGlobalBounds())) {
+			if (lin::doesConvexShapeContainPoint(pos, s)) {
+				if (s.getFillColor() == sf::Color::Red) {//check against inner corners
+					res = false;
+					break;
+				}
+				res = true;
+			}
+		}
+	}
+	return res;
 }

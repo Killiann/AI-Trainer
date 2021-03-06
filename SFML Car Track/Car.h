@@ -114,6 +114,8 @@ public:
 	void Draw(sf::RenderWindow& window);
 	bool containsPoint(sf::Vector2f);
 
+	bool IsOnTrack();
+
 	inline sf::Vector2f getPosition() { return sf::Vector2f(position.x * scale, position.y * scale); }
 	inline float GetRotation() { return heading * (180 / M_PI); }		
 	inline bool isSelected() { return selected; }

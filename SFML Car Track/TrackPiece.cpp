@@ -65,7 +65,7 @@ void TrackPiece::Draw(sf::RenderWindow& window) {
 		window.draw(s);
 
 	for (auto& s : innerBounds)
-		window.draw(s);		*/	
+		window.draw(s);	*/		
 
 	window.draw(trackSprite);
 }
@@ -76,7 +76,7 @@ void TrackPiece::InitCorner(int startPos, int endPos, int rotation, float xPos, 
 
 	sf::ConvexShape inner, outer;
 	inner.setPointCount(2 + innerRadiusDefinition);
-	outer.setPointCount(3 + outerRadiusDefinition);
+	outer.setPointCount(2 + outerRadiusDefinition);
 
 	for (int i = 0; i < innerRadiusDefinition; ++i) {
 		float theta = ((PI / 2) / innerRadiusDefinition);
@@ -93,8 +93,7 @@ void TrackPiece::InitCorner(int startPos, int endPos, int rotation, float xPos, 
 	}
 
 	outer.setPoint(outerRadiusDefinition, sf::Vector2f(0, endPos));
-	outer.setPoint(outerRadiusDefinition + 1, sf::Vector2f(0, 0));
-	outer.setPoint(outerRadiusDefinition + 2, sf::Vector2f(endPos, 0));
+	//outer.setPoint(outerRadiusDefinition + 1, sf::Vector2f(0, 0));
 
 	outer.setFillColor(sf::Color(200, 200, 200));	
 	TransformVertices(outer, sf::Vector2f(xPos, yPos), rotation);
