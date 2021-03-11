@@ -49,7 +49,7 @@ class Car
 	const float cgHeight = 0.55;
 	const float wheelRadius = 0.3;
 	const float wheelWidth = 0.2;
-	const float tireGrip = 4.0;
+	float tireGrip = 4.0;
 	const float lockGrip = 0.7;
 	const float engineForce = 8000.0;
 	const float brakeForce = 12000.0;
@@ -59,7 +59,7 @@ class Car
 	const float cornerStiffnessFront = 10.0;
 	const float cornerStiffnessRear = 10.2;
 	const float airResist = 2.5;
-	const float rollResist = 8.0;
+	float rollResist = 8.0;
 
 	float inertia = mass * inertiaScale;
 	float wheelBase = cgToFrontAxle + cgToRearAxle;

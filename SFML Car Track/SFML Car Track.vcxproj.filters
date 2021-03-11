@@ -31,6 +31,18 @@
     <Filter Include="Header Files\Managers\Checkpoints">
       <UniqueIdentifier>{1c615004-0b22-4007-8d73-6dfa3ff7f9de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Neural Net">
+      <UniqueIdentifier>{1a31e808-f82c-4a95-9124-81ee3b45c6b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Neural Net\Genetic Algorithm">
+      <UniqueIdentifier>{b0be94d0-cf26-4ad3-82cf-817d6f7d2f43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Neural Net">
+      <UniqueIdentifier>{2ea38342-661d-4ab9-9ea4-b88733d3bd07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Neural Net\Genetic Algorithm">
+      <UniqueIdentifier>{2daed08f-1303-4c24-aabc-49d322751746}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,6 +78,15 @@
     <ClCompile Include="CheckPointManager.cpp">
       <Filter>Source Files\Managers\Checkpoints</Filter>
     </ClCompile>
+    <ClCompile Include="Node.cpp">
+      <Filter>Source Files\Neural Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Network.cpp">
+      <Filter>Source Files\Neural Net</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>Source Files\Neural Net</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleManager.h">
@@ -97,6 +118,15 @@
     </ClInclude>
     <ClInclude Include="CheckPointTracker.h">
       <Filter>Header Files\Managers\Checkpoints</Filter>
+    </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Header Files\Neural Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Network.h">
+      <Filter>Header Files\Neural Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.h">
+      <Filter>Header Files\Neural Net</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

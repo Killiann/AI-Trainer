@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include "Network.h"
+
 //game clock
 sf::Clock clk;
 sf::Time dt;
@@ -74,6 +76,13 @@ int main()
     consoleManager.AddMessage("framerate");
     consoleManager.AddMessage("average framerate");
     consoleManager.AddMessage("====================");
+
+
+    //neural network testing
+    std::vector<int> layerData = { 5, 4, 4, 5 };
+    sf::FloatRect dimensions = sf::FloatRect(sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75, window.getViewport(window.getDefaultView()).height * 0.25),
+        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4, window.getViewport(window.getDefaultView()).height / 4));
+    Network network = Network(dimensions, layerData);
 
     allFPS.reserve(100000);
     while (window.isOpen())
@@ -166,6 +175,7 @@ int main()
         //console
         window.setView(window.getDefaultView());
         consoleManager.Draw(window);      
+        network.Draw(window);
 
         //minimap
         minimap.Draw(window);

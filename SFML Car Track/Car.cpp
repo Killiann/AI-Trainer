@@ -182,6 +182,15 @@ float Car::ApplySafeSteer(float steerInput) {
 }
 
 void Car::Update(float dt) {
+	//big traction on mud
+	if (!IsOnTrack()) {
+		rollResist = 600;
+		tireGrip = 2.2;
+	}
+	else {
+		rollResist = 8.0;
+		tireGrip = 4.0;
+	}
 
 	//inputs	
 	float steerInput = 0;
