@@ -12,5 +12,5 @@ public:
 	CheckPointManager(sf::Texture* cpTexture, ConsoleManager *cm);
 	void Draw(sf::RenderTarget& window);
 
-	inline std::vector<CheckPoint>* GetCheckpoints() { return &checkpoints; }
+	inline std::vector<CheckPoint> &GetCheckpoints() { return checkpoints; }
 };

@@ -23,11 +23,16 @@ class CheckPoint {
 	sf::Texture* texture;
 	sf::RectangleShape collisionRect;
 
+	sf::Vector2f center;
+	sf::CircleShape c;
+
 	ConsoleManager* console;
 
 public:
+	CheckPoint(){}
 	CheckPoint(int ID, int ts, sf::Vector2f pos, posInTile pit, sf::Texture* texture, ConsoleManager* cm);
 	void Draw(sf::RenderTarget& window);
 	inline sf::FloatRect getGlobalBounds() { return collisionRect.getGlobalBounds(); }
 	inline int getID() { return ID; }
+	inline sf::Vector2f GetCenter() { return center; }
 };

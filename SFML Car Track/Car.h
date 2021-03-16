@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <SFML/Graphics.hpp>
 #include <cassert>
-
 class Car
 { 
 	//physics + rendering
@@ -23,6 +22,12 @@ class Car
 	sf::Vector2f velocity_c;
 	sf::Vector2f accel;
 	sf::Vector2f accel_c;
+
+	float I_throttle = 0;
+	float I_brake = 0;
+	float I_ebrake = 0;
+	float I_leftSteer = 0;
+	float I_rightSteer = 0;
 	
 	float heading = 0.0;
 	
@@ -93,8 +98,9 @@ class Car
 	std::vector<sf::VertexArray> distanceLines;
 	std::vector<sf::ConvexShape>* trackShapes;
 	sf::RectangleShape scanArea;
-	const int lineCount = 8;
+	const int lineCount = 5;
 	const int lineLength = 500;
+	std::vector<float> distances;
 	
 	sf::Font* infoFont;
 	std::vector<sf::Text> infoText;
@@ -108,8 +114,15 @@ class Car
 
 	CheckPointTracker checkPointTracker;
 	sf::FloatRect nextCheckpointBounds;
+
+	bool onTrack = true;
+
+	//fitness
+	bool alive = true;
+	sf::Clock timeAlive;
+	float fitness;
 public:	
-	Car(int id, sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, CheckPointManager *checkpointManager, Track* track);
+	Car(int id, sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, CheckPointManager &checkpointManager, Track* track);
 	void Update(float dt);
 	void Draw(sf::RenderWindow& window);
 	bool containsPoint(sf::Vector2f);
@@ -130,5 +143,20 @@ public:
 		selected = false;
 		collisionBounds.setOutlineColor(sf::Color::Red);
 	}
+	inline const int GetMaxLineLength() { return lineLength; }
+	inline std::vector<float> GetDistances() { return distances; }
+	inline int GetLineCount() { return lineCount; }
+
+	inline void SetInputs(std::vector<float> inputs) {
+		if (inputs.size() > 0) {
+			I_throttle = inputs[0];
+			I_brake = inputs[1];
+			I_ebrake = inputs[2];
+			I_rightSteer = inputs[3];
+			I_leftSteer = inputs[4];
+		}
+	}
+
+	float CalculateFitness();
 };
 

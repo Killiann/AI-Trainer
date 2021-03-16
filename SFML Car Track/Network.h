@@ -6,6 +6,7 @@ class Network
 {
 	//Network
 	std::vector<Layer> layers;
+	Layer inputLayer, outputLayer;
 
 	//SFML
 	sf::FloatRect dimensions;

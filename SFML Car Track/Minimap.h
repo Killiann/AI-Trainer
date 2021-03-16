@@ -5,7 +5,7 @@
 class Minimap
 {
 	Track* track;
-	std::vector<Car*> cars;
+	std::vector<Car>* cars;
 
 	std::vector<sf::CircleShape> mapMarkers;
 	sf::View miniMap;
@@ -15,7 +15,7 @@ class Minimap
 
 	ConsoleManager* consoleManager;
 public:
-	Minimap(std::vector<Car*> c, Track* t, ConsoleManager *cm);
+	Minimap(std::vector<Car>* c, Track* t, ConsoleManager *cm);
 	void Draw(sf::RenderWindow& window);		
 };
 

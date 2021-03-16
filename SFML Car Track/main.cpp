@@ -11,12 +11,14 @@
 #include <numeric>
 
 #include "Network.h"
+#include <linearAlgebra.h>
 
 //game clock
 sf::Clock clk;
 sf::Time dt;
 std::vector<float> allFPS;
 
+int generationSize = 5;
 bool isCycleDown = false;
 
 int main()
@@ -37,24 +39,21 @@ int main()
 
     //world 
     Track track = Track(&resourceManager);    
-    Car car(0, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
-    Car car1(1, sf::Vector2f(532.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
-    Car car2(2, sf::Vector2f(432.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
-    Car car3(3, sf::Vector2f(432.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
-    Car car4(4, sf::Vector2f(332.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
-    Car car5(5, sf::Vector2f(332.0f, 850.0f), &inputManager, &consoleManager, &resourceManager, &checkPointManager, &track);
-    car.Select();
-
+   
+    //temp car
+    std::vector<Car> cars;
     int currentID = 0;
-    std::vector<Car*> cars;
-    cars.push_back(&car);
-    cars.push_back(&car1);
-    cars.push_back(&car2);
-    cars.push_back(&car3);
-    cars.push_back(&car4);
-    cars.push_back(&car5);
+    for (int i = 0; i < generationSize; ++i) {
+        Car car = Car(i, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, checkPointManager, &track);
+        cars.push_back(car);
+    }
+    cars[currentID].Select();
+
+    //keep this for neural net positioning on screen
+    sf::FloatRect dimensions = sf::FloatRect(sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75, window.getViewport(window.getDefaultView()).height * 0.25),
+        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4, window.getViewport(window.getDefaultView()).height / 4));
     
-    Minimap minimap = Minimap(cars, &track, &consoleManager);
+    Minimap minimap = Minimap(&cars, &track, &consoleManager);
     
     //dev
     sf::Vector2i mousePos;
@@ -69,6 +68,8 @@ int main()
     consoleManager.AddMessage("fastest time");
     consoleManager.AddMessage("last lap");
     consoleManager.AddMessage("on track");
+    consoleManager.AddMessage("fitness");
+    consoleManager.AddMessage("alive");
     consoleManager.AddMessage("========DATA========");    
     consoleManager.AddMessage("mousePos");
     consoleManager.AddMessage("mouseCoords");
@@ -77,12 +78,10 @@ int main()
     consoleManager.AddMessage("average framerate");
     consoleManager.AddMessage("====================");
 
-
-    //neural network testing
-    std::vector<int> layerData = { 5, 4, 4, 5 };
-    sf::FloatRect dimensions = sf::FloatRect(sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75, window.getViewport(window.getDefaultView()).height * 0.25),
-        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4, window.getViewport(window.getDefaultView()).height / 4));
-    Network network = Network(dimensions, layerData);
+    lin::Matrix m1(4, 6);
+    lin::Matrix m2(6, 2);
+    m1.Randomise(-1, 1);
+    m2.Randomise(-1, 1);
 
     allFPS.reserve(100000);
     while (window.isOpen())
@@ -123,11 +122,11 @@ int main()
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {                                        
                     for (auto& c : cars) {                        
-                        if (c->containsPoint(mouseCoords)) {
-                            if (c->getID() != currentID) {
-                                c->Select();
-                                 cars[currentID]->Deselect();
-                                currentID = c->getID();
+                        if (c.containsPoint(mouseCoords)) {
+                            if (c.getID() != currentID) {
+                                c.Select();
+                                 cars[currentID].Deselect();
+                                currentID = c.getID();
                             }
                         }
                     }
@@ -137,11 +136,11 @@ int main()
                 if (event.key.code == sf::Keyboard::Key::Num1) {
                     if (!isCycleDown) {
                         isCycleDown = true;
-                        cars[currentID]->Deselect();
+                        cars[currentID].Deselect();
                         if (currentID == (cars.size() - 1))
                             currentID = 0;
                         else ++currentID;
-                        cars[currentID]->Select();
+                        cars[currentID].Select();
                     }
                 }
             }
@@ -154,12 +153,13 @@ int main()
         
         //update 
         inputManager.Update();
+        cars[currentID].SetInputs(inputManager.GetCarInputs());
         consoleManager.Update();        
 
         for (auto& c : cars)
-            c->Update(dt.asSeconds());        
+            c.Update(dt.asSeconds());        
 
-        camera.setCenter((int)cars[currentID]->getPosition().x, (int)cars[currentID]->getPosition().y);
+        camera.setCenter((int)cars[currentID].getPosition().x, (int)cars[currentID].getPosition().y);
         
         //draw
         window.clear(sf::Color(139, 69, 19));
@@ -170,12 +170,12 @@ int main()
         checkPointManager.Draw(window);
 
         for (auto& c : cars)
-            c->Draw(window);
+            c.Draw(window);
 
         //console
         window.setView(window.getDefaultView());
         consoleManager.Draw(window);      
-        network.Draw(window);
+        //networks[currentID].Draw(window);
 
         //minimap
         minimap.Draw(window);

@@ -29,9 +29,9 @@ void Track::Draw(sf::RenderWindow& window, bool devOverview) {
 }
 
 void Track::addCheckedArea(sf::ConvexShape trackShape) {
-	sf::RectangleShape rect;
-	rect.setFillColor(sf::Color(25, 255, 25, 100));
-	rect.setPosition(trackShape.getGlobalBounds().left, trackShape.getGlobalBounds().top);
-	rect.setSize(sf::Vector2f(trackShape.getGlobalBounds().width, trackShape.getGlobalBounds().height));
-	checkedArea.push_back(rect);
+	//sf::RectangleShape rect;
+	//rect.setFillColor(sf::Color(25, 255, 25, 100));
+	//rect.setPosition(trackShape.getGlobalBounds().left, trackShape.getGlobalBounds().top);
+	//rect.setSize(sf::Vector2f(trackShape.getGlobalBounds().width, trackShape.getGlobalBounds().height));
+	//checkedArea.push_back(rect);
 }

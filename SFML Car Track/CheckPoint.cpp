@@ -36,9 +36,18 @@ CheckPoint::CheckPoint(int id, int ts, sf::Vector2f pos, posInTile pit, sf::Text
 		collisionRect.setSize(sf::Vector2f(spriteBounds.width, 1));
 	}
 	collisionRect.setFillColor(sf::Color::Red);
+
+	center = sf::Vector2f(collisionRect.getPosition().x + collisionRect.getSize().x / 2, collisionRect.getPosition().y + collisionRect.getSize().y / 2);
+	c.setFillColor(sf::Color::Green);
+	c.setRadius(5);
+	c.setPosition(center);
+	c.setOrigin(5, 5);
 }
 
 void CheckPoint::Draw(sf::RenderTarget& window) {
 	window.draw(sprite);
-	if (console->IsDisplayed())window.draw(collisionRect);
+	if (console->IsDisplayed()) {
+		window.draw(collisionRect);
+		window.draw(c);
+	}
 }

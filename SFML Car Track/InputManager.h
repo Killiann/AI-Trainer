@@ -22,6 +22,22 @@ public:
 	float GetSteerLeft() { return steerLeft; }
 	float GetSteerRight() { return steerRight; }
 
+	std::vector<float> GetCarInputs() {
+		std::vector<float> inputs;
+ 		inputs.push_back(throttle);
+		inputs.push_back(brake);
+		inputs.push_back(ebrake);
+		inputs.push_back(steerRight);
+		inputs.push_back(steerLeft);
+		return inputs;
+	}
+
+	void SetThrottle(float newThottle) { throttle = newThottle; }
+	void SetBrake(float newBrake) { brake = newBrake; }
+	void SetEBrake(float newEBrake) { ebrake = newEBrake; }
+	void SetSteerLeft(float newSteerLeft) { steerLeft = newSteerLeft; }
+	void SetSteerRight(float newSteerRight) { steerRight = newSteerRight; }
+
 	void changeSelected(int newID) { selectedCarID = newID; }	
 };
 

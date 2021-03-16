@@ -1,13 +1,13 @@
 #include "CheckPointTracker.h"
 
-CheckPointTracker::CheckPointTracker(CheckPointManager* manager) {
-	checkpoints = *(manager->GetCheckpoints());
+CheckPointTracker::CheckPointTracker(CheckPointManager& manager) {
+	checkpoints = manager.GetCheckpoints();
 
 	//setup segments
 	for (int i = 0; i < checkpoints.size() - 1; ++i) {
-		segments.emplace_back(i, &checkpoints[i], &checkpoints[i + 1]);
+		segments.emplace_back(i, checkpoints[i], checkpoints[i + 1]);
 	}
-	segments.emplace_back(checkpoints.size() - 1, &checkpoints[checkpoints.size() - 1], &checkpoints[0]);
+	segments.emplace_back(checkpoints.size() - 1, checkpoints[checkpoints.size() - 1], checkpoints[0]);
 }
 
 void CheckPointTracker::StartTracking() {
@@ -29,4 +29,5 @@ void CheckPointTracker::CompleteSegment() {
 			currentSegmentID = 0;
 		}
 	}
+	completedSegments++;
 }

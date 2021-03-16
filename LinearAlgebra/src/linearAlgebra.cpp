@@ -66,4 +66,128 @@ namespace lin {
 		}
 		return res;
 	}
+
+	/// <summary>
+	/// return the input placed along a sigmoid curve (between 0 and 1)
+	/// </summary>
+	/// <param name="input"></param>
+	/// <returns></returns>
+	float sigmoid(float input) {
+		return 1 / (1 + std::pow(EULER, -input));
+	}
+
+	//Matrices
+	Matrix::Matrix(float r, float c) : rows(r), cols(c) {
+		for (int i = 0; i < rows; ++i) {
+			data.push_back(std::vector<float>(c));
+			for (int j = 0; j < cols; ++j) {
+				data[i][j] = 0.f;
+			}
+		}
+	}
+
+	void Matrix::Randomise(float min, float max) {
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<> distr(min*10, max*10);
+
+		for (int i = 0; i < rows;  ++i) {
+			for (int j = 0; j < cols; ++j) {
+				data[i][j] = (float)distr(gen) / 10;
+			}
+		}
+	}
+
+	void Matrix::Scale(float n) {
+		for (int i= 0; i < rows; ++i) {
+			for (int j= 0 ; j < cols; ++j) {
+				data[i][j] *= n;
+			}
+		}
+	}
+
+	void Matrix::Add(float n) {
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				data[i][j] += n;
+			}
+		}
+	}
+
+	void Matrix::Add(Matrix m2) { // only works for matrices of same dimensions r*c
+		if (m2.cols == cols && m2.rows == rows);
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				data[i][j] += m2.data[i][j];
+			}
+		}
+	}
+
+	std::vector<float>& Matrix::operator[](int i) {
+		if (data.size() > i)
+			return data[i];
+	}
+
+	Matrix Matrix::operator*(float n) {
+		Matrix copy = *this;
+		copy.Scale(n);
+		return copy;
+	}
+
+	Matrix Matrix::operator*(Matrix m2) {
+		Matrix res = MultiplyMatrices(*this, m2);
+		return res;
+	}
+
+	Matrix Matrix::operator+(float n) {
+		Matrix copy = *this;
+		copy.Add(n);
+		return copy;
+	}
+
+	Matrix Matrix::operator+(Matrix m2) {
+		Matrix copy = *this;
+		copy.Add(m2);
+		return copy;
+	}
+
+	void Matrix::operator=(Matrix m) {
+		rows = m.rows;
+		cols = m.cols;
+		data = m.data;
+	}
+
+	//Matrix 
+	Matrix MultiplyMatrices(Matrix m1, Matrix m2) {
+		try {
+			if (m1.GetCols() != m2.GetRows())
+				throw "m1.cols and m2.rows should match.";
+
+			Matrix result(m1.GetRows(), m2.GetCols());
+			for (int i = 0; i < result.GetRows(); ++i) {
+				for (int j = 0; j < result.GetCols(); ++j) {
+					float sum = 0;
+					for (int k = 0; k < m1.GetCols(); ++k) {
+						sum += m1.GetData()[i][k] * m2.GetData()[k][j];
+					}
+					result[i][j] = sum;
+				}
+			}
+			return result;
+		}
+		catch (std::string exception){
+			std::cout << "LIN: " << exception;
+		}
+	}
+
+	void printMatrix(lin::Matrix m) {
+		std::vector<std::vector<float>> data = m.GetData();
+		std::cout << std::endl;
+		for (int i = 0; i < m.GetRows(); ++i) {
+			std::cout << std::endl;
+			for (int j = 0; j < m.GetCols(); ++j) {
+				std::cout << data[i][j] << ", ";
+			}
+		}
+	}
 }

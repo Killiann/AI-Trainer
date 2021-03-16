@@ -1,8 +1,8 @@
 #include "Minimap.h"
 
-Minimap::Minimap(std::vector<Car*> c, Track* t, ConsoleManager* cm) : cars(c), track(t), consoleManager(cm){
+Minimap::Minimap(std::vector<Car>* c, Track* t, ConsoleManager* cm) : cars(c), track(t), consoleManager(cm){
 	//setup map markers
-	for (auto& i : cars) {
+	for (auto& i : *cars) {
 		sf::CircleShape circle;
 		circle.setOutlineThickness(15.0f);
 		circle.setOutlineColor(sf::Color::Red);
@@ -36,11 +36,11 @@ void Minimap::Draw(sf::RenderWindow& window) {
 	//window.draw(bg);
 	window.draw(boundingRectangle);
 	track->Draw(window, consoleManager->IsDisplayed());
-	for (int i = 0; i < cars.size(); ++i) {
-		if (cars[i]->isSelected() && consoleManager->IsDisplayed())
-			window.draw(cars[i]->getScanArea());
+	for (int i = 0; i < cars->size(); ++i) {
+		if (cars->at(i).isSelected() && consoleManager->IsDisplayed())
+			window.draw(cars->at(i).getScanArea());
 			
-		sf::Vector2f pos = cars[i]->getPosition();
+		sf::Vector2f pos = cars->at(i).getPosition();
 		if (pos.x < boundingRectangle.getPosition().x)
 			pos.x = boundingRectangle.getPosition().x;
 		else if (pos.x > boundingRectangle.getPosition().x + boundingRectangle.getSize().x)
@@ -51,8 +51,8 @@ void Minimap::Draw(sf::RenderWindow& window) {
 			pos.y = boundingRectangle.getPosition().y + boundingRectangle.getSize().y;
 
 		mapMarkers[i].setPosition(pos);
-		if (cars[i]->isSelected() && mapMarkers[i].getOutlineColor() == sf::Color::Red)mapMarkers[i].setOutlineColor(sf::Color::Green);
-		else if (!cars[i]->isSelected() && mapMarkers[i].getOutlineColor() == sf::Color::Green) mapMarkers[i].setOutlineColor(sf::Color::Red);
+		if (cars->at(i).isSelected() && mapMarkers[i].getOutlineColor() == sf::Color::Red)mapMarkers[i].setOutlineColor(sf::Color::Green);
+		else if (!cars->at(i).isSelected() && mapMarkers[i].getOutlineColor() == sf::Color::Green) mapMarkers[i].setOutlineColor(sf::Color::Red);
 		window.draw(mapMarkers[i]);
 	}
 	window.setView(window.getDefaultView());
