@@ -21,6 +21,10 @@ std::vector<float> allFPS;
 int generationSize = 5;
 bool isCycleDown = false;
 
+float doub(float n) {
+    return n * 2;
+}
+
 int main()
 {
     //window setups
@@ -40,19 +44,25 @@ int main()
     //world 
     Track track = Track(&resourceManager);    
    
-    //temp car
+    //setup
+    //neural net positioning on screen
+    sf::FloatRect dimensions = sf::FloatRect(sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75, window.getViewport(window.getDefaultView()).height * 0.25),
+        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4, window.getViewport(window.getDefaultView()).height / 4));
+
     std::vector<Car> cars;
+    std::vector<Network> brains;
     int currentID = 0;
     for (int i = 0; i < generationSize; ++i) {
+        //cars
         Car car = Car(i, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, checkPointManager, &track);
         cars.push_back(car);
+
+        //networks
+        Network nn(5, { 3, 3 }, 5, dimensions);
+        brains.push_back(nn);
     }
     cars[currentID].Select();
 
-    //keep this for neural net positioning on screen
-    sf::FloatRect dimensions = sf::FloatRect(sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75, window.getViewport(window.getDefaultView()).height * 0.25),
-        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4, window.getViewport(window.getDefaultView()).height / 4));
-    
     Minimap minimap = Minimap(&cars, &track, &consoleManager);
     
     //dev
@@ -85,7 +95,7 @@ int main()
 
     allFPS.reserve(100000);
     while (window.isOpen())
-    {   
+    {
         //handle mousePos conversions 
         mousePos = sf::Mouse::getPosition(window);
         mousePos = sf::Vector2i(mousePos.x - window.getPosition().x, mousePos.y - window.getPosition().y);
@@ -96,11 +106,11 @@ int main()
         //handle framerate - avg fps can be added but is limited to vector size (just for testing)
         float fps = 1.f / clk.getElapsedTime().asSeconds();
         allFPS.push_back(fps);
-        consoleManager.UpdateMessageValue("average framerate", std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size())));        
+        consoleManager.UpdateMessageValue("average framerate", std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size())));
         consoleManager.UpdateMessageValue("framerate", std::to_string(fps));
-        
+
         //time between loops
-        dt = clk.restart();      
+        dt = clk.restart();
         consoleManager.UpdateMessageValue("dt", std::to_string(dt.asSeconds()));
 
         sf::Event event;
@@ -120,12 +130,12 @@ int main()
             {
                 //select cars
                 if (event.mouseButton.button == sf::Mouse::Left)
-                {                                        
-                    for (auto& c : cars) {                        
+                {
+                    for (auto& c : cars) {
                         if (c.containsPoint(mouseCoords)) {
                             if (c.getID() != currentID) {
                                 c.Select();
-                                 cars[currentID].Deselect();
+                                cars[currentID].Deselect();
                                 currentID = c.getID();
                             }
                         }
@@ -150,14 +160,19 @@ int main()
                 }
             }
         }
-        
+
         //update 
         inputManager.Update();
         cars[currentID].SetInputs(inputManager.GetCarInputs());
-        consoleManager.Update();        
+        consoleManager.Update();
 
-        for (auto& c : cars)
-            c.Update(dt.asSeconds());        
+        /*for (auto& c : cars)
+            c.Update(dt.asSeconds());*/
+
+        for (int i = 0; i < cars.size(); ++i) {
+            cars[i].Update(dt.asSeconds());
+            brains[i].FeedForward(cars[i].GetDistances());
+        }
 
         camera.setCenter((int)cars[currentID].getPosition().x, (int)cars[currentID].getPosition().y);
         
@@ -175,7 +190,7 @@ int main()
         //console
         window.setView(window.getDefaultView());
         consoleManager.Draw(window);      
-        //networks[currentID].Draw(window);
+        brains[currentID].Draw(window);
 
         //minimap
         minimap.Draw(window);

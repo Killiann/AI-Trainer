@@ -76,6 +76,14 @@ namespace lin {
 		return 1 / (1 + std::pow(EULER, -input));
 	}
 
+	sf::Vector2f Normalise(const sf::Vector2f& source) {
+		float length = sqrt((source.x * source.x) + (source.y * source.y));
+		if (length != 0)
+			return sf::Vector2f(source.x / length, source.y / length);
+		else
+			return source;
+	}
+
 	//Matrices
 	Matrix::Matrix(float r, float c) : rows(r), cols(c) {
 		for (int i = 0; i < rows; ++i) {
@@ -155,6 +163,32 @@ namespace lin {
 		rows = m.rows;
 		cols = m.cols;
 		data = m.data;
+	}
+
+	void Matrix::Map(float (f)(float n)) {
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				data[i][j] = f(data[i][j]);
+			}
+		}
+	}
+
+	std::vector<float> Matrix::ToVector() {
+		std::vector<float> returnVector;
+		for (int i = 0; i < rows; ++i) {
+			for (int j = 0; j < cols; ++j) {
+				returnVector.push_back(data[i][j]);
+			}
+		}
+		return returnVector;
+	}
+
+	Matrix ToMatrix(std::vector<float> v) {
+		Matrix m(v.size(), 1);
+		for (int i = 0; i < v.size(); ++i) {
+			m[i][0] = v[i];
+		}
+		return m;
 	}
 
 	//Matrix 

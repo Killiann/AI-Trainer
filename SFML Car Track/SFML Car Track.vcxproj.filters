@@ -78,13 +78,7 @@
     <ClCompile Include="CheckPointManager.cpp">
       <Filter>Source Files\Managers\Checkpoints</Filter>
     </ClCompile>
-    <ClCompile Include="Node.cpp">
-      <Filter>Source Files\Neural Net</Filter>
-    </ClCompile>
     <ClCompile Include="Network.cpp">
-      <Filter>Source Files\Neural Net</Filter>
-    </ClCompile>
-    <ClCompile Include="Layer.cpp">
       <Filter>Source Files\Neural Net</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,13 +113,7 @@
     <ClInclude Include="CheckPointTracker.h">
       <Filter>Header Files\Managers\Checkpoints</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Header Files\Neural Net</Filter>
-    </ClInclude>
     <ClInclude Include="Network.h">
-      <Filter>Header Files\Neural Net</Filter>
-    </ClInclude>
-    <ClInclude Include="Layer.h">
       <Filter>Header Files\Neural Net</Filter>
     </ClInclude>
   </ItemGroup>

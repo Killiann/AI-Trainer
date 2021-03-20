@@ -33,13 +33,15 @@ namespace lin {
 	const double EULER = std::exp(1.0);
 	float sigmoid(float input);
 
+	sf::Vector2f Normalise(const sf::Vector2f& source);
+
 	//Matrices
 	class Matrix {
 		int rows, cols;
 		std::vector<std::vector<float>> data;
 
 	public:
-
+		Matrix(){}
 		Matrix(float r, float c);
 		void Randomise(float min, float max);
 		void Scale(float n);
@@ -57,9 +59,12 @@ namespace lin {
 		Matrix operator+(float n); //add float
 		Matrix operator+(Matrix m2); //add matrix
 		void operator=(Matrix m);
-
+		
+		void Map(float (f)(float n));
+		std::vector<float> ToVector();
 	};
 
+	Matrix ToMatrix(std::vector<float> v);
 	Matrix MultiplyMatrices(Matrix m1, Matrix m2);
 	void printMatrix(lin::Matrix m);
 }

@@ -154,11 +154,9 @@
     <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="CheckPoint.cpp" />
     <ClCompile Include="InputManager.cpp" />
-    <ClCompile Include="Layer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Minimap.cpp" />
     <ClCompile Include="Network.cpp" />
-    <ClCompile Include="Node.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPiece.cpp" />
@@ -170,10 +168,8 @@
     <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="CheckPoint.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Layer.h" />
     <ClInclude Include="Minimap.h" />
     <ClInclude Include="Network.h" />
-    <ClInclude Include="Node.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPiece.h" />

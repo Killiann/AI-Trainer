@@ -1,27 +1,36 @@
 #pragma once
-#include "Layer.h"
 #include <SFML/Graphics.hpp>
+#include <linearAlgebra.h>
 
-class Network
-{
-	//Network
-	std::vector<Layer> layers;
-	Layer inputLayer, outputLayer;
+class Network {
+	//nodes
+	lin::Matrix nodes_i; //input nodes
+	lin::Matrix nodes_o; //output nodes
+	std::vector<lin::Matrix> nodes_hl; //hidden layer nodes
 
-	//SFML
+	//weights
+	lin::Matrix weights_ih; //weights input - hidden
+	lin::Matrix weights_ho; //weights output - hidden
+	std::vector<lin::Matrix> weights_hl; //weights in hidden layer
+	
+	//biases
+	lin::Matrix biases_o;
+	std::vector<lin::Matrix> biases_hl;
+
+	//Rendering
 	sf::FloatRect dimensions;
-	bool hidden = true;
+	std::vector<sf::CircleShape> inputNodes;
+	std::vector<std::vector<sf::CircleShape>> hiddenNodes;
+	std::vector<sf::CircleShape> outputNodes;
+
+	std::vector<sf::VertexArray> connectionLines;
+
+	void SetupRendering();
+	void UpdateRender();
+	sf::VertexArray CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weight);
 
 public:
-	Network(sf::FloatRect dimensions, std::vector<int> layerData); //for generating a new network with random weights
-	Network(sf::FloatRect dimensions, std::vector<int> layerData, std::vector<float> weights); // for generating a network with predefined weights
-
-	std::vector<float> CalculateOutput(std::vector<float> inputs);
-
-	//SFML
-	inline void Hide() { hidden = true; }
-	inline void Show() { hidden = false; }
-	inline sf::FloatRect GetDimensions() { return dimensions; }
+	Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d);
+	std::vector<float> FeedForward(std::vector<float> inputs);
 	void Draw(sf::RenderTarget& window);
 };
-
