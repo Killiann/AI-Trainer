@@ -60,7 +60,7 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gri
 	}
 }
 
-void TrackPiece::Draw(sf::RenderWindow& window) {	
+void TrackPiece::Draw(sf::RenderTarget& window) {
 /*	for (auto& s : accessibleTrack)
 		window.draw(s);
 

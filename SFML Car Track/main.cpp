@@ -1,5 +1,9 @@
+#include <linearAlgebra.h>
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <linearAlgebra.h>
+#include <algorithm>
+#include <numeric>
+
 #include "Track.h"
 #include "Car.h"
 #include "ConsoleManager.h"
@@ -7,23 +11,17 @@
 #include "ResourceManager.h"
 #include "CheckPointManager.h"
 #include "Minimap.h"
-#include <algorithm>
-#include <numeric>
-
-#include "Network.h"
-#include <linearAlgebra.h>
+#include "Trainer.h"
 
 //game clock
 sf::Clock clk;
 sf::Time dt;
 std::vector<float> allFPS;
 
-int generationSize = 5;
+//key presses
 bool isCycleDown = false;
-
-float doub(float n) {
-    return n * 2;
-}
+bool isResetDown = false;
+bool isNextGenDown = false;
 
 int main()
 {
@@ -42,28 +40,16 @@ int main()
     CheckPointManager checkPointManager(resourceManager.GetCheckpointTexture(), &consoleManager);
 
     //world 
-    Track track = Track(&resourceManager);    
-   
-    //setup
+    Track track = Track(&resourceManager);
+    
     //neural net positioning on screen
     sf::FloatRect dimensions = sf::FloatRect(sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75, window.getViewport(window.getDefaultView()).height * 0.25),
         sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4, window.getViewport(window.getDefaultView()).height / 4));
 
-    std::vector<Car> cars;
-    std::vector<Network> brains;
-    int currentID = 0;
-    for (int i = 0; i < generationSize; ++i) {
-        //cars
-        Car car = Car(i, sf::Vector2f(532.0f, 770.0f), &inputManager, &consoleManager, &resourceManager, checkPointManager, &track);
-        cars.push_back(car);
+    //NN Trainer
+    Trainer trainer(&resourceManager, &consoleManager, &inputManager, &checkPointManager, track, dimensions);
 
-        //networks
-        Network nn(5, { 3, 3 }, 5, dimensions);
-        brains.push_back(nn);
-    }
-    cars[currentID].Select();
-
-    Minimap minimap = Minimap(&cars, &track, &consoleManager);
+    Minimap minimap = Minimap(&trainer.GetCars(), &track, &consoleManager);
     
     //dev
     sf::Vector2i mousePos;
@@ -73,7 +59,7 @@ int main()
     consoleManager.AddMessage("steer angle");
     consoleManager.AddMessage("velocity.x");
     consoleManager.AddMessage("velocity.y");
-    consoleManager.AddMessage("skid count");
+    consoleManager.AddMessage("absolute velocity");
     consoleManager.AddMessage("current segment");
     consoleManager.AddMessage("fastest time");
     consoleManager.AddMessage("last lap");
@@ -86,12 +72,13 @@ int main()
     consoleManager.AddMessage("dt");
     consoleManager.AddMessage("framerate");
     consoleManager.AddMessage("average framerate");
-    consoleManager.AddMessage("====================");
-
-    lin::Matrix m1(4, 6);
-    lin::Matrix m2(6, 2);
-    m1.Randomise(-1, 1);
-    m2.Randomise(-1, 1);
+    consoleManager.AddMessage("========SCENE=======");
+    consoleManager.AddMessage("Generation Size");
+    consoleManager.AddMessage("Mutation Rate");
+    consoleManager.AddMessage("Generation");
+    consoleManager.AddMessage("Current Time");
+    consoleManager.AddMessage("Time Limit");
+    consoleManager.AddMessage("Best Fitness");
 
     allFPS.reserve(100000);
     while (window.isOpen())
@@ -131,26 +118,42 @@ int main()
                 //select cars
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    for (auto& c : cars) {
-                        if (c.containsPoint(mouseCoords)) {
-                            if (c.getID() != currentID) {
-                                c.Select();
-                                cars[currentID].Deselect();
-                                currentID = c.getID();
+                    for (int i = 0; i < trainer.GetCars().size(); ++i) {
+                        if (trainer.GetCars()[i].containsPoint(mouseCoords)) {
+                            if (i != trainer.GetCurrentID()) {
+                                trainer.GetCars()[i].Select();
+                                trainer.GetCars()[trainer.GetCurrentID()].Deselect();
+                                trainer.SetCurrentID(i);
                             }
                         }
                     }
                 }
             }
             if (event.type == sf::Event::KeyPressed) {
+                //cycle through cars
                 if (event.key.code == sf::Keyboard::Key::Num1) {
                     if (!isCycleDown) {
                         isCycleDown = true;
-                        cars[currentID].Deselect();
-                        if (currentID == (cars.size() - 1))
-                            currentID = 0;
-                        else ++currentID;
-                        cars[currentID].Select();
+                        trainer.GetCars()[trainer.GetCurrentID()].Deselect();
+                        if (trainer.GetCurrentID() == (trainer.GetCars().size() - 1))
+                            trainer.SetCurrentID(0);
+                        else trainer.SetCurrentID(trainer.GetCurrentID() + 1);
+                        trainer.GetCars()[trainer.GetCurrentID()].Select();
+                    }
+                }
+
+                //reset scene
+                if (event.key.code == sf::Keyboard::Key::Num0) {
+                    if (!isResetDown) {
+                        trainer.ResetScene();
+                        isResetDown = true;
+                    }
+                }
+                //reset scene
+                if (event.key.code == sf::Keyboard::Key::Num2) {
+                    if (!isNextGenDown) {
+                        trainer.NextGeneration();
+                        isNextGenDown = true;
                     }
                 }
             }
@@ -158,23 +161,24 @@ int main()
                 if (event.key.code == sf::Keyboard::Key::Num1) {
                     if (isCycleDown) isCycleDown = false;
                 }
+                if (event.key.code == sf::Keyboard::Key::Num0) {
+                    if (isResetDown) isResetDown = false;
+                }
+                if (event.key.code == sf::Keyboard::Key::Num2) {
+                    if (isNextGenDown) isNextGenDown = false;
+                }
             }
+
+                   
         }
 
         //update 
         inputManager.Update();
-        cars[currentID].SetInputs(inputManager.GetCarInputs());
         consoleManager.Update();
 
-        /*for (auto& c : cars)
-            c.Update(dt.asSeconds());*/
-
-        for (int i = 0; i < cars.size(); ++i) {
-            cars[i].Update(dt.asSeconds());
-            brains[i].FeedForward(cars[i].GetDistances());
-        }
-
-        camera.setCenter((int)cars[currentID].getPosition().x, (int)cars[currentID].getPosition().y);
+        //update trainer (cars + NN)
+        trainer.Update(dt.asSeconds());
+        camera.setCenter((int)trainer.GetCars()[trainer.GetCurrentID()].getPosition().x, (int)trainer.GetCars()[trainer.GetCurrentID()].getPosition().y);
         
         //draw
         window.clear(sf::Color(139, 69, 19));
@@ -184,16 +188,16 @@ int main()
         track.Draw(window, false);        
         checkPointManager.Draw(window);
 
-        for (auto& c : cars)
-            c.Draw(window);
+        trainer.DrawWorld(window);
 
-        //console
+        //console 
         window.setView(window.getDefaultView());
         consoleManager.Draw(window);      
-        brains[currentID].Draw(window);
 
-        //minimap
+        //minimap+ Neural net
         minimap.Draw(window);
+        trainer.DrawUI(window);
+
         window.display();
     }
 

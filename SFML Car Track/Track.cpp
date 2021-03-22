@@ -18,7 +18,7 @@ Track::Track(ResourceManager *resource) : resourceManager(resource){
 	}
 }
 
-void Track::Draw(sf::RenderWindow& window, bool devOverview) {
+void Track::Draw(sf::RenderTarget& window, bool devOverview) {
 	for (auto& t : trackPieces)
 		t.Draw(window);
 	

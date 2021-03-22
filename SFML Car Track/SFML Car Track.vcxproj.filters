@@ -81,6 +81,9 @@
     <ClCompile Include="Network.cpp">
       <Filter>Source Files\Neural Net</Filter>
     </ClCompile>
+    <ClCompile Include="Trainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleManager.h">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="Network.h">
       <Filter>Header Files\Neural Net</Filter>
+    </ClInclude>
+    <ClInclude Include="Trainer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

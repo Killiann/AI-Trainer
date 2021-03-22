@@ -43,7 +43,7 @@ class Track
 
 public:
 	Track(ResourceManager *resourceManager);	
-	void Draw(sf::RenderWindow& window, bool devOverview);
+	void Draw(sf::RenderTarget& window, bool devOverview);
 	void addCheckedArea(sf::ConvexShape trackShape);
 
 	inline std::vector<sf::ConvexShape>* GetTrackShapes() { return &trackShapes; }

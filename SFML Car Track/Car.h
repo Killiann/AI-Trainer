@@ -98,7 +98,7 @@ class Car
 	std::vector<sf::VertexArray> distanceLines;
 	std::vector<sf::ConvexShape>* trackShapes;
 	sf::RectangleShape scanArea;
-	const int lineCount = 5;
+	const int lineCount = 7;
 	const int lineLength = 500;
 	std::vector<float> distances;
 	
@@ -118,13 +118,15 @@ class Car
 	bool onTrack = true;
 
 	//fitness
+	float CalculateFitness();
 	bool alive = true;
 	sf::Clock timeAlive;
 	float fitness;
 public:	
+	Car(){}
 	Car(int id, sf::Vector2f pos, InputManager* input, ConsoleManager *console, ResourceManager *resourceManager, CheckPointManager &checkpointManager, Track* track);
 	void Update(float dt);
-	void Draw(sf::RenderWindow& window);
+	void Draw(sf::RenderTarget& window);
 	bool containsPoint(sf::Vector2f);
 
 	bool IsOnTrack();
@@ -145,6 +147,12 @@ public:
 	}
 	inline const int GetMaxLineLength() { return lineLength; }
 	inline std::vector<float> GetDistances() { return distances; }
+	inline std::vector<float> GetNetworkInput() {
+		std::vector<float> nnInput = distances;
+		nnInput.push_back(absVel / 30);
+		return nnInput;
+	}
+
 	inline int GetLineCount() { return lineCount; }
 
 	inline void SetInputs(std::vector<float> inputs) {
@@ -157,6 +165,10 @@ public:
 		}
 	}
 
-	float CalculateFitness();
+	inline bool IsAlive() { return alive; }
+	inline bool HasStarted() { return checkPointTracker.Started(); }
+	inline float GetFitness() { return fitness; }
+
+	void operator=(Car c);
 };
 

@@ -6,7 +6,7 @@
 
 ConsoleManager::ConsoleManager(sf::Font* f) : font(f){
 	background.setFillColor(sf::Color::Black);
-	background.setSize(sf::Vector2f(200, 400));
+	background.setSize(sf::Vector2f(200, 450));
 	background.setPosition(position);
 	background.setOutlineThickness(3);
 	background.setOutlineColor(sf::Color::White);		

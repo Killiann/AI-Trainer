@@ -158,6 +158,7 @@
     <ClCompile Include="Minimap.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Trainer.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPiece.cpp" />
   </ItemGroup>
@@ -171,6 +172,7 @@
     <ClInclude Include="Minimap.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Trainer.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPiece.h" />
   </ItemGroup>

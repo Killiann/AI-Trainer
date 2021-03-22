@@ -112,10 +112,8 @@ void Car::DoPhysics(float dt) {
 
 	//get amount of brake/throttle from inputs
 	float brake(0), throttle(0);
-	if (selected) {
-		brake = std::min(I_brake * brakeForce + I_ebrake * eBrakeForce, brakeForce);
-		throttle = I_throttle * engineForce;
-	}
+	brake = std::min(I_brake * brakeForce + I_ebrake * eBrakeForce, brakeForce);
+	throttle = I_throttle * engineForce;
 
 	//resulting force in local car coordinates
 	float tractionForce_cx = throttle - brake * sgn(velocity_c.x);
@@ -220,7 +218,7 @@ void Car::Update(float dt) {
 		consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));
 		consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
 		consoleManager->UpdateMessageValue("velocity.y", std::to_string(velocity.y));
-		consoleManager->UpdateMessageValue("skid count", std::to_string(skidMarks.size()));
+		consoleManager->UpdateMessageValue("absolute velocity", std::to_string(absVel));
 		consoleManager->UpdateMessageValue("current segment", std::to_string(checkPointTracker.getCurrentSegmentTime() / 1000.f));
 		consoleManager->UpdateMessageValue("fastest time", std::to_string(checkPointTracker.getFastestTime() / 1000.f));
 		consoleManager->UpdateMessageValue("last lap", std::to_string(checkPointTracker.getLastLapTime() / 1000.f));
@@ -230,7 +228,7 @@ void Car::Update(float dt) {
 	}
 }
 
-void Car::Draw(sf::RenderWindow& window){
+void Car::Draw(sf::RenderTarget& window){
 	
 	//dev mode below car
 	if (selected) {
@@ -425,13 +423,69 @@ bool Car::IsOnTrack() {
 float Car::CalculateFitness() {
 	//will be revised most likely
 	if (checkPointTracker.Started()) {
-		float fitness = timeAlive.getElapsedTime().asSeconds();
-		fitness = fitness / (checkPointTracker.GetCompletedSegments() * 5);
+
+		float fitness = checkPointTracker.GetCompletedSegments() * 2;
 		lin::Line lineToNextCP(sf::Vector2f(position.x * scale, position.y * scale), checkPointTracker.GetNextCheckpointCenter());
 		float distanceToNextCP = lineToNextCP.GetLength();
-
-		fitness -= 30 / distanceToNextCP;
+		fitness += 10 / distanceToNextCP;
 		return fitness;
+
+		//float fitness = timeAlive.getElapsedTime().asSeconds();
+		//fitness = fitness / (checkPointTracker.GetCompletedSegments() * 5);
+		//lin::Line lineToNextCP(sf::Vector2f(position.x * scale, position.y * scale), checkPointTracker.GetNextCheckpointCenter());
+		//float distanceToNextCP = lineToNextCP.GetLength();
+
+		//fitness -= 30 / distanceToNextCP;
+		//return fitness;
 	}
 	else return 0;
+}
+
+void Car::operator=(Car c) {
+	position = c.position;
+	velocity = c.velocity;
+	velocity_c = c.velocity_c;
+	accel = c.accel;
+	accel_c = c.accel_c;
+
+	heading = c.heading;
+	absVel = c.absVel;
+	yawRate = c.yawRate;
+	steer = c.steer;
+	steerAngle = c.steerAngle;
+
+	driftTexture = c.driftTexture;
+	carBody = c.carBody;
+	wheels = c.wheels;
+	skidMarks = c.skidMarks;
+
+	consoleManager = c.consoleManager;
+	inputManager = c.inputManager;
+	resourceManager = c.resourceManager; 
+	track = c.track;
+	tileSize = c.tileSize;
+
+	distanceLines = c.distanceLines;
+	trackShapes = c.trackShapes;
+	scanArea = c.scanArea;
+	distances = c.distances;
+
+	infoText = c.infoText;
+	infoFont = c.infoFont;
+
+	collisionBounds = c.collisionBounds;
+	globalBounds = c.globalBounds;
+
+	collisionArea = c.collisionArea;
+	selected = c.selected;
+	ID = c.ID;
+
+	checkPointTracker = c.checkPointTracker;
+	nextCheckpointBounds = c.nextCheckpointBounds;
+
+	onTrack = c.onTrack;
+
+	alive = c.alive;
+	fitness = c.fitness;
+	timeAlive = c.timeAlive;
 }

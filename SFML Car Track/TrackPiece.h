@@ -27,7 +27,7 @@ public:
 	};
 
 	TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gridPos, TrackType trackType, float rotation);	
-	void Draw(sf::RenderWindow& wind);
+	void Draw(sf::RenderTarget& wind);
 	std::vector<sf::ConvexShape> GetCollisionShapes();	
 };
 

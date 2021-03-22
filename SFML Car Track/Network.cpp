@@ -12,20 +12,19 @@ Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer,
 		//setup weights
 		weights_ih = lin::Matrix(hiddenLayers[0], inputLayer);
 		weights_ho = lin::Matrix(outputLayer, hiddenLayers[hiddenLayers.size() - 1]);
-		weights_ih.Randomise(-1, 1);
-		weights_ho.Randomise(-1, 1);
+		weights_ih.Randomise(-5, 5);
+		weights_ho.Randomise(-5, 5);
 		if (hiddenLayers.size() > 1) {
 			for (int i = 0; i < hiddenLayers.size() - 1; ++i) {
 				//create hidden layer weights
 				weights_hl.emplace_back(hiddenLayers[i + 1], hiddenLayers[i]);
-				weights_hl[i].Randomise(-1, 1);
+				weights_hl[i].Randomise(-5, 5);
 			}
-
-			//create hidden layer biases 
-			for (int i = 0; i < hiddenLayers.size(); ++i) {
-				biases_hl.emplace_back(hiddenLayers[i], 1);
-				biases_hl[i].Randomise(-1, 1);
-			}
+		}
+		//create hidden layer biases 
+		for (int i = 0; i < hiddenLayers.size(); ++i) {
+			biases_hl.emplace_back(hiddenLayers[i], 1);
+			biases_hl[i].Randomise(-1, 1);
 		}
 		biases_o = lin::Matrix(outputLayer, 1);
 		biases_o.Randomise(-1, 1);	
@@ -44,7 +43,7 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 
 		//activate first layer of hidden layer
 		nodes_hl[0] = lin::MultiplyMatrices(weights_ih, inputMatrix);
-		nodes_hl[0].Add(biases_hl[0]);
+ 		nodes_hl[0].Add(biases_hl[0]);
 		nodes_hl[0].Map(lin::sigmoid);
 
 		//activate rest of hidden layer nodes
@@ -59,12 +58,41 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 		nodes_o.Add(biases_o);
 		nodes_o.Map(lin::sigmoid);
 
+		//temp
+		for (int i = 0; i < nodes_o.GetRows(); ++i) {
+			if (nodes_o[i][0] > 0.5)
+				nodes_o[i][0] = 1;
+			else nodes_o[i][0] = 0;
+		}
+
 		//SFML
 		UpdateRender();
 	}
 	else std::cout << "Could not feed forward network. Incorrect number of inputs.\n";
 	return nodes_o.ToVector();
 }
+
+void Network::SetWeights(std::vector<lin::Matrix> newWeights) {
+	if (newWeights.size() == weights_hl.size() + 2) {
+		weights_ih = newWeights[0];
+		weights_ho = newWeights[1];
+		for (int i = 2; i < newWeights.size(); ++i) 
+			weights_hl[i - 2] = newWeights[i];
+	}
+	else std::cout << "Incorrect number of new weights for network.\n";
+}
+
+void Network::SetBiases(std::vector<lin::Matrix> newBiases) {
+	if (newBiases.size() == biases_hl.size() + 1) {
+		biases_o = newBiases[0];
+		for (int i = 1; i < newBiases.size(); ++i) {
+			biases_hl[i - 1] = newBiases[i];
+		}
+	}
+	else std::cout << "Incorrect number of new biases for network.\n";
+}
+
+//RENDERING BELOW HERE============================
 
 void Network::Draw(sf::RenderTarget& window) {
 
@@ -109,11 +137,13 @@ void Network::SetupRendering() {
 	}
 
 	//hidden node weights
-	for (int j = 0; j < hiddenNodes.size() - 1; ++j) { //loop through layers
-		for (int i = 0; i < hiddenNodes[j].size(); ++i) { //loop through nodes in layer
-			for (int r = 0; r < hiddenNodes[j + 1].size(); ++r) { //loop through nodes in next layer
-				sf::VertexArray connection = CreateLine(hiddenNodes[j][i].getPosition(), hiddenNodes[j + 1][r].getPosition(), weights_hl[j][r][i]);
-				connectionLines.push_back(connection);
+	if (hiddenNodes.size() > 1) {
+		for (int j = 0; j < hiddenNodes.size() - 1; ++j) { //loop through layers
+			for (int i = 0; i < hiddenNodes[j].size(); ++i) { //loop through nodes in layer
+				for (int r = 0; r < hiddenNodes[j + 1].size(); ++r) { //loop through nodes in next layer
+					sf::VertexArray connection = CreateLine(hiddenNodes[j][i].getPosition(), hiddenNodes[j + 1][r].getPosition(), weights_hl[j][r][i]);
+					connectionLines.push_back(connection);
+				}
 			}
 		}
 	}
@@ -171,7 +201,7 @@ void Network::UpdateRender() {
 //create weighted Line
 sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weight) {
 	sf::Color lineColor = weight < 0 ? sf::Color::Red : sf::Color::Green;
-	weight *= 1.5;
+	weight = weight / 2;
 	sf::Vector2f line = p2 - p1;
 	sf::Vector2f normal(-line.y, line.x);
 	normal = lin::Normalise(normal);
@@ -186,3 +216,4 @@ sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weig
 
 	return returnShape;
 }
+
