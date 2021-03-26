@@ -22,7 +22,9 @@ void UpdateRange(std::vector<Car>& cars, std::vector<Network>& networks, float d
 
 class Trainer
 {
+	float dt;
 	int frameCount = 0;
+
 	//setup
 	int currentGeneration = 1;
 	int generationSize = 10 * 10; //multiple of 10
