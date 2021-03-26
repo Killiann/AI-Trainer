@@ -85,7 +85,7 @@ namespace lin {
 	}
 
 	//Matrices
-	Matrix::Matrix(float r, float c) : rows(r), cols(c) {
+	Matrix::Matrix(int r, int c) : rows(r), cols(c) {
 		for (int i = 0; i < rows; ++i) {
 			data.push_back(std::vector<float>(c));
 			for (int j = 0; j < cols; ++j) {

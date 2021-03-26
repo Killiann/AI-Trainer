@@ -42,7 +42,7 @@ namespace lin {
 
 	public:
 		Matrix(){}
-		Matrix(float r, float c);
+		Matrix(int r, int c);
 		void Randomise(float min, float max);
 		void Scale(float n);
 		void Add(float n);

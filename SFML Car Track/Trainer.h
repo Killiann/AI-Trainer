@@ -22,13 +22,14 @@ void UpdateRange(std::vector<Car>& cars, std::vector<Network>& networks, float d
 
 class Trainer
 {
+	int frameCount = 0;
 	//setup
 	int currentGeneration = 1;
 	int generationSize = 10 * 10; //multiple of 10
 	float mutationRate = 0.01;
 
 	int inputNodes = 8;
-	std::vector<int> hiddenNodes = { 6, 5 };
+	std::vector<int> hiddenNodes = { 6,5 };
 	int outputNodes = 5;
 	
 	sf::Clock timer;
@@ -77,5 +78,8 @@ public:
 
 	static float Mutate(float n);
 	static float Divide(float n);
+
+	inline void SaveBestCar() { bestNetwork.SaveToFile("best.txt", bestFitness); }
+	inline void LoadBestCar() { bestFitness = bestNetwork.LoadFromFile("best.txt"); }
 };
 

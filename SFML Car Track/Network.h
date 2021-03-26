@@ -1,6 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <linearAlgebra.h>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 class Network {
 	//nodes
@@ -57,4 +60,7 @@ public:
 	void SetBiases(std::vector<lin::Matrix> newBiases);
 
 	void Draw(sf::RenderTarget& window);
+
+	void SaveToFile(std::string fileName, float fitness);
+	float LoadFromFile(std::string fileName);
 };

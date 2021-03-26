@@ -22,6 +22,7 @@ std::vector<float> allFPS;
 bool isCycleDown = false;
 bool isResetDown = false;
 bool isNextGenDown = false;
+bool isSaveDown = false;
 
 int main()
 {
@@ -156,6 +157,13 @@ int main()
                         isNextGenDown = true;
                     }
                 }
+
+                //save best car
+                if (event.key.code == sf::Keyboard::Key::S) {
+                    if (!isSaveDown) {
+                        trainer.SaveBestCar();
+                    }
+                }
             }
             if (event.type == sf::Event::KeyReleased) {
                 if (event.key.code == sf::Keyboard::Key::Num1) {
@@ -166,6 +174,9 @@ int main()
                 }
                 if (event.key.code == sf::Keyboard::Key::Num2) {
                     if (isNextGenDown) isNextGenDown = false;
+                }
+                if (event.key.code == sf::Keyboard::Key::S) {
+                    if (isSaveDown) isSaveDown = false;
                 }
             }
 

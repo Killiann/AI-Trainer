@@ -4,6 +4,8 @@ Trainer::Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, InputManager* i
 : resourceManager(rMngr), consoleManager(coMngr), inputManager(iMngr), checkPointManager(chMngr), track(t), nnDimensions(nnDim) {
 	Setup();
 	bestFitness = 0;
+	LoadBestCar();
+	NextGeneration();
 }
 
 void Trainer::Setup() {
@@ -31,20 +33,11 @@ void UpdateRange(std::vector<Car>& cars, std::vector<Network>& networks, float d
 }
 
 void Trainer::Update(float dt) {
-	//threads.emplace_back(&Trainer::SortCars, this);
-	SortCars();
-
-	//threads.clear();
-	////divide update load
-	//int interval = generationSize / 50;
-	//for(int i=0;i< interval;++i){
-	//	threads.emplace_back(UpdateRange, std::ref(cars), std::ref(networks), dt, i * interval, (i + 1) * interval);
-	//}
-
-	////join threads
-	//for (auto &t: threads) {
-	//	t.join();
-	//}
+	frameCount++;
+	if (frameCount == 30){
+		SortCars();
+		frameCount = 0;
+	}
 
 	for (int i = 0; i < generationSize; ++i) {
 		cars[i].Update(dt);
@@ -89,8 +82,9 @@ void Trainer::ResetScene() {
 
 void Trainer::NextGeneration() {
 	//get top 10% of networks
+	SortCars();
 	std::vector<Network> bestNetworks = networks;
-	bestNetworks.resize(4);
+	bestNetworks.resize(generationSize / 10);
 
 	if (cars[0].GetFitness() > bestFitness) {
 		bestFitness = cars[0].GetFitness();
@@ -131,8 +125,8 @@ void Trainer::NextGeneration() {
 		Network nn(inputNodes, hiddenNodes, outputNodes, nnDimensions);
 		//get weight of selected network and muddle up values + create new network using them
 		std::vector<lin::Matrix> parentWeights = bestNetworks[n1].GetWeights();
-		bool mutate = (distr(gen) == 1 && distr(gen) == 1);
-		bool crossOver = (distr(gen) == 1);
+		bool mutate = (distr(gen) == 1);
+ 		bool crossOver = (distr(gen) == 1);
 		crossOver = true;
 
 		for (int i = 0; i < parentWeights.size(); ++i) {
@@ -163,14 +157,13 @@ void Trainer::NextGeneration() {
 float Trainer::Mutate(float n){
 	std::random_device rd;
 	std::mt19937 gen(rd()); 
-	std::uniform_int_distribution<> perc(0, 100);
-	std::uniform_int_distribution<> distr(-100, 100);
-	if ((float)perc(gen) / 100.f <= 0.05) {
-		n += (distr(gen) / 50);
+	std::uniform_int_distribution<> perc(0, 1000);
+	//std::uniform_int_distribution<> distr(-100, 100);
+	std::uniform_int_distribution<> rnd(-500, 500);
+	if ((float)perc(gen) / 1000.f <= 0.005) {
+		n = rnd(gen);
 	} 
-	if ((float)perc(gen) / 100.f <= 0.01f) {
-		n = distr(gen) * 3;
-	}
+
 	return n;
 }
 

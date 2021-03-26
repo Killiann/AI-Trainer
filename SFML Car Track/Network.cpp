@@ -217,3 +217,144 @@ sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weig
 	return returnShape;
 }
 
+//SAVING / LOADING 
+
+void Network::SaveToFile(std::string fileName, float fitness) {
+	//save
+	std::ofstream file;
+	file.open(fileName);
+	
+	file << fitness << std::endl;
+	//network details
+	file << nodes_i.GetRows() << " " << nodes_o.GetRows() << " ";
+	for (int i = 0; i < nodes_hl.size(); ++i) {
+		file << nodes_hl[i].GetRows() << " ";
+	}
+	file << std::endl;
+
+	//input weights
+	file << weights_ih.GetRows() << " " << weights_ih.GetCols() << std::endl;
+	for (int r = 0; r < weights_ih.GetRows(); ++r) {
+		for (int c = 0; c < weights_ih.GetCols(); ++c) {
+			file << weights_ih[r][c] << " ";
+		}
+		file << std::endl;
+	}
+
+	//ouput weights
+	file << weights_ho.GetRows() << " " << weights_ho.GetCols() << std::endl;
+	for (int r = 0; r < weights_ho.GetRows(); ++r) {
+		for (int c = 0; c < weights_ho.GetCols(); ++c) {
+			file << weights_ho[r][c] << " ";
+		}
+		file << std::endl;
+	}
+
+	//hidden weights
+	for (int i = 0; i < weights_hl.size(); ++i) {
+		file << weights_hl[i].GetRows() << " " << weights_hl[i].GetCols() << std::endl;
+		for (int r = 0; r < weights_hl[i].GetRows(); ++r) {
+			for (int c = 0; c < weights_hl[i].GetCols(); ++c) {
+				file << weights_hl[i][r][c] << " ";
+			}
+			file << std::endl;
+		}
+	}
+
+	//ouput biases
+	file << biases_o.GetRows() << " " << biases_o.GetCols() << std::endl;
+	for (int r = 0; r < biases_o.GetRows(); ++r) {
+		for (int c = 0; c < biases_o.GetCols(); ++c) {
+			file << biases_o[r][c] << " ";
+		}
+		file << std::endl;
+	}
+
+	//hidden biases
+	for (int i = 0; i < biases_hl.size(); ++i) {
+		file << biases_hl[i].GetRows() << " " << biases_hl[i].GetCols() << std::endl;
+		for (int r = 0; r < biases_hl[i].GetRows(); ++r) {
+			for (int c = 0; c < biases_hl[i].GetCols(); ++c) {
+				file << biases_hl[i][r][c] << " ";
+			}
+			file << std::endl;
+		}
+	}
+
+	file.close();
+}
+
+std::vector<std::string> splitString(std::string s, std::string delimiter) {
+	std::vector<std::string> res;
+	size_t pos = 0;
+	std::string token;
+	while ((pos = s.find(delimiter)) != std::string::npos) {
+		token = s.substr(0, pos);
+		res.push_back(token);
+		s.erase(0, pos + delimiter.length());
+	}
+	res.push_back(s);
+	return res;
+}
+
+void LoadMatrix(std::ifstream& file, lin::Matrix& m) {
+	std::string line;
+	std::getline(file, line);
+	std::vector<std::string> splitLine = splitString(line, " ");
+	m = lin::Matrix(std::stoi(splitLine[0]), std::stoi(splitLine[1]));
+	for (int r = 0; r < m.GetRows(); ++r) {
+		splitLine.clear();
+		std::getline(file, line);
+		splitLine = splitString(line, " ");
+		for (int c = 0; c < m.GetCols(); ++c) {
+			m[r][c] = std::stof(splitLine[c]);
+		}
+	}
+}
+
+float Network::LoadFromFile(std::string fileName) {
+	//load 
+	std::ifstream file;
+	file.open(fileName);
+	std::string line;
+
+	//get fitness
+	float fitness;
+	std::getline(file, line);
+	fitness = std::stof(line);
+	
+	//setup network size - fetch node counts
+	std::getline(file, line);
+	std::vector <std::string> splitLine = splitString(line, " ");
+	nodes_i = lin::Matrix(std::stoi(splitLine[0]), 0);    //input
+	nodes_o = lin::Matrix(std::stoi(splitLine[1]), 0);	  //output
+	for (int i = 2; i < splitLine.size(); ++i) {
+		nodes_hl.emplace_back(std::stoi(splitLine[i]), 1);//hidden
+	}
+	splitLine.clear();
+
+	//load weights
+	LoadMatrix(file, weights_ih);
+	LoadMatrix(file, weights_ho);
+	if (nodes_hl.size() > 1) {
+		for (int i = 0; i < nodes_hl.size() - 1; ++i) {
+			lin::Matrix hiddenWeight;
+			LoadMatrix(file, hiddenWeight);
+			weights_hl.push_back(hiddenWeight);
+		}
+	}
+
+	//load biases
+	LoadMatrix(file, biases_o);
+	for (int i = 0; i < nodes_hl.size(); ++i) {
+		lin::Matrix hiddenBias;
+		LoadMatrix(file, hiddenBias);
+		biases_hl.push_back(hiddenBias);
+	}
+
+	//SFML
+	SetupRendering();
+
+	return fitness;
+}
+
