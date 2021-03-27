@@ -240,10 +240,10 @@ void Car::Draw(sf::RenderTarget& window){
 	}
 
 	//skid marks
-	sf::Transform skidTransform;
-	skidTransform.scale(scale, scale);
-	for (sf::Sprite& c : skidMarks) 
-		window.draw(c, skidTransform);
+	//sf::Transform skidTransform;
+	//skidTransform.scale(scale, scale);
+	//for (sf::Sprite& c : skidMarks) 
+	//	window.draw(c, skidTransform);
 
 	sf::Transform transform;	
 	transform.translate((int)(position.x * scale), (int)(position.y * scale));	

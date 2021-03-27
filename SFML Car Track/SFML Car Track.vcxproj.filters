@@ -43,6 +43,9 @@
     <Filter Include="Header Files\Neural Net\Genetic Algorithm">
       <UniqueIdentifier>{2daed08f-1303-4c24-aabc-49d322751746}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ThreadPool">
+      <UniqueIdentifier>{207189cc-5f8f-4420-b68c-8c7a1582f60f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -121,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="Trainer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SafeQueue.h">
+      <Filter>Header Files\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Header Files\ThreadPool</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
