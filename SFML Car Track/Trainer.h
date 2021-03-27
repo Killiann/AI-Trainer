@@ -5,6 +5,7 @@
 #include "Network.h"
 #include "Track.h"
 #include <thread>
+#include "ThreadPool.h"
 
 struct TrainingCar {
 	TrainingCar(Car& c, Network& n) :car(c), brain(n) {
@@ -22,12 +23,15 @@ void UpdateRange(std::vector<Car>& cars, std::vector<Network>& networks, float d
 
 class Trainer
 {
+	//THREADING
+	int threadCount = 12;
+
 	float dt;
 	int frameCount = 0;
 
 	//setup
 	int currentGeneration = 1;
-	int generationSize = 10 * 10; //multiple of 10
+	int generationSize = 60 * threadCount; //multiple of 10
 	float mutationRate = 0.01;
 
 	int inputNodes = 8;
@@ -55,8 +59,9 @@ class Trainer
 	sf::FloatRect nnDimensions;
 
 	void Setup();
-	void SortCars();
-	//void UpdateRange(float, int, int);
+	//void SortCars();s
+	void UpdateRange(float, int, int);
+	//void UpdateRange(float dt);
 
 	float bestFitness;
 	Network bestNetwork;
@@ -64,10 +69,14 @@ class Trainer
 	//threading
 	std::vector<std::thread> threads;
 
+	//quick sort
+	int Partition(int low, int high);
+	void SortCars(int low, int high);
+
 public:
 	Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, InputManager* iMngr, CheckPointManager* chMnger, Track& track, sf::FloatRect nnDim);
 	
-	void Update(float dt);
+	void Update(float dt, ThreadPool &pool);
 	void DrawWorld(sf::RenderTarget& window);
 	void DrawUI(sf::RenderTarget& window);
 	

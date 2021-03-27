@@ -25,23 +25,27 @@ void Trainer::Setup() {
 	bestFitness = 0;
 }
 
-void UpdateRange(std::vector<Car>& cars, std::vector<Network>& networks, float dt, int min, int max) {
+void Trainer::UpdateRange(float dt, int min, int max) {
 	for (int i = min; i < max; ++i) {
 		cars[i].Update(dt);
 		cars[i].SetInputs(networks[i].FeedForward(cars[i].GetNetworkInput()));
 	}
 }
 
-void Trainer::Update(float dt) {
-	frameCount++;
+void Trainer::Update(float dt, ThreadPool &pool) {
+	/*frameCount++;
 	if (frameCount == 30){
 		SortCars();
 		frameCount = 0;
+	}*/
+	std::vector<std::future<void>> results(threadCount);
+	int interval = generationSize / threadCount;
+	for (int i = 0; i < threadCount; ++i) {
+		auto func = std::bind(&Trainer::UpdateRange, this, dt, interval * i, interval * (i + 1));
+		results[i] = pool.submit(func);
 	}
-
-	for (int i = 0; i < generationSize; ++i) {
-		cars[i].Update(dt);
-		cars[i].SetInputs(networks[i].FeedForward(cars[i].GetNetworkInput()));
+	for (int i = 0; i < threadCount; ++i) {
+		results[i].get();
 	}
 
 	//check if can move on to next gen
@@ -50,7 +54,7 @@ void Trainer::Update(float dt) {
 		if (c.IsAlive() && c.HasStarted() && allDead)
 			allDead = false;
 	
-	if ((allDead && timer.getElapsedTime().asSeconds() > 5) || timer.getElapsedTime().asSeconds() > 90) NextGeneration();
+	if ((allDead && timer.getElapsedTime().asSeconds() > 5) || timer.getElapsedTime().asSeconds() > 40) NextGeneration();
 
 	//consoleManager
 	consoleManager->UpdateMessageValue("Generation Size", std::to_string(generationSize));
@@ -82,9 +86,9 @@ void Trainer::ResetScene() {
 
 void Trainer::NextGeneration() {
 	//get top 10% of networks
-	SortCars();
+	SortCars(0, cars.size() -1);
 	std::vector<Network> bestNetworks = networks;
-	bestNetworks.resize(generationSize / 10);
+	bestNetworks.resize(5);
 
 	if (cars[0].GetFitness() > bestFitness) {
 		bestFitness = cars[0].GetFitness();
@@ -97,7 +101,7 @@ void Trainer::NextGeneration() {
 	//create 50 similar copies of top 5 with mutation
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> distr(0, 1);
+	std::uniform_int_distribution<> distr(0, 5);
 
 	//reset scene with new networks
  	cars.clear();
@@ -110,7 +114,9 @@ void Trainer::NextGeneration() {
 
 		//select two of top 5 networks
 		int n1(-1), n2(-1);
-		while (n1 < 0 || n2 < 0) {
+		n1 = distr(gen);
+		n2 = distr(gen);
+		/*while (n1 < 0 || n2 < 0) {
 			int selectedNetwork = -1;
 			int count = 0;
 			while (selectedNetwork == -1 && count < bestNetworks.size()) {
@@ -119,7 +125,7 @@ void Trainer::NextGeneration() {
 				++count;
 			}
 			n1 == -1 ? n1 = selectedNetwork : n2 = selectedNetwork;
-		}
+		}*/
 
 		//new nn
 		Network nn(inputNodes, hiddenNodes, outputNodes, nnDimensions);
@@ -128,6 +134,7 @@ void Trainer::NextGeneration() {
 		bool mutate = (distr(gen) == 1);
  		bool crossOver = (distr(gen) == 1);
 		crossOver = true;
+		mutate = true;
 
 		for (int i = 0; i < parentWeights.size(); ++i) {
 			if (crossOver) {
@@ -159,10 +166,13 @@ float Trainer::Mutate(float n){
 	std::mt19937 gen(rd()); 
 	std::uniform_int_distribution<> perc(0, 1000);
 	//std::uniform_int_distribution<> distr(-100, 100);
-	std::uniform_int_distribution<> rnd(-500, 500);
-	if ((float)perc(gen) / 1000.f <= 0.005) {
-		n = rnd(gen);
+	std::uniform_int_distribution<> rnd(-100, 100);
+	if ((float)perc(gen) / 1000.f <= 0.01) {
+		n += rnd(gen) / 50;
 	} 
+	if ((float)perc(gen) / 1000.f <= 0.001) {
+		n += (rnd(gen) / 100) * 5;
+	}
 
 	return n;
 }
@@ -170,20 +180,55 @@ float Trainer::Mutate(float n){
 float Trainer::Divide(float n) {
 	return n / 2;
 }
+//
+//void Trainer::SortCars() {
+//	cars[currentId].Deselect();
+//	bool sorted = false;
+//	while (!sorted) {
+//		sorted = true;
+//		for (int i = 0; i < cars.size() - 1; ++i) {
+//			if (cars[i].GetFitness() < cars[i + 1].GetFitness()) {
+//				std::swap(cars[i], cars[i + 1]);
+//				std::swap(networks[i], networks[i + 1]);
+//				sorted = false;
+//			}
+//		}
+//	}
+//	currentId = 0;
+//	cars[currentId].Select();
+//}
 
-void Trainer::SortCars() {
-	cars[currentId].Deselect();
-	bool sorted = false;
-	while (!sorted) {
-		sorted = true;
-		for (int i = 0; i < cars.size() - 1; ++i) {
-			if (cars[i].GetFitness() < cars[i + 1].GetFitness()) {
-				std::swap(cars[i], cars[i + 1]);
-				std::swap(networks[i], networks[i + 1]);
-				sorted = false;
-			}
+int Trainer::Partition(int low, int high)
+{
+	float pivot = cars[high].GetFitness(); // pivot
+	int i = (low - 1); // Index of smaller element and indicates the right position of pivot found so far
+
+	for (int j = low; j <= high - 1; j++)
+	{
+		// If current element is smaller than the pivot
+		if (cars[j].GetFitness() > pivot)
+		{
+			i++; // increment index of smaller element
+			std::swap(cars[i], cars[j]);
+			std::swap(networks[i], networks[j]);
 		}
 	}
-	currentId = 0;
-	cars[currentId].Select();
+	std::swap(cars[i + 1], cars[high]);
+	std::swap(networks[i + 1], networks[high]);
+	return (i + 1);
+}
+
+void Trainer::SortCars(int low, int high)
+ {
+	if (low < high)
+	{
+		/* pi is partitioning index, arr[p] is now
+		at right place */
+		int pi = Partition(low, high);
+
+		// Separately sort elements before
+		// partition and after partition
+		SortCars(low, pi - 1);
+		SortCars(pi + 1, high);
+	}
 }

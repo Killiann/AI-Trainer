@@ -172,6 +172,8 @@
     <ClInclude Include="Minimap.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="SafeQueue.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Trainer.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPiece.h" />

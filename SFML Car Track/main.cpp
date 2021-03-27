@@ -13,6 +13,8 @@
 #include "Minimap.h"
 #include "Trainer.h"
 
+#include "ThreadPool.h"
+
 //game clock
 sf::Clock clk;
 sf::Time dt;
@@ -24,6 +26,8 @@ bool isResetDown = false;
 bool isNextGenDown = false;
 bool isSaveDown = false;
 
+ThreadPool pool(12);
+
 int main()
 {
     //window setups
@@ -32,7 +36,8 @@ int main()
     sf::RenderWindow window(sf::VideoMode(1500, 1000), "Track Testing", sf::Style::Default, settings);                
     sf::View camera;
     window.setFramerateLimit(90);
-    camera.setSize(1500, 1000);
+    camera.setSize(3000, 2000);
+    camera.setCenter(1200, 700);
 
     //managers 
     ResourceManager resourceManager = ResourceManager();
@@ -82,6 +87,8 @@ int main()
     consoleManager.AddMessage("Best Fitness");
 
     allFPS.reserve(100000);
+
+    pool.init();
     while (window.isOpen())
     {
         //handle mousePos conversions 
@@ -188,8 +195,8 @@ int main()
         consoleManager.Update();
 
         //update trainer (cars + NN)
-        trainer.Update(dt.asSeconds());
-        camera.setCenter((int)trainer.GetCars()[trainer.GetCurrentID()].getPosition().x, (int)trainer.GetCars()[trainer.GetCurrentID()].getPosition().y);
+        trainer.Update(dt.asSeconds(), pool);
+        //camera.setCenter((int)trainer.GetCars()[trainer.GetCurrentID()].getPosition().x, (int)trainer.GetCars()[trainer.GetCurrentID()].getPosition().y);
         
         //draw
         window.clear(sf::Color(139, 69, 19));
@@ -211,6 +218,6 @@ int main()
 
         window.display();
     }
-
+    pool.shutdown();
     return 0;
 }
