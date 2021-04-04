@@ -88,7 +88,7 @@ void Trainer::NextGeneration() {
 	//get top 10% of networks
 	SortCars(0, cars.size() -1);
 	std::vector<Network> bestNetworks = networks;
-	bestNetworks.resize(5);
+	bestNetworks.resize(25);
 
 	if (cars[0].GetFitness() > bestFitness) {
 		bestFitness = cars[0].GetFitness();
@@ -114,9 +114,9 @@ void Trainer::NextGeneration() {
 
 		//select two of top 5 networks
 		int n1(-1), n2(-1);
-		n1 = distr(gen);
-		n2 = distr(gen);
-		/*while (n1 < 0 || n2 < 0) {
+		//n1 = distr(gen);
+		//n2 = distr(gen);
+		while (n1 < 0 || n2 < 0) {
 			int selectedNetwork = -1;
 			int count = 0;
 			while (selectedNetwork == -1 && count < bestNetworks.size()) {
@@ -125,10 +125,10 @@ void Trainer::NextGeneration() {
 				++count;
 			}
 			n1 == -1 ? n1 = selectedNetwork : n2 = selectedNetwork;
-		}*/
+		}
 
 		//new nn
-		Network nn(inputNodes, hiddenNodes, outputNodes, nnDimensions);
+ 		Network nn(inputNodes, hiddenNodes, outputNodes, nnDimensions);
 		//get weight of selected network and muddle up values + create new network using them
 		std::vector<lin::Matrix> parentWeights = bestNetworks[n1].GetWeights();
 		bool mutate = (distr(gen) == 1);
@@ -167,11 +167,11 @@ float Trainer::Mutate(float n){
 	std::uniform_int_distribution<> perc(0, 1000);
 	//std::uniform_int_distribution<> distr(-100, 100);
 	std::uniform_int_distribution<> rnd(-100, 100);
-	if ((float)perc(gen) / 1000.f <= 0.01) {
-		n += rnd(gen) / 50;
+	if ((float)perc(gen) / 1000.f <= 0.03) {
+		n += (float)rnd(gen) / 300.f;
 	} 
-	if ((float)perc(gen) / 1000.f <= 0.001) {
-		n += (rnd(gen) / 100) * 5;
+	if ((float)perc(gen) / 1000.f <= 0.01) {
+		n = ((float)rnd(gen) / 100.f) * 5.f;
 	}
 
 	return n;

@@ -30,12 +30,12 @@ class Trainer
 	int frameCount = 0;
 
 	//setup
-	int currentGeneration = 1;
+	int currentGeneration = 0;
 	int generationSize = 60 * threadCount; //multiple of 10
 	float mutationRate = 0.01;
 
 	int inputNodes = 8;
-	std::vector<int> hiddenNodes = { 6,5 };
+	std::vector<int> hiddenNodes = { 6, 5 };
 	int outputNodes = 5;
 	
 	sf::Clock timer;

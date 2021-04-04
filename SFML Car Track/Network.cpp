@@ -44,26 +44,26 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 		//activate first layer of hidden layer
 		nodes_hl[0] = lin::MultiplyMatrices(weights_ih, inputMatrix);
  		nodes_hl[0].Add(biases_hl[0]);
-		nodes_hl[0].Map(lin::sigmoid);
+		nodes_hl[0].Map(lin::leakyRelu);
 
 		//activate rest of hidden layer nodes
 		for (int i = 1; i < nodes_hl.size(); ++i) {
 			nodes_hl[i] = lin::MultiplyMatrices(weights_hl[i - 1], nodes_hl[i - 1]);
 			nodes_hl[i].Add(biases_hl[i]);
-			nodes_hl[i].Map(lin::sigmoid);
+			nodes_hl[i].Map(lin::leakyRelu);
 		}
 
 		//activate output layer
 		nodes_o = lin::MultiplyMatrices(weights_ho, nodes_hl[nodes_hl.size() - 1]);
 		nodes_o.Add(biases_o);
-		nodes_o.Map(lin::sigmoid);
+		nodes_o.Map(lin::binary);
 
-		//temp
-		for (int i = 0; i < nodes_o.GetRows(); ++i) {
-			if (nodes_o[i][0] > 0.5)
-				nodes_o[i][0] = 1;
-			else nodes_o[i][0] = 0;
-		}
+		////temp
+		//for (int i = 0; i < nodes_o.GetRows(); ++i) {
+		//	if (nodes_o[i][0] > 0.5)
+		//		nodes_o[i][0] = 1;
+		//	else nodes_o[i][0] = 0;
+		//}
 
 		//SFML
 		UpdateRender();

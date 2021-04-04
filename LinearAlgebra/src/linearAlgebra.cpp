@@ -75,6 +75,14 @@ namespace lin {
 	float sigmoid(float input) {
 		return 1 / (1 + std::pow(EULER, -input));
 	}
+	float leakyRelu(float input)
+	{
+		return std::max(input * 0.01f, input);
+	}
+
+	float binary(float input) {
+		return input > 0 ? true : false;
+	}
 
 	sf::Vector2f Normalise(const sf::Vector2f& source) {
 		float length = sqrt((source.x * source.x) + (source.y * source.y));
