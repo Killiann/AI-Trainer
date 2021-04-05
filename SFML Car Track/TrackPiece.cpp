@@ -1,41 +1,37 @@
 #include "TrackPiece.h"
 
-#define _USE_MATH_DEFINES
+TrackPiece::TrackPiece(sf::Texture& trackTexture, int tSize, sf::Vector2f gridPos, TrackType trackType, float rotation): tileSize(tSize){	
+	float xPos = tileSize * gridPos.x;
+	float yPos = tileSize * gridPos.y;
+	incr = (int)(tileSize / 8.f);
 
-TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gridPos, TrackType trackType, float rotation){
-	tileS = tileSize;
-	float xPos = tileS * gridPos.x;
-	float yPos = tileS * gridPos.y;
-	incr = (float)tileS / 8;
-
-	//rotation = 0;
-	int texTileW = trackTexture.getSize().x / 5;
+	float textureTileWidth = trackTexture.getSize().x / 5.f;
 	trackSprite.setTexture(trackTexture);		
-	trackSprite.setScale((float)tileS / texTileW, (float)tileS / texTileW);
+	trackSprite.setScale((float)tileSize / textureTileWidth, (float)tileSize / textureTileWidth);
 	trackSprite.setPosition(xPos, yPos);
-	trackSprite.setOrigin(texTileW / 2, texTileW / 2);
+	trackSprite.setOrigin(textureTileWidth / 2.f, textureTileWidth / 2.f);
 	trackSprite.setRotation(rotation);	
 
-	//setup track collision shapes
+	//setup track piece collision shapes
 	switch(trackType){
-	case(STRAIGHT): {
-		trackSprite.setTextureRect(sf::IntRect(texTileW, 0, texTileW, texTileW));
+	case(TrackType::STRAIGHT): {
+		trackSprite.setTextureRect(sf::IntRect(textureTileWidth, 0, textureTileWidth, textureTileWidth));
 
 		sf::ConvexShape inner, outer;
 		inner.setPointCount(4);
 		outer.setPointCount(4);
 
 		//top shape		
-		inner.setPoint(0, sf::Vector2f(0, 0)); //top left
-		inner.setPoint(1, sf::Vector2f(tileS, 0)); //top right
-		inner.setPoint(2, sf::Vector2f(tileS, incr)); //bottom right
-		inner.setPoint(3, sf::Vector2f(0, incr)); //bottom left
+		inner.setPoint(0, sf::Vector2f(0.f, 0.f)); //top left
+		inner.setPoint(1, sf::Vector2f((float)tileSize, 0.f)); //top right
+		inner.setPoint(2, sf::Vector2f((float)tileSize, (float)incr)); //bottom right
+		inner.setPoint(3, sf::Vector2f(0.f, (float)incr)); //bottom left
 
 		//bottom shape
-		outer.setPoint(0, sf::Vector2f(0, incr)); //top left
-		outer.setPoint(1, sf::Vector2f(tileS, incr)); //top right
-		outer.setPoint(2, sf::Vector2f(tileS, 5*incr)); //bottom left
-		outer.setPoint(3, sf::Vector2f(0, 5*incr)); //bottom right
+		outer.setPoint(0, sf::Vector2f(0.f, (float)incr)); //top left
+		outer.setPoint(1, sf::Vector2f((float)tileSize, (float)incr)); //top right
+		outer.setPoint(2, sf::Vector2f((float)tileSize, 5.f * (float)incr)); //bottom left
+		outer.setPoint(3, sf::Vector2f(0.f, 5.f * (float)incr)); //bottom right
 
 		outer.setFillColor(sf::Color(200, 200, 200));
  		TransformVertices(outer, sf::Vector2f(xPos, yPos), rotation);
@@ -43,17 +39,16 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gri
 		accessibleTrack.push_back(outer);
 		break;
 	}
-
-	case(CORNER_SHORT):
-		trackSprite.setTextureRect(sf::IntRect(texTileW * 3, 0, texTileW, texTileW));
+	case(TrackType::CORNER_SHORT):
+		trackSprite.setTextureRect(sf::IntRect(textureTileWidth * 3, 0, textureTileWidth, textureTileWidth));
 		InitCorner(incr, incr * 5, rotation, xPos, yPos);
 		break;	
-	case(CORNER_LONG): 
-		trackSprite.setTextureRect(sf::IntRect(texTileW * 4, 0, texTileW, texTileW));
+	case(TrackType::CORNER_LONG): 
+		trackSprite.setTextureRect(sf::IntRect(textureTileWidth * 4, 0, textureTileWidth, textureTileWidth));
 		InitCorner(incr * 3, incr * 7, rotation, xPos, yPos);
 		break;	
-	case(DOUBLE_CORNER):
-		trackSprite.setTextureRect(sf::IntRect(texTileW * 2, 0, texTileW, texTileW));
+	case(TrackType::DOUBLE_CORNER):
+		trackSprite.setTextureRect(sf::IntRect(textureTileWidth * 2, 0, textureTileWidth, textureTileWidth));
 		InitCorner(incr, incr * 5, rotation, xPos, yPos);
 		InitCorner(incr, incr * 5, rotation + 180, xPos, yPos);
 		break;
@@ -61,16 +56,11 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tileSize, sf::Vector2f gri
 }
 
 void TrackPiece::Draw(sf::RenderTarget& window) {
-/*	for (auto& s : accessibleTrack)
-		window.draw(s);
-
-	for (auto& s : innerBounds)
-		window.draw(s);	*/		
-
 	window.draw(trackSprite);
 }
 
-void TrackPiece::InitCorner(int startPos, int endPos, int rotation, float xPos, float yPos) {
+void TrackPiece::InitCorner(int startPos, int endPos, float rotation, float xPos, float yPos) {
+	//resolution of corners
 	int innerRadiusDefinition = 10;
 	int outerRadiusDefinition = 15;
 
@@ -79,21 +69,20 @@ void TrackPiece::InitCorner(int startPos, int endPos, int rotation, float xPos, 
 	outer.setPointCount(2 + outerRadiusDefinition);
 
 	for (int i = 0; i < innerRadiusDefinition; ++i) {
-		float theta = ((PI / 2) / innerRadiusDefinition);
+		float theta = (((float)M_PI / 2) / innerRadiusDefinition);
 		float angle = (theta * i);
 		inner.setPoint(i, sf::Vector2f(startPos * cos(angle), startPos * sin(angle)));
 	}
-	inner.setPoint(innerRadiusDefinition, sf::Vector2f(0, startPos));
-	inner.setPoint(innerRadiusDefinition + 1, sf::Vector2f(0, 0));
+	inner.setPoint(innerRadiusDefinition, sf::Vector2f(0.f, (float)startPos));
+	inner.setPoint(innerRadiusDefinition + 1, sf::Vector2f(0.f, 0.f));
 
 	for (int i = 0; i < outerRadiusDefinition; ++i) {
-		float theta = ((PI / 2) / outerRadiusDefinition);
+		float theta = (((float)M_PI / 2.f) / (float)outerRadiusDefinition);
 		float angle = (theta * i);
 		outer.setPoint(i, sf::Vector2f(endPos * cos(angle), endPos * sin(angle)));
 	}
 
-	outer.setPoint(outerRadiusDefinition, sf::Vector2f(0, endPos));
-	//outer.setPoint(outerRadiusDefinition + 1, sf::Vector2f(0, 0));
+	outer.setPoint(outerRadiusDefinition, sf::Vector2f(0.f, (float)endPos));
 
 	outer.setFillColor(sf::Color(200, 200, 200));	
 	TransformVertices(outer, sf::Vector2f(xPos, yPos), rotation);
@@ -106,16 +95,16 @@ void TrackPiece::InitCorner(int startPos, int endPos, int rotation, float xPos, 
 }
 
 void TrackPiece::TransformVertices(sf::ConvexShape &transformable, sf::Vector2f pos, float rotation) {
-	transformable.setPosition(tileS / 2, tileS / 2);
-	transformable.setOrigin(tileS / 2, tileS / 2);
+	transformable.setPosition(tileSize / 2.f, tileSize / 2.f);
+	transformable.setOrigin(tileSize / 2.f, tileSize / 2.f);
 	
 	sf::Transformable tr = (sf::Transformable)transformable;
 	tr.setPosition(pos.x, pos.y);
-	tr.setOrigin(tileS / 2, tileS / 2);
+	tr.setOrigin(tileSize / 2.f, tileSize / 2.f);
 	tr.rotate(rotation);
 
 	sf::Transform t = tr.getTransform();
-	for (int i = 0; i < transformable.getPointCount(); ++i)
+	for (unsigned int i = 0; i < transformable.getPointCount(); ++i)
 		transformable.setPoint(i, t.transformPoint(transformable.getPoint(i)));
 }
 

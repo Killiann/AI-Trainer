@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <cassert>
 
 class Network {
 	//nodes
@@ -17,8 +18,8 @@ class Network {
 	std::vector<lin::Matrix> weights_hl; //weights in hidden layer
 	
 	//biases
-	lin::Matrix biases_o;
-	std::vector<lin::Matrix> biases_hl;
+	lin::Matrix biases_o; //output biases
+	std::vector<lin::Matrix> biases_hl; //hidden layer biases
 
 	//Rendering
 	sf::FloatRect dimensions;
@@ -35,32 +36,16 @@ class Network {
 public:
 	Network() {};
 	Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d);
-	std::vector<float> FeedForward(std::vector<float> inputs);
-
-	inline std::vector<lin::Matrix> GetWeights() {
-		std::vector<lin::Matrix> ret;
-		ret.push_back(weights_ih);
-		ret.push_back(weights_ho);
-		for (int i = 0; i < weights_hl.size(); ++i)
-			ret.push_back(weights_hl[i]);
-		
-		return ret;
-	}
-
-	inline std::vector<lin::Matrix> GetBiases() {
-		std::vector<lin::Matrix> ret;
-		ret.push_back(biases_o);
-		for (int i = 0; i < biases_hl.size(); ++i)
-			ret.push_back(biases_hl[i]);
-
-		return ret;
-	}
 
 	void SetWeights(std::vector<lin::Matrix> newWeights);
 	void SetBiases(std::vector<lin::Matrix> newBiases);
+	std::vector<lin::Matrix> GetWeights();
+	std::vector<lin::Matrix> GetBiases();
 
-	void Draw(sf::RenderTarget& window);
+	std::vector<float> FeedForward(std::vector<float> inputs);			
 
 	void SaveToFile(std::string fileName, float fitness);
 	float LoadFromFile(std::string fileName);
+
+	void Draw(sf::RenderTarget& window);
 };

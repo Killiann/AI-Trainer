@@ -9,7 +9,29 @@ ConsoleManager::ConsoleManager(sf::Font* f) : font(f){
 	background.setSize(sf::Vector2f(200, 450));
 	background.setPosition(position);
 	background.setOutlineThickness(3);
-	background.setOutlineColor(sf::Color::White);		
+	background.setOutlineColor(sf::Color::White);	
+
+	//Initialisse Messages
+	AddMessage("=========CAR========");
+	AddMessage("steer angle");
+	AddMessage("velocity.x");
+	AddMessage("velocity.y");
+	AddMessage("absolute velocity");
+	AddMessage("current segment");
+	AddMessage("fastest time");
+	AddMessage("last lap");
+	AddMessage("on track");
+	AddMessage("fitness");
+	AddMessage("alive");
+	AddMessage("========DATA========");
+	AddMessage("framerate");
+	AddMessage("========SCENE=======");
+	AddMessage("Generation Size");
+	AddMessage("Mutation Rate");
+	AddMessage("Generation");
+	AddMessage("Current Time");
+	AddMessage("Time Limit");
+	AddMessage("Best Fitness");
 }
 
 void ConsoleManager::AddMessage(std::string message, std::string value) {
@@ -29,19 +51,7 @@ void ConsoleManager::UpdateMessageValue(std::string key, std::string value) {
 		std::cout << "Console message with key: " << key << " not found." << std::endl;	
 }
 
-void ConsoleManager::Update() {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C)) {
-		if (!isPressing) {
-			display = !display;
-			isPressing = true;
-		}
-	}
-	if (isPressing)
-		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
-			isPressing = false;
-}
-
-void ConsoleManager::Draw(sf::RenderWindow& window) {    
+void ConsoleManager::Draw(sf::RenderTarget& window) {
 	if (display) {
 		window.draw(background);
 

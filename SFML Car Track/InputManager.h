@@ -1,8 +1,12 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Trainer.h"
+
 #include "ConsoleManager.h"
+
 class InputManager
 {
+	//car controls
 	float throttle = 0;
 	float brake = 0;
 	float ebrake = 0;
@@ -11,11 +15,21 @@ class InputManager
 
 	int selectedCarID = 0;
 
-	ConsoleManager *consoleManager;
+	//UI key presses
+	bool isCycleDown = false;
+	bool isResetDown = false;
+	bool isNextGenDown = false;
+	bool isSaveDown = false;
+	bool isConsoleDown = false;
+
+	Trainer* trainer;	
+	ConsoleManager* consoleManager = nullptr;
+
 public:
-	InputManager(ConsoleManager* c);
+	InputManager(ConsoleManager* c, Trainer* t);
 	void Update();
-	
+	void UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords);
+
 	float GetThrottle() { return throttle; }
 	float GetBrake() { return brake; }
 	float GetEBrake() { return ebrake; }

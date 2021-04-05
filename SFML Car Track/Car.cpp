@@ -1,60 +1,45 @@
 #include "Car.h"
 
+//helpers
 template <typename T> int sgn(T val) {
 	return (T(0) < val) - (val < T(0));
 }
-
-template<class T>
+template<typename T>
 constexpr const T& clamp(const T& v, const T& lo, const T& hi)
 {
 	assert(!(hi < lo));
 	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
-Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console, ResourceManager *resource, CheckPointManager& checkpoint, Track* trk)
-	:ID(id), inputManager(input), consoleManager(console), resourceManager(resource), track(trk){
+Car::Car(int id, sf::Vector2f pos, ConsoleManager *console, ResourceManager *resource, Track* trk)
+	:ID(id), consoleManager(console), track(trk){
 
-	//CheckPointTracker tracker(checkpoint);
-	checkPointTracker = CheckPointTracker(checkpoint);
-	nextCheckpointBounds = checkPointTracker.GetNextCheckpointBounds();
-
-	//position setup
 	position.x = pos.x / scale;
-	position.y = pos.y / scale;	
+	position.y = pos.y / scale;
 
-	//track info
+	//Fetch resources
+	carBody.setTexture(*resource->GetCarTexture());
+	driftTexture = resource->GetDriftTexture();
+	infoFont = resource->GetPixelFont();
+	carBody.setScale(sf::Vector2f((cgToRear + cgToFront) / carBody.getTextureRect().width, (halfWidth * 2.f) / carBody.getTextureRect().height));
+
+	//Track
 	trackShapes = track->GetTrackShapes();
 	tileSize = track->GetTileWidth();
-	infoFont = resourceManager->GetPixelFont();
-	infoText.reserve(lineCount);
-	for (int i = 0; i <= lineCount; ++i) {
+	
+	//CheckPointTracker tracker;
+	checkPointTracker = CheckPointTracker(*track->GetCheckPoints());
+	nextCheckpointBounds = checkPointTracker.GetNextCheckpointBounds();		
+
+	//Info text
+	for (unsigned int i = 0; i <= lineCount; ++i) {
 		sf::Text text;
 		text.setFont(*infoFont);
 		text.scale(0.5f, 0.5f);
-		text.setFillColor(sf::Color::Blue);		
+		text.setFillColor(sf::Color::Blue);
 		infoText.push_back(text);
-	}	
+	}
 	infoText[infoText.size() - 1].setString("ID: " + std::to_string(ID));
-
-	//car sprite
-	carBody.setTexture(*resourceManager->GetCarTexture());
-	carBody.setScale(sf::Vector2f((cgToRear + cgToFront) / carBody.getTextureRect().width, (halfWidth * 2.0) / carBody.getTextureRect().height));		
-	driftTexture = resourceManager->GetDriftTexture();
-
-	//collision
-	collisionBounds.setPosition(position);
-	collisionBounds.setOutlineColor(sf::Color::Red);
-	float padding = 5.f;
-	collisionBounds.setPointCount(4);
-	sf::Vector2f boundingBox = sf::Vector2f(carBody.getGlobalBounds().width * scale + padding, carBody.getGlobalBounds().height * scale + padding);
-	collisionBounds.setPoint(0, sf::Vector2f(0,0));
-	collisionBounds.setPoint(1, sf::Vector2f(0, boundingBox.y));
-	collisionBounds.setPoint(2, sf::Vector2f(boundingBox.x, boundingBox.y));
-	collisionBounds.setPoint(3, sf::Vector2f(boundingBox.x, 0));
-	collisionBounds.setOrigin(boundingBox.x / 2, boundingBox.y / 2);
-	collisionBounds.setFillColor(sf::Color::Transparent);
-	collisionBounds.setOutlineThickness(1.f);
-	collisionArea = boundingBox.x * boundingBox.y;
 
 	//wheels
 	for (int i = 0; i < 4; ++i) {
@@ -65,9 +50,11 @@ Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console,
 		wheels.push_back(wheel);
 	}		
 
-	//distance lines checking area
-	scanArea = sf::RectangleShape(sf::Vector2f(track->GetTileWidth() * 2, track->GetTileWidth() * 2));
-	scanArea.setOrigin(sf::Vector2f(track->GetTileWidth(), track->GetTileWidth()));
+	//distance lines to track edges
+	distances = std::vector<float>(lineCount);
+
+	scanArea = sf::RectangleShape(sf::Vector2f(track->GetTileWidth() * 2.f, track->GetTileWidth() * 2.f));
+	scanArea.setOrigin(sf::Vector2f((float)track->GetTileWidth(), (float)track->GetTileWidth()));
 	scanArea.setPosition(position);
 	scanArea.setFillColor(sf::Color(255, 0, 0, 100));
 
@@ -75,8 +62,20 @@ Car::Car(int id, sf::Vector2f pos, InputManager *input, ConsoleManager *console,
 	globalBounds.setFillColor(sf::Color::Transparent);
 	globalBounds.setOutlineColor(sf::Color::Blue);
 	globalBounds.setOutlineThickness(1);
-	
-	distances = std::vector<float>(lineCount);
+
+	//bounding box (rotated)
+	float padding = 5.f;
+	sf::Vector2f boundingBox = sf::Vector2f(carBody.getGlobalBounds().width * scale + padding, carBody.getGlobalBounds().height * scale + padding);
+	collisionBounds.setPosition(position);
+	collisionBounds.setOutlineColor(sf::Color::Red);
+	collisionBounds.setPointCount(4);
+	collisionBounds.setPoint(0, sf::Vector2f(0, 0));
+	collisionBounds.setPoint(1, sf::Vector2f(0, boundingBox.y));
+	collisionBounds.setPoint(2, sf::Vector2f(boundingBox.x, boundingBox.y));
+	collisionBounds.setPoint(3, sf::Vector2f(boundingBox.x, 0));
+	collisionBounds.setOrigin(boundingBox.x / 2, boundingBox.y / 2);
+	collisionBounds.setFillColor(sf::Color::Transparent);
+	collisionBounds.setOutlineThickness(1.f);		
 }
 
 void Car::DoPhysics(float dt) {
@@ -91,7 +90,7 @@ void Car::DoPhysics(float dt) {
 	float axleWeightFront = mass * (axleWeightRatioFront * gravity - weightTransfer * accel_c.x * cgHeight / wheelBase);
 	float axleWeightRear = mass * (axleWeightRatioRear * gravity + weightTransfer * accel_c.x * cgHeight / wheelBase);
 
-	//resulting velocity of the weheels as result of the yaw rate of the car body
+	//resulting velocity of the wheels as result of the yaw rate of the car body
 	//v = yawRate * r where r is the distance from axle to CG and yawRate (angular velocity) in rad/s
 	float yawSpeedFront = cgToFrontAxle * yawRate;
 	float yawSpeedRear = -cgToRearAxle * yawRate;
@@ -105,7 +104,7 @@ void Car::DoPhysics(float dt) {
 	}
 
 	float tireGripFront = tireGrip;
-	float tireGripRear = tireGrip * (1.0 - I_ebrake * (1.0 - lockGrip)); // reduce rear grip when ebrake is on
+	float tireGripRear = tireGrip * (1.f - I_ebrake * (1.f - lockGrip)); // reduce rear grip when ebrake is on
 
 	float frictionForceFront_cy = clamp(-cornerStiffnessFront * slipAngleFront, -tireGripFront, tireGripFront) * axleWeightFront;
 	float frictionForceRear_cy = clamp(-cornerStiffnessRear * slipAngleRear, -tireGripRear, tireGripRear) * axleWeightRear;
@@ -162,21 +161,21 @@ void Car::DoPhysics(float dt) {
 float Car::ApplySmoothSteer(float steerInput, float dt) {
 	float steer_l = 0;
 
-	if (std::abs(steerInput) > 0.001)
-		steer_l = clamp((steer + (double)steerInput * (double)dt * 2.0), -1.0, 1.0);
+	if (std::abs(steerInput) > 0.001f)
+		steer_l = (float)clamp((steer + steerInput * dt * 2.f), -1.f, 1.f);
 	else {
 		if (steer > 0)
-			steer_l = std::max((steer - dt * 1.0), 0.0);
+			steer_l = (float)std::max((steer - dt * 1.f), 0.f);
 		else if (steer < 0)
-			steer_l = std::min(steer + dt * 1.0, 0.0);
+			steer_l = (float)std::min(steer + dt * 1.f, 0.f);
 	}
 	
 	return steer_l;
 }
 
 float Car::ApplySafeSteer(float steerInput) {	
-	float avel = std::min((double)absVel, 90.0);
-	float steer_l = steerInput * (1.0 - (avel / 4000.0));
+	float avel = (float)std::min(absVel, 90.f);
+	float steer_l = steerInput * (1.f - (avel / 4000.f));
 	return steer_l;
 }
 
@@ -185,15 +184,15 @@ void Car::Update(float dt) {
 		scanArea.setPosition(position.x * scale, position.y * scale);
 		onTrack = IsOnTrack();
 
-		//big traction on mud
+		//alter traction on mud
 		if (!onTrack) {
 			rollResist = 600;
-			tireGrip = 2.2;
+			tireGrip = 2.2f;
 			alive = false;
 		}
 		else {
-			rollResist = 8.0;
-			tireGrip = 4.0;
+			rollResist = 8.f;
+			tireGrip = 4.f;
 		}
 
 		float steerInput = I_rightSteer - I_leftSteer;
@@ -214,14 +213,15 @@ void Car::Update(float dt) {
 		fitness = CalculateFitness();
 	}
 
+	//update console
 	if (selected) {
 		consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));
 		consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
 		consoleManager->UpdateMessageValue("velocity.y", std::to_string(velocity.y));
 		consoleManager->UpdateMessageValue("absolute velocity", std::to_string(absVel));
-		consoleManager->UpdateMessageValue("current segment", std::to_string(checkPointTracker.getCurrentSegmentTime() / 1000.f));
-		consoleManager->UpdateMessageValue("fastest time", std::to_string(checkPointTracker.getFastestTime() / 1000.f));
-		consoleManager->UpdateMessageValue("last lap", std::to_string(checkPointTracker.getLastLapTime() / 1000.f));
+		consoleManager->UpdateMessageValue("current segment", std::to_string(checkPointTracker.GetCurrentSegmentTime() / 1000.f));
+		consoleManager->UpdateMessageValue("fastest time", std::to_string(checkPointTracker.GetFastestLap() / 1000.f));
+		consoleManager->UpdateMessageValue("last lap", std::to_string(checkPointTracker.GetLastLapTime() / 1000.f));
 		consoleManager->UpdateMessageValue("on track", std::to_string(onTrack));
 		consoleManager->UpdateMessageValue("fitness", std::to_string(fitness));
 		consoleManager->UpdateMessageValue("alive", std::to_string(alive));
@@ -239,6 +239,7 @@ void Car::Draw(sf::RenderTarget& window){
 		}
 	}
 
+	//temporarily removed due to performance - add option to add back / find way of fixing performance (NOT IMPORTANT)
 	//skid marks
 	//sf::Transform skidTransform;
 	//skidTransform.scale(scale, scale);
@@ -246,14 +247,14 @@ void Car::Draw(sf::RenderTarget& window){
 	//	window.draw(c, skidTransform);
 
 	sf::Transform transform;	
-	transform.translate((int)(position.x * scale), (int)(position.y * scale));	
+	transform.translate((position.x * (int)scale), (position.y * (int)scale));
 	transform.scale(scale, scale);
-	transform.rotate(heading * (180 / M_PI));
+	transform.rotate(heading * (180.f / (float)M_PI));
 	//front wheels
 	wheels.at(0).setPosition(cgToFrontAxle, halfWidth);
 	wheels.at(1).setPosition(cgToFrontAxle, -halfWidth);
-	wheels.at(0).setRotation((steerAngle * (180 / M_PI)));
-	wheels.at(1).setRotation((steerAngle * (180 / M_PI)));
+	wheels.at(0).setRotation((steerAngle * (180.f / (float)M_PI)));
+	wheels.at(1).setRotation((steerAngle * (180.f / (float)M_PI)));
 
 	//back wheels
 	wheels.at(2).setPosition(-cgToRearAxle, halfWidth);
@@ -273,11 +274,11 @@ void Car::Draw(sf::RenderTarget& window){
 	transform2.scale(scale, scale);
 
 	carBody.setPosition(0,0);			
-	carBody.setOrigin(carBody.getTextureRect().width / 2.0, carBody.getTextureRect().height / 2.0);
-	carBody.setRotation(heading * (180 / M_PI));		
+	carBody.setOrigin(carBody.getTextureRect().width / 2.f, carBody.getTextureRect().height / 2.f);
+	carBody.setRotation(heading * (180.f / (float)M_PI));
 
-	collisionBounds.setPosition((int)(position.x * scale), (int)(position.y * scale));
-	collisionBounds.setRotation(heading * (180 / M_PI));	
+	collisionBounds.setPosition((position.x * (int)scale), (position.y * (int)scale));
+	collisionBounds.setRotation(heading * (180.f / (float)M_PI));
 
 	sf::FloatRect glbl = collisionBounds.getGlobalBounds();
 	globalBounds.setPosition(glbl.left+5, glbl.top+5);
@@ -285,7 +286,7 @@ void Car::Draw(sf::RenderTarget& window){
 
 	window.draw(carBody, transform2);		
 
-	//devmode (above car)
+	//dev display (above car)
 	if (consoleManager->IsDisplayed()) {
 		//line distances
 		if (selected) {
@@ -309,9 +310,9 @@ void Car::addSkidMarks() {
 	//right
 	temp1.setScale(carBody.getScale());
 	temp1.setTexture(*driftTexture);
-	temp1.setOrigin(sf::Vector2f(temp1.getTextureRect().width / 2, temp1.getTextureRect().height / 2));
+	temp1.setOrigin(sf::Vector2f(temp1.getTextureRect().width / 2.f, temp1.getTextureRect().height / 2.f));
 	temp1.setPosition(posX, posY);
-	temp1.setRotation(heading * (180 / M_PI));
+	temp1.setRotation(heading * (180.f / (float)M_PI));
 	skidMarks.push_back(temp1);	
 
 	//left	
@@ -321,27 +322,27 @@ void Car::addSkidMarks() {
 	skidMarks.push_back(temp1);	
 }
 
+//calculate distances to the edges of the track, the car's 'vision'
 void Car::CalculateDistances() {
 	distanceLines.clear();
 	distances.clear();
-	for (int i = 0; i < lineCount; ++i) {
+
+	//for each line
+	for (unsigned int i = 0; i < lineCount; ++i) {
 		sf::VertexArray newLine = sf::VertexArray(sf::LinesStrip);
 		newLine.append(sf::Vertex(sf::Vector2f(position.x * scale, position.y * scale), lineColor));
 
 		//create line of set length from center of car outwards in equal segments
-		const float theta = (M_PI) / (lineCount - 1);
-		const float angle = (theta * i) - (M_PI/2);
+		const float theta = (float)M_PI / (lineCount - 1);
+		const float angle = (theta * i) - ((float)M_PI / 2.f);
 		lin::Line line1 = lin::Line(sf::Vector2f(position.x * scale, position.y * scale), sf::Vector2f((position.x * scale) + (lineLength * cos(angle + heading)),
 												 (position.y * scale) + (lineLength * sin(angle + heading))));
 
-		if(consoleManager->IsDisplayed())track->clearCheckedArea();
-		float shortestDistance = lineLength;
+		float shortestDistance = (float)lineLength;
 		for (auto& trackShape : *trackShapes) {	
 			//only run check if the trackshape is within checking area
 			if (trackShape.getGlobalBounds().intersects(scanArea.getGlobalBounds())) {								
-				if(consoleManager->IsDisplayed()) track->addCheckedArea(trackShape);				
-
-				for (int i = 0; i < trackShape.getPointCount(); ++i) {
+				for (unsigned int i = 0; i < trackShape.getPointCount(); ++i) {
 					//create line between two points of track shape
 					lin::Line line2;
 					if (i == trackShape.getPointCount() - 1) line2 = lin::Line(trackShape.getPoint(i), trackShape.getPoint(0));
@@ -358,14 +359,14 @@ void Car::CalculateDistances() {
 							float x = (line2.B * line1.C - line1.B * line2.C) / delta;
 							float y = (line1.A * line2.C - line2.A * line1.C) / delta;
 							
-							//check if segments interect at that point
+							//check if segments both exist at that point
 							if ((std::min(line2.p1.x, line2.p2.x) <= x + 1) && (x - 1 <= std::max(line2.p1.x, line2.p2.x)) &&
 								(std::min(line2.p1.y, line2.p2.y) <= y + 1) && (y - 1 <= std::max(line2.p1.y, line2.p2.y)) &&
 								(std::min(line1.p1.x, line1.p2.x) <= x + 1) && (x - 1 <= std::max(line1.p1.x, line1.p2.x)) &&
 								(std::min(line1.p1.y, line1.p2.y) <= y + 1) && (y - 1 <= std::max(line1.p1.y, line1.p2.y))) {
 								
 								//check whether this is the shortest distance found so far
-								float length = std::sqrt(std::pow(line1.p1.x - x, 2) + std::pow(line1.p1.y - y, 2));
+								float length = std::sqrt(std::pow(line1.p1.x - x, 2.f) + std::pow(line1.p1.y - y, 2.f));
 								if (shortestDistance > length) {
 									line1.p2 = sf::Vector2f(x, y);
 									shortestDistance = length;
@@ -376,14 +377,19 @@ void Car::CalculateDistances() {
 				}
 			}
 		}
-		int text_x = line1.p2.x;
-		int text_y = line1.p2.y;
-		infoText[i].setPosition(sf::Vector2f(text_x, text_y));
-		distances.push_back(shortestDistance / lineLength);
-		std::string dist = std::to_string(shortestDistance);
-		infoText[i].setString(dist.substr(0, dist.find_first_of('.') + 2));
+		
+		//save		
 		newLine.append(sf::Vertex(line1.p2, lineColor));
 		distanceLines.push_back(newLine);
+
+		distances.push_back(shortestDistance / lineLength);
+
+		//update distance value on UI
+		std::string dist = std::to_string(shortestDistance);
+		float text_x = line1.p2.x;
+		float text_y = line1.p2.y;
+		infoText[i].setPosition(text_x, text_y);
+		infoText[i].setString(dist.substr(0, dist.find_first_of('.') + 2));			
 	}	
 }
 
@@ -404,39 +410,30 @@ void Car::CheckPointHandling() {
 }
 
 bool Car::IsOnTrack() {
-	bool res = false;
+	bool onTrack = false;
 	sf::Vector2f pos = sf::Vector2f(position.x * scale, position.y * scale);
-	for (auto s : *trackShapes) {
+	for (auto &s : *trackShapes) {
 		if (s.getGlobalBounds().intersects(scanArea.getGlobalBounds())) {
 			if (lin::doesConvexShapeContainPoint(pos, s)) {
 				if (s.getFillColor() == sf::Color::Red) {//check against inner corners
-					res = false;
+					onTrack = false;
 					break;
 				}
-				res = true;
+				onTrack = true;
 			}
 		}
 	}
-	return res;
+	return onTrack;
 }
 
 float Car::CalculateFitness() {
-	//will be revised most likely
+	//uses the amount of checkpoints crossed + distance to next checkpoint to calculate fitness
 	if (checkPointTracker.Started()) {
-
-		float fitness = checkPointTracker.GetCompletedSegments() * 2;
+		float fitness = checkPointTracker.GetCompletedSegments() * 2.f;
 		lin::Line lineToNextCP(sf::Vector2f(position.x * scale, position.y * scale), checkPointTracker.GetNextCheckpointCenter());
 		float distanceToNextCP = lineToNextCP.GetLength();
 		fitness += 10 / distanceToNextCP;
 		return fitness;
-
-		//float fitness = timeAlive.getElapsedTime().asSeconds();
-		//fitness = fitness / (checkPointTracker.GetCompletedSegments() * 5);
-		//lin::Line lineToNextCP(sf::Vector2f(position.x * scale, position.y * scale), checkPointTracker.GetNextCheckpointCenter());
-		//float distanceToNextCP = lineToNextCP.GetLength();
-
-		//fitness -= 30 / distanceToNextCP;
-		//return fitness;
 	}
 	else return 0;
 }
@@ -460,8 +457,6 @@ void Car::operator=(Car c) {
 	skidMarks = c.skidMarks;
 
 	consoleManager = c.consoleManager;
-	inputManager = c.inputManager;
-	resourceManager = c.resourceManager; 
 	track = c.track;
 	tileSize = c.tileSize;
 
@@ -476,7 +471,6 @@ void Car::operator=(Car c) {
 	collisionBounds = c.collisionBounds;
 	globalBounds = c.globalBounds;
 
-	collisionArea = c.collisionArea;
 	selected = c.selected;
 	ID = c.ID;
 

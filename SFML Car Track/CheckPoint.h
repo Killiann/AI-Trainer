@@ -2,7 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "ConsoleManager.h"
 
-enum posInTile {
+enum class PosInTile {
 	TL, //top left
 	TR, //top right
 	RT, //right top
@@ -10,29 +10,32 @@ enum posInTile {
 	BR, //bottom right
 	BL, //bottom left
 	LB, //left bottom
-	LT //left top
+	LT	//left top
 };
 
 class CheckPoint {
-	int ID;
-	int tileSize;
-	bool isStart;
-	sf::Vector2f position;
-	posInTile PIT;
+	int ID = -1;
+    int tileSize = 432; //same as in track
+	bool isStart = false;
+
+	PosInTile PIT = PosInTile(0);
 	sf::Sprite sprite;
-	sf::Texture* texture;
+	sf::Texture* texture = nullptr;
 	sf::RectangleShape collisionRect;
 
+	sf::Vector2f position;
 	sf::Vector2f center;
-	sf::CircleShape c;
+	sf::CircleShape centerShape;	
 
-	ConsoleManager* console;
+	ConsoleManager* console = nullptr;
 
 public:
 	CheckPoint(){}
-	CheckPoint(int ID, int ts, sf::Vector2f pos, posInTile pit, sf::Texture* texture, ConsoleManager* cm);
-	void Draw(sf::RenderTarget& window);
+	CheckPoint(int ID, sf::Vector2f pos, PosInTile pit, sf::Texture* texture, ConsoleManager* cm);	
+
 	inline sf::FloatRect getGlobalBounds() { return collisionRect.getGlobalBounds(); }
 	inline int getID() { return ID; }
 	inline sf::Vector2f GetCenter() { return center; }
+
+	void Draw(sf::RenderTarget& window);
 };

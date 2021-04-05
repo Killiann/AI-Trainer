@@ -4,7 +4,7 @@ CheckPointTracker::CheckPointTracker(CheckPointManager& manager) {
 	checkpoints = manager.GetCheckpoints();
 
 	//setup segments
-	for (int i = 0; i < checkpoints.size() - 1; ++i) {
+	for (unsigned int i = 0; i < checkpoints.size() - 1; ++i) {
 		segments.emplace_back(i, checkpoints[i], checkpoints[i + 1]);
 	}
 	segments.emplace_back(checkpoints.size() - 1, checkpoints[checkpoints.size() - 1], checkpoints[0]);
@@ -22,10 +22,10 @@ void CheckPointTracker::CompleteSegment() {
 		StartTracking();
 	}
 	else {
-		segments[currentSegmentID].timings.emplace_back(segmentClock.restart().asMilliseconds());
+		segments[currentSegmentID].timings.push_back((float)segmentClock.restart().asMilliseconds());
 		if (currentSegmentID < segments.size() - 1)++currentSegmentID;
 		else {
-			lapTimes.emplace_back(lapClock.restart().asMilliseconds());
+			lapTimes.push_back((float)lapClock.restart().asMilliseconds());
 			currentSegmentID = 0;
 		}
 	}

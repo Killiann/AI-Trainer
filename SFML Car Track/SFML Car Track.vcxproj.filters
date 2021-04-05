@@ -34,14 +34,8 @@
     <Filter Include="Source Files\Neural Net">
       <UniqueIdentifier>{1a31e808-f82c-4a95-9124-81ee3b45c6b6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Neural Net\Genetic Algorithm">
-      <UniqueIdentifier>{b0be94d0-cf26-4ad3-82cf-817d6f7d2f43}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Neural Net">
       <UniqueIdentifier>{2ea38342-661d-4ab9-9ea4-b88733d3bd07}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Neural Net\Genetic Algorithm">
-      <UniqueIdentifier>{2daed08f-1303-4c24-aabc-49d322751746}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\ThreadPool">
       <UniqueIdentifier>{207189cc-5f8f-4420-b68c-8c7a1582f60f}</UniqueIdentifier>
@@ -85,7 +79,10 @@
       <Filter>Source Files\Neural Net</Filter>
     </ClCompile>
     <ClCompile Include="Trainer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Neural Net</Filter>
+    </ClCompile>
+    <ClCompile Include="TrackManager.cpp">
+      <Filter>Source Files\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,14 +119,17 @@
     <ClInclude Include="Network.h">
       <Filter>Header Files\Neural Net</Filter>
     </ClInclude>
-    <ClInclude Include="Trainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SafeQueue.h">
       <Filter>Header Files\ThreadPool</Filter>
     </ClInclude>
     <ClInclude Include="ThreadPool.h">
       <Filter>Header Files\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="Trainer.h">
+      <Filter>Header Files\Neural Net</Filter>
+    </ClInclude>
+    <ClInclude Include="TrackManager.h">
+      <Filter>Header Files\Managers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

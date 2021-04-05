@@ -1,53 +1,92 @@
 #include "Network.h"
 
 Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d) : dimensions(d) {
-	if (hiddenLayers.size() > 0) {
-		//setup nodes
-		nodes_i = lin::Matrix(inputLayer, 1);
-		nodes_o = lin::Matrix(outputLayer, 1);
-		for (int i = 0; i < hiddenLayers.size(); ++i) {
-			nodes_hl.emplace_back(hiddenLayers[i], 1);
-		}
+	assert(hiddenLayers.size() > 0); //will not work with 0 hidden layers
 
-		//setup weights
-		weights_ih = lin::Matrix(hiddenLayers[0], inputLayer);
-		weights_ho = lin::Matrix(outputLayer, hiddenLayers[hiddenLayers.size() - 1]);
-		weights_ih.Randomise(-5, 5);
-		weights_ho.Randomise(-5, 5);
-		if (hiddenLayers.size() > 1) {
-			for (int i = 0; i < hiddenLayers.size() - 1; ++i) {
-				//create hidden layer weights
-				weights_hl.emplace_back(hiddenLayers[i + 1], hiddenLayers[i]);
-				weights_hl[i].Randomise(-5, 5);
-			}
-		}
-		//create hidden layer biases 
-		for (int i = 0; i < hiddenLayers.size(); ++i) {
-			biases_hl.emplace_back(hiddenLayers[i], 1);
-			biases_hl[i].Randomise(-1, 1);
-		}
-		biases_o = lin::Matrix(outputLayer, 1);
-		biases_o.Randomise(-1, 1);	
-
-		//SFML
-		SetupRendering();
+	//setup nodes
+	nodes_i = lin::Matrix(inputLayer, 1);
+	nodes_o = lin::Matrix(outputLayer, 1);
+	for (unsigned int i = 0; i < hiddenLayers.size(); ++i) {
+		nodes_hl.emplace_back(hiddenLayers[i], 1);
 	}
-	else std::cout << "Need more than 0 hidden layers in network.";
+
+	//setup weights
+	weights_ih = lin::Matrix(hiddenLayers[0], inputLayer);
+	weights_ho = lin::Matrix(outputLayer, hiddenLayers[hiddenLayers.size() - 1]);
+	weights_ih.Randomise(-5, 5);
+	weights_ho.Randomise(-5, 5);
+	if (hiddenLayers.size() > 1) {
+		for (unsigned int i = 0; i < hiddenLayers.size() - 1; ++i) {
+			//create hidden layer weights
+			weights_hl.emplace_back(hiddenLayers[i + 1], hiddenLayers[i]);
+			weights_hl[i].Randomise(-5, 5);
+		}
+	}
+
+	//setup biases
+	for (unsigned int i = 0; i < hiddenLayers.size(); ++i) {
+		biases_hl.emplace_back(hiddenLayers[i], 1);
+		biases_hl[i].Randomise(-1, 1);
+	}
+	biases_o = lin::Matrix(outputLayer, 1);
+	biases_o.Randomise(-1, 1);
+
+	//SFML
+	SetupRendering();
+}
+
+void Network::SetWeights(std::vector<lin::Matrix> newWeights) {
+	if (newWeights.size() == weights_hl.size() + 2) {
+		weights_ih = newWeights[0];
+		weights_ho = newWeights[1];
+		for (unsigned int i = 2; i < newWeights.size(); ++i) 
+			weights_hl[i - 2] = newWeights[i];
+	}
+	else std::cout << "Incorrect number of new weights for network.\n";
+}
+
+void Network::SetBiases(std::vector<lin::Matrix> newBiases) {
+	if (newBiases.size() == biases_hl.size() + 1) {
+		biases_o = newBiases[0];
+		for (unsigned int i = 1; i < newBiases.size(); ++i) {
+			biases_hl[i - 1] = newBiases[i];
+		}
+	}
+	else std::cout << "Incorrect number of new biases for network.\n";
+}
+
+std::vector<lin::Matrix> Network::GetWeights() {
+	std::vector<lin::Matrix> ret;
+	ret.push_back(weights_ih);
+	ret.push_back(weights_ho);
+	for (unsigned int i = 0; i < weights_hl.size(); ++i)
+		ret.push_back(weights_hl[i]);
+
+	return ret;
+}
+
+std::vector<lin::Matrix> Network::GetBiases() {
+	std::vector<lin::Matrix> ret;
+	ret.push_back(biases_o);
+	for (unsigned int i = 0; i < biases_hl.size(); ++i)
+		ret.push_back(biases_hl[i]);
+
+	return ret;
 }
 
 std::vector<float> Network::FeedForward(std::vector<float> inputs) {
-	//convert inputs to matrix to use to multiply
+	//convert inputs to matrix to use in multiplication
 	if (inputs.size() == nodes_i.GetRows()) {
 		lin::Matrix inputMatrix = lin::ToMatrix(inputs);
 		nodes_i = inputMatrix;
 
 		//activate first layer of hidden layer
 		nodes_hl[0] = lin::MultiplyMatrices(weights_ih, inputMatrix);
- 		nodes_hl[0].Add(biases_hl[0]);
+		nodes_hl[0].Add(biases_hl[0]);
 		nodes_hl[0].Map(lin::leakyRelu);
 
 		//activate rest of hidden layer nodes
-		for (int i = 1; i < nodes_hl.size(); ++i) {
+		for (unsigned int i = 1; i < nodes_hl.size(); ++i) {
 			nodes_hl[i] = lin::MultiplyMatrices(weights_hl[i - 1], nodes_hl[i - 1]);
 			nodes_hl[i].Add(biases_hl[i]);
 			nodes_hl[i].Map(lin::leakyRelu);
@@ -58,13 +97,6 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 		nodes_o.Add(biases_o);
 		nodes_o.Map(lin::binary);
 
-		////temp
-		//for (int i = 0; i < nodes_o.GetRows(); ++i) {
-		//	if (nodes_o[i][0] > 0.5)
-		//		nodes_o[i][0] = 1;
-		//	else nodes_o[i][0] = 0;
-		//}
-
 		//SFML
 		UpdateRender();
 	}
@@ -72,48 +104,28 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 	return nodes_o.ToVector();
 }
 
-void Network::SetWeights(std::vector<lin::Matrix> newWeights) {
-	if (newWeights.size() == weights_hl.size() + 2) {
-		weights_ih = newWeights[0];
-		weights_ho = newWeights[1];
-		for (int i = 2; i < newWeights.size(); ++i) 
-			weights_hl[i - 2] = newWeights[i];
-	}
-	else std::cout << "Incorrect number of new weights for network.\n";
-}
-
-void Network::SetBiases(std::vector<lin::Matrix> newBiases) {
-	if (newBiases.size() == biases_hl.size() + 1) {
-		biases_o = newBiases[0];
-		for (int i = 1; i < newBiases.size(); ++i) {
-			biases_hl[i - 1] = newBiases[i];
-		}
-	}
-	else std::cout << "Incorrect number of new biases for network.\n";
-}
-
-//RENDERING BELOW HERE============================
+//RENDERING ============================
 
 void Network::Draw(sf::RenderTarget& window) {
 
-	for (auto l : connectionLines)
+	for (auto &l : connectionLines)
 		window.draw(l);
 
-	for (auto c : inputNodes)
+	for (auto &c : inputNodes)
 		window.draw(c);
 
-	for (int i = 0; i < hiddenNodes.size(); ++i) {
-		for (auto n : hiddenNodes[i])
+	for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
+		for (auto &n : hiddenNodes[i])
 			window.draw(n);
 	}
 
-	for (auto o : outputNodes)
+	for (auto &o : outputNodes)
 		window.draw(o);
 }
 
 void Network::SetupRendering() {
 	sf::CircleShape circle;
-	int radius = 13;
+	float radius = 13;
 	circle.setRadius(radius);
 	circle.setOrigin(radius, radius);
 	circle.setFillColor(sf::Color::White);
@@ -125,12 +137,12 @@ void Network::SetupRendering() {
 
 	//hidden nodes
 	int nodeCount = 0;
-	for (int j = 0; j < nodes_hl.size(); ++j) {
+	for (unsigned int j = 0; j < nodes_hl.size(); ++j) {
 		nodeCount += nodes_hl[j].GetRows();
 		hiddenNodes.push_back(std::vector<sf::CircleShape>());
 		
 		padding = (dimensions.height - ((yInterval * nodes_hl[j].GetRows()) - yInterval)) / 2;
-		for (int i = 0; i < nodes_hl[j].GetRows(); ++i) {
+		for (unsigned int i = 0; i < nodes_hl[j].GetRows(); ++i) {
 			circle.setPosition(sf::Vector2f(dimensions.left + xInterval * (j + 2), dimensions.top + padding + (i * yInterval)));
 			hiddenNodes[j].push_back(circle);
 		}
@@ -138,9 +150,9 @@ void Network::SetupRendering() {
 
 	//hidden node weights
 	if (hiddenNodes.size() > 1) {
-		for (int j = 0; j < hiddenNodes.size() - 1; ++j) { //loop through layers
-			for (int i = 0; i < hiddenNodes[j].size(); ++i) { //loop through nodes in layer
-				for (int r = 0; r < hiddenNodes[j + 1].size(); ++r) { //loop through nodes in next layer
+		for (unsigned int j = 0; j < hiddenNodes.size() - 1; ++j) { //loop through layers
+			for (unsigned int i = 0; i < hiddenNodes[j].size(); ++i) { //loop through nodes in layer
+				for (unsigned int r = 0; r < hiddenNodes[j + 1].size(); ++r) { //loop through nodes in next layer
 					sf::VertexArray connection = CreateLine(hiddenNodes[j][i].getPosition(), hiddenNodes[j + 1][r].getPosition(), weights_hl[j][r][i]);
 					connectionLines.push_back(connection);
 				}
@@ -150,12 +162,12 @@ void Network::SetupRendering() {
 	
 	//output nodes
 	padding = (dimensions.height - ((yInterval * nodes_o.GetRows()) - yInterval)) / 2;
-	for (int i = 0; i < nodes_o.GetRows(); ++i) {
+	for (unsigned int i = 0; i < nodes_o.GetRows(); ++i) {
 		circle.setPosition(sf::Vector2f(dimensions.left + xInterval * (2 + nodes_hl.size()), dimensions.top + padding + (i * yInterval)));
 		outputNodes.push_back(circle);
 
 		//weights
-		for (int j = 0; j < hiddenNodes[hiddenNodes.size() - 1].size(); ++j) {
+		for (unsigned int j = 0; j < hiddenNodes[hiddenNodes.size() - 1].size(); ++j) {
 			sf::VertexArray connection = CreateLine(hiddenNodes[hiddenNodes.size() - 1][j].getPosition(), circle.getPosition(), weights_ho[i][j]);
 			connectionLines.push_back(connection);
 		}
@@ -163,12 +175,12 @@ void Network::SetupRendering() {
 
 	//input nodes
 	padding = (dimensions.height - ((yInterval * nodes_i.GetRows()) - yInterval)) / 2;
-	for (int i = 0; i < nodes_i.GetRows(); ++i) {
+	for (unsigned int i = 0; i < nodes_i.GetRows(); ++i) {
 		circle.setPosition(sf::Vector2f(dimensions.left + xInterval, dimensions.top + padding + (i * yInterval)));
 		inputNodes.push_back(circle);
 		
 		//weights
-		for (int r = 0; r < weights_ih.GetRows(); ++r) {
+		for (unsigned int r = 0; r < weights_ih.GetRows(); ++r) {
 			sf::VertexArray connection = CreateLine(circle.getPosition(), hiddenNodes[0][r].getPosition(), weights_ih[r][i]);
 			connectionLines.push_back(connection);
 		}
@@ -178,22 +190,22 @@ void Network::SetupRendering() {
 //update colour of nodes
 void Network::UpdateRender() {
 	//input nodes
-	for (int i = 0; i < inputNodes.size(); ++i) {
-		int cv = std::min(nodes_i[i][0] * 255, 255.f);
+	for (unsigned int i = 0; i < inputNodes.size(); ++i) {
+		unsigned int cv = std::min((int)(nodes_i[i][0] * 255.f), 255);
 		inputNodes[i].setFillColor(sf::Color(cv, cv, cv));
 	}
 
 	//hidden layers 
-	for (int i = 0; i < hiddenNodes.size(); ++i) {
-		for (int j = 0; j < hiddenNodes[i].size(); ++j) {
-			int cv = std::min(nodes_hl[i][j][0] * 255, 255.f);
+	for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
+		for (unsigned int j = 0; j < hiddenNodes[i].size(); ++j) {
+			int cv = std::min((int)(nodes_hl[i][j][0] * 255.f), 255);
 			hiddenNodes[i][j].setFillColor(sf::Color(cv, cv, cv));
 		}
 	}
 
 	//output layer
-	for (int i = 0; i < outputNodes.size(); ++i) {
-		int cv = std::min(nodes_o[i][0] * 255, 255.f);
+	for (unsigned int i = 0; i < outputNodes.size(); ++i) {
+		unsigned int cv = std::min((int)(nodes_o[i][0] * 255), 255);
 		outputNodes[i].setFillColor(sf::Color(cv, cv, cv));
 	}
 }
@@ -211,13 +223,13 @@ sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weig
 	returnShape[2].position = p2 - weight * normal;
 	returnShape[3].position = p2 + weight * normal;
 
-	for (int i = 0; i < returnShape.getVertexCount(); ++i)
+	for (unsigned int i = 0; i < returnShape.getVertexCount(); ++i)
 		returnShape[i].color = lineColor;
 
 	return returnShape;
 }
 
-//SAVING / LOADING 
+//SAVING / LOADING ============================
 
 void Network::SaveToFile(std::string fileName, float fitness) {
 	//save
@@ -226,16 +238,16 @@ void Network::SaveToFile(std::string fileName, float fitness) {
 	
 	file << fitness << std::endl;
 	//network details
-	file << nodes_i.GetRows() << " " << nodes_o.GetRows() << " ";
-	for (int i = 0; i < nodes_hl.size(); ++i) {
-		file << nodes_hl[i].GetRows() << " ";
+	file << nodes_i.GetRows() << " " << nodes_o.GetRows();
+	for (unsigned int i = 0; i < nodes_hl.size(); ++i) {
+		file << " " << nodes_hl[i].GetRows();
 	}
 	file << std::endl;
 
 	//input weights
 	file << weights_ih.GetRows() << " " << weights_ih.GetCols() << std::endl;
-	for (int r = 0; r < weights_ih.GetRows(); ++r) {
-		for (int c = 0; c < weights_ih.GetCols(); ++c) {
+	for (unsigned int r = 0; r < weights_ih.GetRows(); ++r) {
+		for (unsigned int c = 0; c < weights_ih.GetCols(); ++c) {
 			file << weights_ih[r][c] << " ";
 		}
 		file << std::endl;
@@ -243,18 +255,18 @@ void Network::SaveToFile(std::string fileName, float fitness) {
 
 	//ouput weights
 	file << weights_ho.GetRows() << " " << weights_ho.GetCols() << std::endl;
-	for (int r = 0; r < weights_ho.GetRows(); ++r) {
-		for (int c = 0; c < weights_ho.GetCols(); ++c) {
+	for (unsigned int r = 0; r < weights_ho.GetRows(); ++r) {
+		for (unsigned int c = 0; c < weights_ho.GetCols(); ++c) {
 			file << weights_ho[r][c] << " ";
 		}
 		file << std::endl;
 	}
 
 	//hidden weights
-	for (int i = 0; i < weights_hl.size(); ++i) {
+	for (unsigned int i = 0; i < weights_hl.size(); ++i) {
 		file << weights_hl[i].GetRows() << " " << weights_hl[i].GetCols() << std::endl;
-		for (int r = 0; r < weights_hl[i].GetRows(); ++r) {
-			for (int c = 0; c < weights_hl[i].GetCols(); ++c) {
+		for (unsigned int r = 0; r < weights_hl[i].GetRows(); ++r) {
+			for (unsigned int c = 0; c < weights_hl[i].GetCols(); ++c) {
 				file << weights_hl[i][r][c] << " ";
 			}
 			file << std::endl;
@@ -263,18 +275,18 @@ void Network::SaveToFile(std::string fileName, float fitness) {
 
 	//ouput biases
 	file << biases_o.GetRows() << " " << biases_o.GetCols() << std::endl;
-	for (int r = 0; r < biases_o.GetRows(); ++r) {
-		for (int c = 0; c < biases_o.GetCols(); ++c) {
+	for (unsigned int r = 0; r < biases_o.GetRows(); ++r) {
+		for (unsigned int c = 0; c < biases_o.GetCols(); ++c) {
 			file << biases_o[r][c] << " ";
 		}
 		file << std::endl;
 	}
 
 	//hidden biases
-	for (int i = 0; i < biases_hl.size(); ++i) {
+	for (unsigned int i = 0; i < biases_hl.size(); ++i) {
 		file << biases_hl[i].GetRows() << " " << biases_hl[i].GetCols() << std::endl;
-		for (int r = 0; r < biases_hl[i].GetRows(); ++r) {
-			for (int c = 0; c < biases_hl[i].GetCols(); ++c) {
+		for (unsigned int r = 0; r < biases_hl[i].GetRows(); ++r) {
+			for (unsigned int c = 0; c < biases_hl[i].GetCols(); ++c) {
 				file << biases_hl[i][r][c] << " ";
 			}
 			file << std::endl;
@@ -302,11 +314,11 @@ void LoadMatrix(std::ifstream& file, lin::Matrix& m) {
 	std::getline(file, line);
 	std::vector<std::string> splitLine = splitString(line, " ");
 	m = lin::Matrix(std::stoi(splitLine[0]), std::stoi(splitLine[1]));
-	for (int r = 0; r < m.GetRows(); ++r) {
+	for (unsigned int r = 0; r < m.GetRows(); ++r) {
 		splitLine.clear();
 		std::getline(file, line);
 		splitLine = splitString(line, " ");
-		for (int c = 0; c < m.GetCols(); ++c) {
+		for (unsigned int c = 0; c < m.GetCols(); ++c) {
 			m[r][c] = std::stof(splitLine[c]);
 		}
 	}
@@ -328,7 +340,7 @@ float Network::LoadFromFile(std::string fileName) {
 	std::vector <std::string> splitLine = splitString(line, " ");
 	nodes_i = lin::Matrix(std::stoi(splitLine[0]), 0);    //input
 	nodes_o = lin::Matrix(std::stoi(splitLine[1]), 0);	  //output
-	for (int i = 2; i < splitLine.size(); ++i) {
+	for (unsigned int i = 2; i < splitLine.size(); ++i) {
 		nodes_hl.emplace_back(std::stoi(splitLine[i]), 1);//hidden
 	}
 	splitLine.clear();
@@ -337,7 +349,7 @@ float Network::LoadFromFile(std::string fileName) {
 	LoadMatrix(file, weights_ih);
 	LoadMatrix(file, weights_ho);
 	if (nodes_hl.size() > 1) {
-		for (int i = 0; i < nodes_hl.size() - 1; ++i) {
+		for (unsigned int i = 0; i < nodes_hl.size() - 1; ++i) {
 			lin::Matrix hiddenWeight;
 			LoadMatrix(file, hiddenWeight);
 			weights_hl.push_back(hiddenWeight);
@@ -346,7 +358,7 @@ float Network::LoadFromFile(std::string fileName) {
 
 	//load biases
 	LoadMatrix(file, biases_o);
-	for (int i = 0; i < nodes_hl.size(); ++i) {
+	for (unsigned int i = 0; i < nodes_hl.size(); ++i) {
 		lin::Matrix hiddenBias;
 		LoadMatrix(file, hiddenBias);
 		biases_hl.push_back(hiddenBias);
