@@ -14,6 +14,7 @@
 #include "ThreadPool.h"
 
 #include "Button.h"
+#include "Label.h"
 
 //game clock
 sf::Clock clk;
@@ -60,6 +61,7 @@ int main()
 
     //testing
     Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetConsoleFont());
+    Label lbl1(sf::Vector2f(100, 150), "Test Label", resourceManager.GetConsoleFont());
 
     //main loop
     while (window.isOpen())
@@ -111,6 +113,7 @@ int main()
         trainer.DrawUI(window);
 
         btn1.Draw(window);
+        lbl1.Draw(window);
 
         window.display();
     }
