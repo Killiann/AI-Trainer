@@ -5,7 +5,7 @@ Trainer::Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, Track& t, sf::F
 	
 	//get number of cores in the system and alter generatiion size accordingly
 	threadCount = std::thread::hardware_concurrency();
-	generationSize = threadCount * carsPerThread;
+	generationSize = (threadCount + 1) * carsPerThread;
 	bestFitness = 0;
 
 	//setup trainer
@@ -49,11 +49,12 @@ void Trainer::Update(float dt, ThreadPool &pool) {
 	
 	//split generation update mmethods (Car physics + network FeedForward) across threads using threadpool
 	std::vector<std::future<void>> results(threadCount);
-	int interval = generationSize / threadCount;
+	int interval = generationSize / (threadCount + 1);
 	for (int i = 0; i < threadCount; ++i) {
 		auto func = std::bind(&Trainer::UpdateRange, this, dt, interval * i, interval * (i + 1));
 		results[i] = pool.submit(func);
 	}
+	UpdateRange(dt, threadCount * interval, (threadCount + 1) * interval);
 	for (int i = 0; i < threadCount; ++i) {
 		results[i].get();
 	}
