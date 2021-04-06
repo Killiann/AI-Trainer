@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="CheckPointManager.cpp" />
     <ClCompile Include="CheckPointTracker.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="TrackPiece.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Car.h" />
     <ClInclude Include="CheckPointManager.h" />
     <ClInclude Include="CheckPointTracker.h" />

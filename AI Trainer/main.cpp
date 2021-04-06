@@ -13,6 +13,8 @@
 
 #include "ThreadPool.h"
 
+#include "Button.h"
+
 //game clock
 sf::Clock clk;
 sf::Time dt;
@@ -55,6 +57,9 @@ int main()
     //initialise thread pool
     ThreadPool pool(12);
     pool.init();
+
+    //testing
+    Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetConsoleFont());
 
     //main loop
     while (window.isOpen())
@@ -104,6 +109,8 @@ int main()
         consoleManager.Draw(window);
         minimap.Draw(window);
         trainer.DrawUI(window);
+
+        btn1.Draw(window);
 
         window.display();
     }
