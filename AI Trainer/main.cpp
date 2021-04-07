@@ -15,6 +15,7 @@
 
 #include "Button.h"
 #include "Label.h"
+#include "Dropdown.h"
 
 //game clock
 sf::Clock clk;
@@ -32,12 +33,12 @@ int main()
     //window setup
     sf::ContextSettings settings;    
     settings.antialiasingLevel = 8;    
-    sf::RenderWindow window(sf::VideoMode(1500, 1000), "Racer AI Trainer", sf::Style::Default, settings);                
+    sf::RenderWindow window(sf::VideoMode(1500, 900), "Racer AI Trainer", sf::Style::Default, settings);                
     sf::View camera;
     window.setFramerateLimit(90);
 
     //main view
-    camera.setSize(3000, 2000);
+    camera.setSize(3000, 1800);
     camera.setCenter(1200, 700);
    
     //neural net positioning on UI
@@ -63,8 +64,12 @@ int main()
     pool.init();
 
     //testing
-    Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetConsoleFont(), test);
-    Label lbl1(sf::Vector2f(100, 150), "Test Label", resourceManager.GetConsoleFont());
+    Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetRobotoRegular(), test);
+    Label lbl1(sf::Vector2f(100, 150), "Test Label", resourceManager.GetRobotoRegular());
+    Dropdown dd1(sf::Vector2f(100, 200), "Test Dropdown", resourceManager.GetRobotoRegular(), resourceManager.GetArrowTexture());
+    dd1.AddItem("test item 1");
+    dd1.AddItem("test item 2");
+    dd1.AddItem("test item 3123123");
 
     //main loop
     while (window.isOpen())
@@ -93,10 +98,11 @@ int main()
                 // update the view to the new size of the window
                 sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
                 window.setView(sf::View(visibleArea));
-            }                     
-            //get proper mouse position
+            }                                 
 
+            //temp
             btn1.Update(window, event);
+            dd1.Update(window, event);
             inputManager.UpdateUIControls(event, mouseCoords);
         }
 
@@ -119,8 +125,10 @@ int main()
         minimap.Draw(window);
         trainer.DrawUI(window);
 
+        //temp
         btn1.Draw(window);
         lbl1.Draw(window);
+        dd1.Draw(window);
 
         window.display();
     }

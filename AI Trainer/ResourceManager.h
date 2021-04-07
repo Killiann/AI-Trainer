@@ -9,10 +9,13 @@ class ResourceManager
 	sf::Texture driftTexture;
 	sf::Texture trackTexture;
 	sf::Texture checkpointTexture;
+	sf::Texture ddArrowTexture;
 
 	//fonts
 	sf::Font consoleFont;
 	sf::Font pixelFont;
+	sf::Font robotoLight;
+	sf::Font robotoRegular;
 
 public:
 	ResourceManager();
@@ -21,8 +24,11 @@ public:
 	sf::Texture* GetDriftTexture() { return &driftTexture; }
 	sf::Texture* GetTrackTexture() { return &trackTexture; }
 	sf::Texture* GetCheckpointTexture() { return &checkpointTexture; }
+	sf::Texture* GetArrowTexture() { return &ddArrowTexture; }
 
 	sf::Font* GetConsoleFont() { return &consoleFont; }
 	sf::Font* GetPixelFont() { return &pixelFont; }
+	sf::Font* GetRobotoLight() { return &robotoLight; }
+	sf::Font* GetRobotoRegular() { return &robotoRegular; }
 };
 

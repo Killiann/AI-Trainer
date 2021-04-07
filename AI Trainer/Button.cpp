@@ -5,7 +5,7 @@ Button::Button(sf::Vector2f btnPosition, std::string btnText, sf::Font* btnFont,
 	background.setPosition(btnPosition);
 	background.setSize(sf::Vector2f((float)width, (float)height));
 	background.setFillColor(color);
-	background.setOutlineThickness(1.5f);
+	background.setOutlineThickness(1.f);
 	background.setOutlineColor(accent);
 
 	text.setFont(*font);
