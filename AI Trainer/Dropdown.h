@@ -105,6 +105,7 @@ class Dropdown
 	}
 
 public:
+	Dropdown(){}
 	Dropdown(sf::Vector2f ddPosition, std::string ddTitle, sf::Font* ddFont, sf::Texture* ddArrow);
 	
 	void AddItem(std::string itemName);

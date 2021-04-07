@@ -43,6 +43,7 @@ class Textbox
 	}
 
 public:
+	Textbox(){}
 	Textbox(sf::Vector2f position, sf::Font* font, bool numeric = false);
 
 	void Update(sf::RenderWindow& window, sf::Event& event);

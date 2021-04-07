@@ -13,10 +13,7 @@
 
 #include "ThreadPool.h"
 
-#include "Button.h"
-#include "Label.h"
-#include "Dropdown.h"
-#include "Textbox.h"
+#include "MainMenu.h"
 
 //game clock
 sf::Clock clk;
@@ -24,10 +21,6 @@ sf::Time dt;
 
 std::deque<float> allFPS;
 sf::Vector2f mouseCoords;
-
-void test() {
-    std::cout << "wow It worked";
-}
 
 int main()
 {
@@ -49,7 +42,7 @@ int main()
     );
 
     //managers 
-    ResourceManager resourceManager = ResourceManager();
+    ResourceManager resourceManager;
     ConsoleManager consoleManager(resourceManager.GetConsoleFont());
     TrackManager trackManager(&resourceManager, &consoleManager);
    
@@ -60,18 +53,11 @@ int main()
     //Minimap setup
     Minimap minimap = Minimap(&trainer.GetCars(), &trackManager.GetCurrentTrack(), &consoleManager);    
 
+    MainMenu menu(&resourceManager);
+
     //initialise thread pool
     ThreadPool pool(12);
     pool.init();
-
-    //testing
-    Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetRobotoRegular(), test);
-    Label lbl1(sf::Vector2f(100, 150), "Test Label", resourceManager.GetRobotoRegular());
-    Dropdown dd1(sf::Vector2f(100, 200), "Test Dropdown", resourceManager.GetRobotoRegular(), resourceManager.GetArrowTexture());
-    dd1.AddItem("test item 1");
-    dd1.AddItem("test item 2");
-    dd1.AddItem("test item 3123123");
-    Textbox txt1(sf::Vector2f(100, 250), resourceManager.GetRobotoRegular());
 
     //main loop
     while (window.isOpen())
@@ -101,11 +87,8 @@ int main()
                 sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
                 window.setView(sf::View(visibleArea));
             }                                 
-
-            //temp
-            btn1.Update(window, event);
-            dd1.Update(window, event);
-            txt1.Update(window, event);
+                   
+            menu.Update(window, event);
             inputManager.UpdateUIControls(event, mouseCoords);
         }
 
@@ -129,10 +112,7 @@ int main()
         trainer.DrawUI(window);
 
         //temp
-        btn1.Draw(window);
-        lbl1.Draw(window);
-        dd1.Draw(window);
-        txt1.Draw(window);
+        menu.Draw(window);
 
         window.display();
     }

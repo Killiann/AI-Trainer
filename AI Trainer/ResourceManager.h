@@ -17,6 +17,11 @@ class ResourceManager
 	sf::Font robotoLight;
 	sf::Font robotoRegular;
 
+	//cursors
+	sf::Cursor handCursor;
+	sf::Cursor textCursor;
+	sf::Cursor arrowCursor;
+
 public:
 	ResourceManager();
 	
@@ -30,5 +35,9 @@ public:
 	sf::Font* GetPixelFont() { return &pixelFont; }
 	sf::Font* GetRobotoLight() { return &robotoLight; }
 	sf::Font* GetRobotoRegular() { return &robotoRegular; }
+
+	sf::Cursor* GetHandCursor() { return &handCursor; }
+	sf::Cursor* GetTextCursor() { return &textCursor; }
+	sf::Cursor* GetArrowCursor() { return &arrowCursor; }
 };
 
