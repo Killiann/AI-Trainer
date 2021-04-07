@@ -21,8 +21,11 @@ sf::Clock clk;
 sf::Time dt;
 
 std::deque<float> allFPS;
-sf::Vector2i mousePos;
 sf::Vector2f mouseCoords;
+
+void test() {
+    std::cout << "wow It worked";
+}
 
 int main()
 {
@@ -60,7 +63,7 @@ int main()
     pool.init();
 
     //testing
-    Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetConsoleFont());
+    Button btn1(sf::Vector2f(100, 100), "Test", resourceManager.GetConsoleFont(), test);
     Label lbl1(sf::Vector2f(100, 150), "Test Label", resourceManager.GetConsoleFont());
 
     //main loop
@@ -71,6 +74,10 @@ int main()
         allFPS.push_back(fps);
         if (allFPS.size() > 30) allFPS.pop_front();
         consoleManager.UpdateMessageValue("framerate", std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size())) + " fps");
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        //sf::Vector2i mousePos = sf::Vector2i(mouseP.x - window.getPosition().x, mouseP.y - window.getPosition().y);
+        mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);
 
         //time between loops
         dt = clk.restart();
@@ -88,15 +95,15 @@ int main()
                 window.setView(sf::View(visibleArea));
             }                     
             //get proper mouse position
-            mousePos = sf::Vector2i(mousePos.x - window.getPosition().x, mousePos.y - window.getPosition().y);
-            mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);
 
+            btn1.Update(window, event);
             inputManager.UpdateUIControls(event, mouseCoords);
         }
 
         //update 
         inputManager.Update();
         trainer.Update(dt.asSeconds(), pool);
+
 
         //draw entities
         window.clear(sf::Color(139, 69, 19));
