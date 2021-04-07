@@ -16,6 +16,7 @@
 #include "Button.h"
 #include "Label.h"
 #include "Dropdown.h"
+#include "Textbox.h"
 
 //game clock
 sf::Clock clk;
@@ -70,6 +71,7 @@ int main()
     dd1.AddItem("test item 1");
     dd1.AddItem("test item 2");
     dd1.AddItem("test item 3123123");
+    Textbox txt1(sf::Vector2f(100, 250), resourceManager.GetRobotoRegular());
 
     //main loop
     while (window.isOpen())
@@ -103,6 +105,7 @@ int main()
             //temp
             btn1.Update(window, event);
             dd1.Update(window, event);
+            txt1.Update(window, event);
             inputManager.UpdateUIControls(event, mouseCoords);
         }
 
@@ -129,6 +132,7 @@ int main()
         btn1.Draw(window);
         lbl1.Draw(window);
         dd1.Draw(window);
+        txt1.Draw(window);
 
         window.display();
     }

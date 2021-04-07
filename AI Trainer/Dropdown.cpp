@@ -44,6 +44,22 @@ void Dropdown::Update(sf::RenderWindow& window, sf::Event& event) {
 			window.setMouseCursor(handCursor);
 			Hovering(true);
 		}
+		else if (isOpen) {
+			if (event.type == sf::Event::MouseButtonPressed) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+					bool isContained = false;
+					for (auto& i : items)
+						if (i.background.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window)))
+							isContained = true;
+
+					if (!isContained) {
+						//toggle dropdowwn
+						isOpen = isOpen ? false : true;
+						arrow.rotate(180);
+					}
+				}
+			}
+		}
 	}
 	else {
 		if (!isClicking && event.type == sf::Event::MouseButtonPressed) {
@@ -69,7 +85,7 @@ void Dropdown::Update(sf::RenderWindow& window, sf::Event& event) {
 		}
 	}
 
-	//items
+	//items	
 	if (isOpen) {
 		for (unsigned int i = 0; i < items.size(); ++i) {
 			sf::FloatRect itemBounds = items[i].background.getGlobalBounds();
