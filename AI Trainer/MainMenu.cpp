@@ -34,6 +34,11 @@ MainMenu::MainMenu(ResourceManager *resource): resourceManager(resource) {
 	navigation.push_back(newSim);
 	navigation.push_back(loadSim);
 	navigation.push_back(exitSim);
+
+	dd = Dropdown(sf::Vector2f(position.x + padding, position.y + padding + 250), sf::Vector2f(150, 40), resourceManager, "Test");
+	dd.AddItem("Item 1");
+	dd.AddItem("Item 2");
+	dd.AddItem("Item 3");
 }
 
 void MainMenu::Update(sf::RenderWindow& window, sf::Event& event) {
@@ -50,13 +55,14 @@ void MainMenu::Update(sf::RenderWindow& window, sf::Event& event) {
 			}
 		}
 	}
-
+	dd.Update(window, event);
 }
 
-void MainMenu::Draw(sf::RenderTarget& window) {
+void MainMenu::Draw(sf::RenderTarget& window){
 	window.draw(background);
 	window.draw(title);
 	window.draw(prompt);
 	for (auto& n : navigation)
 		n.Draw(window);
+	dd.Draw(window);
 }

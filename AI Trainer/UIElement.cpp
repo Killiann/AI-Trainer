@@ -27,8 +27,10 @@ void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
 	//on mouse enter bounds
 	if (!isHovering) {
 		if (bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
-			window.setMouseCursor(*handCursor);
-			Hovering(true);
+			if (hoverable) {
+				window.setMouseCursor(*handCursor);
+				Hovering(true);
+			}
 		}
 	}
 	else {
@@ -49,7 +51,7 @@ void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
 		if (!bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
 			window.setMouseCursor(*arrowCursor);
 			if (isClicking) Clicking(false);
-			Hovering(false);
+			if (isHovering) Hovering(false);
 		}
 	}
 }

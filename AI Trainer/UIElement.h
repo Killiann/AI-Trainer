@@ -27,6 +27,7 @@ protected:
 
 	bool isHovering = false;
 	bool isClicking = false;
+	bool hoverable = true;
 
 	//cursors
 	sf::Cursor* handCursor = nullptr;
@@ -54,7 +55,7 @@ public:
 	inline void SetClickColor(sf::Color c) { clickColor = c; }
 	inline void SetOutlineThickness(float t) { 
 		outlineThickness = t; 
-		background.setOutlineThickness(0.f);
+		background.setOutlineThickness(t);
 	}
 	inline void SetColor(sf::Color c) {
 		color = c;

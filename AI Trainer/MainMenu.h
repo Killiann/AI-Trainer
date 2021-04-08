@@ -20,6 +20,7 @@ class MainMenu
 	sf::Text prompt;
 
 	std::vector<Button> navigation;
+	Dropdown dd;
 
 public:
 	MainMenu(ResourceManager* resource);
