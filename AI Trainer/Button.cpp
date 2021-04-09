@@ -1,10 +1,9 @@
 #include "Button.h"
 
-Button::Button():UIElement(){}
+Button::Button() : UIElement(){}
 
-Button::Button(sf::Vector2f btnPosition, sf::Vector2f btnSize, ResourceManager* resource, std::string btnText, void (f)()) :
-	UIElement(btnPosition, btnSize, resource) {
-	clickFunc = f;
+Button::Button(sf::Vector2f btnPosition, sf::Vector2f btnSize, ResourceManager* resource, std::string btnText, void (f)(void*) ,void* ctx)
+	: UIElement(btnPosition, btnSize, resource), context(ctx), func(f){	
 
 	//defaults
 	SetColor(sf::Color(40, 40, 40)); 
@@ -17,11 +16,13 @@ Button::Button(sf::Vector2f btnPosition, sf::Vector2f btnSize, ResourceManager* 
 }
 
 void Button::OnClick() {
-	clickFunc();
+	UIElement::OnClick();
+	func(context);
 }
 
 void Button::operator=(Button b) {
 	UIElement::operator=(b);
 
-	this->clickFunc = b.clickFunc;
+	this->func = b.func;
+	this->context = b.context;
 }

@@ -27,7 +27,7 @@ int main()
     //window setup
     sf::ContextSettings settings;    
     settings.antialiasingLevel = 8;    
-    sf::RenderWindow window(sf::VideoMode(1500, 900), "Racer AI Trainer", sf::Style::Default, settings);                
+    sf::RenderWindow window(sf::VideoMode(1500, 900), "Racer AI Trainer", sf::Style::Close, settings);                
     sf::View camera;
     window.setFramerateLimit(90);
 

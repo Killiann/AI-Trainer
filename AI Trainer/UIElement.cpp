@@ -23,42 +23,54 @@ UIElement::UIElement(sf::Vector2f pos, sf::Vector2f s, ResourceManager* resource
 }
 
 void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
-	sf::FloatRect bounds = background.getGlobalBounds();
-	//on mouse enter bounds
-	if (!isHovering) {
-		if (bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
-			if (hoverable) {
+	//if (onScreen) {
+		sf::FloatRect bounds = background.getGlobalBounds();
+		//on mouse enter bounds
+		if (!isHovering) {
+			if (bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
+				if (hoverable) {
+					window.setMouseCursor(*handCursor);
+					cursorId = 0; // hand
+					Hovering(true);
+				}
+			}
+		}
+		else {
+			//if not hand cursor while hovering (can happen when moving between elements)
+			if (cursorId != 0) {
+				cursorId = 0;
 				window.setMouseCursor(*handCursor);
-				Hovering(true);
+			}
+
+			//on mouse down
+			if (!isClicking && event.type == sf::Event::MouseButtonPressed)
+				if (event.mouseButton.button == sf::Mouse::Left)
+					Clicking(true);
+
+			//on mouse up
+			if (isClicking && event.type == sf::Event::MouseButtonReleased) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+					Clicking(false);
+ 					OnClick();
+				}
+			}
+
+			//on mouse exit bounds
+			if (!bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
+				window.setMouseCursor(*arrowCursor);
+				cursorId = 2; // arrow
+				if (isClicking) Clicking(false);
+				if (isHovering) Hovering(false);
 			}
 		}
-	}
-	else {
-		//on mouse down
-		if (!isClicking && event.type == sf::Event::MouseButtonPressed) 
-			if (event.mouseButton.button == sf::Mouse::Left) 
-				Clicking(true);					
-
-		//on mouse up
-		if (isClicking && event.type == sf::Event::MouseButtonReleased) {
-			if (event.mouseButton.button == sf::Mouse::Left) {
-				Clicking(false);
-				OnClick();
-			}
-		}
-
-		//on mouse exit bounds
-		if (!bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
-			window.setMouseCursor(*arrowCursor);
-			if (isClicking) Clicking(false);
-			if (isHovering) Hovering(false);
-		}
-	}
+	//}
+	//onScreen = false;
 }
 
 void UIElement::Draw(sf::RenderTarget& window) {
 	window.draw(background);
  	window.draw(text);
+	//onScreen = true;
 }
 
 void UIElement::operator=(UIElement b) {

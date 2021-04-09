@@ -29,11 +29,15 @@ protected:
 	bool isClicking = false;
 	bool hoverable = true;
 
+	bool onScreen = false;
+
 	//cursors
 	sf::Cursor* handCursor = nullptr;
 	sf::Cursor* textCursor = nullptr;
 	sf::Cursor* arrowCursor = nullptr;
 	
+	unsigned int cursorId = 0;
+
 	//helpers
 	inline virtual void Hovering(bool hovering) {
 		isHovering = hovering;
@@ -74,7 +78,7 @@ public:
 		text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
 	}	
 
-	inline bool IsHovering() { return isHovering; }
+	inline virtual bool IsHovering() { return isHovering; }
 
 	virtual sf::Vector2f GetSize() { return size; }
 	virtual sf::Vector2f GetPosition() { return position; }

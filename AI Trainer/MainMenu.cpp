@@ -1,16 +1,12 @@
 #include "MainMenu.h"
 
-void NewSim() {
-	std::cout << "New\n";
-}
+//navigation
+void ForwardNewSim(void* menu) { ((MainMenu*)menu)->NewSim(); }
+void ForwardLoadSim(void* menu) { ((MainMenu*)menu)->LoadSim(); }
+void ForwardExit(void* menu) { ((MainMenu*)menu)->ExitApp(); }
 
-void LoadSim() {
-	std::cout << "Load\n";
-}
-
-void ExitSim() {
-	std::cout << "Exit\n";
-}
+//new simulation
+void ForwardBack(void* menu) { ((MainMenu*)menu)->Back(); }
 
 MainMenu::MainMenu(ResourceManager *resource): resourceManager(resource) {
 	background.setPosition(position);
@@ -22,47 +18,85 @@ MainMenu::MainMenu(ResourceManager *resource): resourceManager(resource) {
 	title.setFont(*resource->GetRobotoLight());
 	title.setFillColor(sf::Color(60, 60, 60));		
 
-	Button newSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "New", NewSim);
-	Button loadSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 150), sf::Vector2f(150, 40), resourceManager, "Load", LoadSim);
-	Button exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 200), sf::Vector2f(150, 40), resourceManager, "Exit", ExitSim);
+	//navigatio
+	Button newSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "New", ForwardNewSim, this);
+	Button loadSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 150), sf::Vector2f(150, 40), resourceManager, "Load", ForwardLoadSim, this);
+	Button exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 200), sf::Vector2f(150, 40), resourceManager, "Exit", ForwardExit, this);
 	
 	prompt.setPosition(position.x + newSim.GetSize().x + (padding * 2), position.y + padding + 100);
 	prompt.setFont(*resourceManager->GetRobotoLight());
 	prompt.setScale(0.55, 0.55);
-	prompt.setFillColor(sf::Color(60, 60, 60));	
+	prompt.setFillColor(sf::Color(60, 60, 60));		
+	 
+	
+	navigationElements.emplace_back(std::make_shared<Button>(newSim));
+	navigationElements.emplace_back(std::make_shared<Button>(loadSim));
+	navigationElements.emplace_back(std::make_shared<Button>(exitSim));
 
-	navigation.push_back(newSim);
-	navigation.push_back(loadSim);
-	navigation.push_back(exitSim);
 
-	dd = Dropdown(sf::Vector2f(position.x + padding, position.y + padding + 250), sf::Vector2f(150, 40), resourceManager, "Test");
-	dd.AddItem("Item 1");
-	dd.AddItem("Item 2");
-	dd.AddItem("Item 3");
+	//new simulation 
+	Button back = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);
+	newSimulationElements.push_back(back);
+	loadSimulationElements.push_back(back);
+	//load simulation
 }
 
 void MainMenu::Update(sf::RenderWindow& window, sf::Event& event) {
-	for (unsigned int i = 0; i < navigation.size();++i) {
-		navigation[i].Update(window, event);
-		if (navigation[i].IsHovering()) {
+	switch (currentState) {
+	case(MenuState::Navigation): NavigationState(window, event); break;
+	case(MenuState::NewSimulation): NewSimulationState(window, event); break;
+	case(MenuState::LoadSimulation): LoadSimulationState(window, event); break;	
+	}
+}
+
+//menu states (pages)
+void MainMenu::NavigationState(sf::RenderWindow& window, sf::Event& event) {
+	//main menu on load
+	for (unsigned int i = 0; i < navigationElements.size(); ++i) {
+		navigationElements[i]->Update(window, event);
+		if (navigationElements[i]->IsHovering()) {
 			switch (i) {
-			//new sim
-			case(0): prompt.setString("Start training a new model with custom parameters.");break;
-			//load sim
+				//new sim	
+			case(0): prompt.setString("Start training a new model with custom parameters."); break;
+				//load sim
 			case(1): prompt.setString("Continue training a previously created model."); break;
-			//exit application
+				//exit application
 			case(2):prompt.setString("Exit application.");
 			}
 		}
 	}
-	dd.Update(window, event);
+	//close
+	if (exit)
+		window.close();
+}
+
+void MainMenu::NewSimulationState(sf::RenderWindow& window, sf::Event& event) {
+	for (auto& e : newSimulationElements)
+		e.Update(window, event);
+}
+
+void MainMenu::LoadSimulationState(sf::RenderWindow& window, sf::Event& event) {
+	for (auto& e : loadSimulationElements)
+		e.Update(window, event);
 }
 
 void MainMenu::Draw(sf::RenderTarget& window){
 	window.draw(background);
 	window.draw(title);
-	window.draw(prompt);
-	for (auto& n : navigation)
-		n.Draw(window);
-	dd.Draw(window);
+
+	switch (currentState) {
+	case(MenuState::Navigation):
+		window.draw(prompt);
+		for (auto& n : navigationElements)
+			n->Draw(window);
+		break;
+	case(MenuState::NewSimulation):
+		for (auto& n : newSimulationElements)
+			n.Draw(window);
+		break;
+	case(MenuState::LoadSimulation):
+		for (auto& n : loadSimulationElements)
+			n.Draw(window);
+		break;
+	}
 }

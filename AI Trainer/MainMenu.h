@@ -19,12 +19,35 @@ class MainMenu
 	sf::Text title;
 	sf::Text prompt;
 
-	std::vector<Button> navigation;
-	Dropdown dd;
+	std::vector<std::shared_ptr<UIElement>> navigationElements;
+	std::vector<Button> newSimulationElements;
+	std::vector<Button> loadSimulationElements;
+
+	bool exit = false;
+
+	enum class MenuState {
+		Navigation,
+		NewSimulation,
+		LoadSimulation
+	};
+
+	MenuState currentState = MenuState::Navigation;
+
+	void NavigationState(sf::RenderWindow& window, sf::Event& event);
+	void NewSimulationState(sf::RenderWindow& window, sf::Event& event);
+	void LoadSimulationState(sf::RenderWindow& window, sf::Event& event);
 
 public:
 	MainMenu(ResourceManager* resource);
 	void Update(sf::RenderWindow& window, sf::Event& event);
-	void Draw(sf::RenderTarget& window);
+	void Draw(sf::RenderTarget& window);	
+
+	//navigation
+	inline void NewSim() { currentState = MenuState::NewSimulation; }
+	inline void LoadSim() { currentState = MenuState::LoadSimulation; }
+	inline void ExitApp() { exit = true; }
+
+	//new simulation
+	inline void Back() { currentState = MenuState::Navigation; }
 };
 
