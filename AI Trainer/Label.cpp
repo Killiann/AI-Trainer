@@ -14,6 +14,3 @@ Label::Label(sf::Vector2f lblPosition, sf::Vector2f size, ResourceManager* resou
 
 }
 
-void Label::Draw(sf::RenderTarget& window) {
-	window.draw(text);
-}

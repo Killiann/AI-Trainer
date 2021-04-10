@@ -1,53 +1,33 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <iostream>
+#include "UIElement.h"
 
-class Textbox
+class Textbox : public UIElement 
 {
-	bool numeric;
+	bool numeric = false;
 	bool isFocused = false;
-	bool isHovering = false;
-	bool isClicking = false;
-
-	int width = 138, height = 25;
-
-	sf::RectangleShape background;
-	sf::Text text;
-	sf::Font* font = nullptr;
-
-	sf::Color textColor = sf::Color(40, 40, 40);
-	sf::Color hoverColor = sf::Color(230, 230, 230);
-	sf::Color color = sf::Color::White;
-
-	sf::Color unfocusedAccent = sf::Color(250, 95, 87);
-	sf::Color focusedAccent = sf::Color::Blue;
-
+		
 	std::string value;
 
-	sf::Cursor arrowCursor;
-	sf::Cursor textCursor;
-
+	//blinking cursor
 	float cTime = 500.f; //milliseconds
 	bool showCursor = false;
-	sf::Clock cursorTimer;
+	sf::Clock cursorTimer;	
 
-	inline void Hovering(bool hovering) {
-		isHovering = hovering;
-		//hovering ? background.se(hoverColor) : background.setFillColor(color);
-	}
+	void OnClick();
 
 	inline void Focused(bool focused) {
 		isFocused = focused;
 		if (isFocused)cursorTimer.restart();
-		isFocused ? background.setOutlineColor(focusedAccent) : background.setOutlineColor(unfocusedAccent);
+		isFocused ? SetOutlineThickness(2.f) : SetOutlineThickness(1.f);
 	}
 
 public:
 	Textbox(){}
-	Textbox(sf::Vector2f position, sf::Font* font, bool numeric = false);
+	Textbox(sf::Vector2f position, sf::Vector2f size, ResourceManager* resource, bool numeric);
 
-	void Update(sf::RenderWindow& window, sf::Event& event);
-	
+	void Update(sf::RenderWindow& window, sf::Event& event);	
 	void Draw(sf::RenderTarget& window);
+
+	void operator=(Textbox t);
 };
 

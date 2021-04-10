@@ -1,6 +1,4 @@
 #pragma once
-
-#include <SFML/Graphics.hpp>
 #include "UIElement.h"
 
 class Button : public UIElement

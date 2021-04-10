@@ -1,6 +1,4 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <iostream>
 #include "UIElement.h"
 
 class DropdownItem : public UIElement {

@@ -1,57 +1,34 @@
 #include "Textbox.h"
 
-Textbox::Textbox(sf::Vector2f position, sf::Font* tbFont, bool isNumeric) : font(tbFont), numeric(isNumeric){
-
-	background.setSize(sf::Vector2f((float)width, (float)height));
-	background.setPosition(position);
-	background.setFillColor(color);
-	background.setOutlineThickness(1.f);
-	background.setOutlineColor(unfocusedAccent);
-
-	text.setFont(*font);
-	text.setString("test");
-	text.setScale(sf::Vector2f(0.5, 0.5));
-	text.setFillColor(textColor);
-	text.setOutlineThickness(0);
-	text.setLetterSpacing(1.f);
+Textbox::Textbox(sf::Vector2f position, sf::Vector2f size, ResourceManager* resource, bool isNumeric = false) : numeric(isNumeric), UIElement(position, size, resource){	
 	text.setOrigin(0, text.getLocalBounds().height / 2);
-	text.setPosition(position.x + 5, position.y + (height / 2.f) - 4);
+	text.setPosition(position.x + 5, position.y + (size.y / 2.f) - 9);
 
-	if (!textCursor.loadFromSystem(sf::Cursor::Text))
-		std::cout << "Could not load hand cursor.";
-
-	if (!arrowCursor.loadFromSystem(sf::Cursor::Arrow))
-		std::cout << "Could not load arrow cursor.";
-
+	SetColor(sf::Color::White);
+	SetHoverColor(sf::Color::White);
+	SetClickColor(sf::Color::White);
+	SetAccentColor(sf::Color(60, 60, 60));
+	SetTextColor(sf::Color(60, 60, 60));
 }
 
-void Textbox::Update(sf::RenderWindow& window, sf::Event& event) {
-	sf::FloatRect bounds = background.getGlobalBounds();
-	
-	if (!isHovering) {
-		if (bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
-			window.setMouseCursor(textCursor);
-			Hovering(true);
-		}
-		else if (event.type == sf::Event::MouseButtonPressed) 
-			if(event.mouseButton.button == sf::Mouse::Left)
-				Focused(false);
-		
-	}
-	else {
-		if (!isFocused && event.type == sf::Event::MouseButtonPressed) {
-			if (event.mouseButton.button == sf::Mouse::Left) {
-				Focused(true);
+void Textbox::OnClick() {
+	UIElement::OnClick();
+	Focused(isFocused ? false : true);
+}
+
+void Textbox::Update(sf::RenderWindow& window, sf::Event& event) {		
+	UIElement::Update(window, event);
+	if (isFocused) {		
+
+		//unfocus if clicked outside of element
+		if (event.type == sf::Event::MouseButtonPressed) {
+			if (!background.getGlobalBounds().contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
+				if (event.mouseButton.button == sf::Mouse::Left) {
+					Focused(false);
+				}
 			}
 		}
 
-		if (!bounds.contains((sf::Vector2f)sf::Mouse::getPosition(window))) {
-			window.setMouseCursor(arrowCursor);
-			Hovering(false);
-		}
-	}
-
-	if (isFocused) {
 		if (event.type == sf::Event::TextEntered) {
 			if (event.text.unicode == 0x08) {
 				if (value.size() > 0) {
@@ -59,7 +36,7 @@ void Textbox::Update(sf::RenderWindow& window, sf::Event& event) {
 					text.setString(value);
 				}
 			}
-			else if(text.getGlobalBounds().width < width - 15){
+			else if(text.getGlobalBounds().width < size.x - 15){
 				if (!numeric) {
 					if (event.text.unicode < 0x80) {
 						value += (char)event.text.unicode;
@@ -90,4 +67,13 @@ void Textbox::Draw(sf::RenderTarget& window) {
 	}
 	window.draw(text);
 	if (isFocused && showCursor)text.setString(text.getString().substring(0, text.getString().getSize() - 1));
+}
+
+void Textbox::operator=(Textbox t) {
+	UIElement::operator=(t);
+
+	numeric = t.numeric;
+	isFocused = t.isFocused;
+	value = t.value;
+	showCursor = t.showCursor;
 }

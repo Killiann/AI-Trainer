@@ -27,10 +27,13 @@ MainMenu::MainMenu(ResourceManager *resource): resourceManager(resource) {
 	Label prompt = Label(promptPos, sf::Vector2f(0, 0), resource, "", 0.55);
 	prompt.SetFont(resource->GetRobotoLight());	 
 	
+	Textbox testBox(sf::Vector2f(position.x + padding, position.y + padding + 250), sf::Vector2f(150, 40), resourceManager, true);
+
 	navigationElements.emplace_back(std::make_shared<Label>(prompt));
 	navigationElements.emplace_back(std::make_shared<Button>(newSim));
 	navigationElements.emplace_back(std::make_shared<Button>(loadSim));
 	navigationElements.emplace_back(std::make_shared<Button>(exitSim));
+	navigationElements.emplace_back(std::make_shared<Textbox>(testBox));
 
 	//new simulation 
 	Button back = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);
