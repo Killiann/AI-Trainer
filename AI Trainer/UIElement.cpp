@@ -14,7 +14,7 @@ UIElement::UIElement(sf::Vector2f pos, sf::Vector2f s, ResourceManager* resource
 	text.setFillColor(textColor);
 	text.setOutlineThickness(0);
 	text.setLetterSpacing(1.f);
-	text.setOrigin(text.getGlobalBounds().width / 2, text.getGlobalBounds().height / 2);
+	text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds ().height / 2);
 	text.setPosition(position.x + (size.x / 2.f), position.y + (size.y / 2.f) - 4);
 
 	handCursor = resourceManager->GetHandCursor();
@@ -23,7 +23,8 @@ UIElement::UIElement(sf::Vector2f pos, sf::Vector2f s, ResourceManager* resource
 }
 
 void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
-	//if (onScreen) {
+	if (!hidden) {
+		//if (onScreen) {
 		sf::FloatRect bounds = background.getGlobalBounds();
 		//on mouse enter bounds
 		if (!isHovering) {
@@ -65,14 +66,14 @@ void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
 				if (isHovering) Hovering(false);
 			}
 		}
-	//}
-	//onScreen = false;
+	}
 }
 
 void UIElement::Draw(sf::RenderTarget& window) {
-	window.draw(background);
- 	window.draw(text);
-	//onScreen = true;
+	if (!hidden) {
+		window.draw(background);
+		window.draw(text);
+	}
 }
 
 void UIElement::operator=(UIElement b) {

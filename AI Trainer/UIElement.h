@@ -27,7 +27,8 @@ protected:
 
 	bool isHovering = false;
 	bool isClicking = false;
-	
+	bool hidden = false;
+
 	bool hoverable = true;
 	bool clickable = true;
 
@@ -87,16 +88,22 @@ public:
 	inline void EnableHover() { hoverable = true; }
 	inline void DisableHover() { hoverable = false; }
 
+	inline void Show() { hidden = false; }
+	inline void Hide() { hidden = true; }
+
 	inline void SetFont(sf::Font* newFont) {
 		if (newFont != nullptr) {
 			font = newFont;
 			text.setFont(*font);
 		}
 	}
+	inline void SetFontScale(float scale) { text.setScale(scale, scale); }	
+
 	inline void SetText(std::string newString) { text.setString(newString); }
 
 	virtual sf::Vector2f GetSize() { return size; }
 	virtual sf::Vector2f GetPosition() { return position; }
+	virtual void OffsetText(float x, float y) { text.setPosition(text.getPosition().x + x, text.getPosition().y + y); }
 
 	virtual void Update(sf::RenderWindow& window, sf::Event& event);
 	virtual void Draw(sf::RenderTarget& window);

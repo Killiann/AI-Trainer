@@ -11,6 +11,7 @@ Label::Label(sf::Vector2f lblPosition, sf::Vector2f size, ResourceManager* resou
 	text.setScale(fontScale, fontScale);
 	text.setString(message);
 	text.setOrigin(0, text.getOrigin().y);
+	text.setPosition(lblPosition.x, position.y + 4);
 
 }
 

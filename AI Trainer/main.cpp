@@ -94,7 +94,7 @@ int main()
 
         //update 
         inputManager.Update();
-        trainer.Update(dt.asSeconds(), pool);
+        //trainer.Update(dt.asSeconds(), pool);
 
 
         //draw entities
