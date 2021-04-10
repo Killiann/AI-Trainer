@@ -17,7 +17,6 @@ class MainMenu
 	ResourceManager* resourceManager;
 
 	sf::Text title;
-	sf::Text prompt;
 
 	std::vector<std::shared_ptr<UIElement>> navigationElements;
 	std::vector<Button> newSimulationElements;

@@ -1,17 +1,14 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
+#include "UIElement.h"
 
-class Label
-{
-	sf::Color color = sf::Color(30, 30, 30);
-	sf::Font* font = nullptr;
-	sf::Text text;
+class Label : public UIElement
+{	
 
 public:
 	Label(){}
-	Label(sf::Vector2f lblPosition, std::string lblText, sf::Font* lblFont);
-
-	inline std::string GetText() { return text.getString(); }
+	Label(sf::Vector2f lblPosition, sf::Vector2f size, ResourceManager* resource, std::string message, float fontScale);
+	
 	inline void UpdateText(std::string newText) { text.setString(newText); }
 
 	void Draw(sf::RenderTarget& window);

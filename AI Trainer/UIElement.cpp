@@ -36,22 +36,24 @@ void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
 			}
 		}
 		else {
-			//if not hand cursor while hovering (can happen when moving between elements)
+			//if not hand cursor while hovering (can happen when moving between elements)			
 			if (cursorId != 0) {
 				cursorId = 0;
 				window.setMouseCursor(*handCursor);
 			}
 
-			//on mouse down
-			if (!isClicking && event.type == sf::Event::MouseButtonPressed)
-				if (event.mouseButton.button == sf::Mouse::Left)
-					Clicking(true);
+			if (clickable) {
+				//on mouse down
+				if (!isClicking && event.type == sf::Event::MouseButtonPressed)
+					if (event.mouseButton.button == sf::Mouse::Left)
+						Clicking(true);
 
-			//on mouse up
-			if (isClicking && event.type == sf::Event::MouseButtonReleased) {
-				if (event.mouseButton.button == sf::Mouse::Left) {
-					Clicking(false);
- 					OnClick();
+				//on mouse up
+				if (isClicking && event.type == sf::Event::MouseButtonReleased) {
+					if (event.mouseButton.button == sf::Mouse::Left) {
+						Clicking(false);
+						OnClick();
+					}
 				}
 			}
 

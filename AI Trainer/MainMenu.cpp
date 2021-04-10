@@ -22,17 +22,15 @@ MainMenu::MainMenu(ResourceManager *resource): resourceManager(resource) {
 	Button newSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "New", ForwardNewSim, this);
 	Button loadSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 150), sf::Vector2f(150, 40), resourceManager, "Load", ForwardLoadSim, this);
 	Button exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 200), sf::Vector2f(150, 40), resourceManager, "Exit", ForwardExit, this);
+		
+	sf::Vector2f promptPos(position.x + newSim.GetSize().x + (padding * 2), position.y + padding + 100);
+	Label prompt = Label(promptPos, sf::Vector2f(0, 0), resource, "", 0.55);
+	prompt.SetFont(resource->GetRobotoLight());	 
 	
-	prompt.setPosition(position.x + newSim.GetSize().x + (padding * 2), position.y + padding + 100);
-	prompt.setFont(*resourceManager->GetRobotoLight());
-	prompt.setScale(0.55, 0.55);
-	prompt.setFillColor(sf::Color(60, 60, 60));		
-	 
-	
+	navigationElements.emplace_back(std::make_shared<Label>(prompt));
 	navigationElements.emplace_back(std::make_shared<Button>(newSim));
 	navigationElements.emplace_back(std::make_shared<Button>(loadSim));
 	navigationElements.emplace_back(std::make_shared<Button>(exitSim));
-
 
 	//new simulation 
 	Button back = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);
@@ -57,11 +55,11 @@ void MainMenu::NavigationState(sf::RenderWindow& window, sf::Event& event) {
 		if (navigationElements[i]->IsHovering()) {
 			switch (i) {
 				//new sim	
-			case(0): prompt.setString("Start training a new model with custom parameters."); break;
+			case(1): navigationElements[0]->SetText("Start training a new model with custom parameters."); break;
 				//load sim
-			case(1): prompt.setString("Continue training a previously created model."); break;
+			case(2): navigationElements[0]->SetText("Continue training a previously created model."); break;
 				//exit application
-			case(2):prompt.setString("Exit application.");
+			case(3): navigationElements[0]->SetText("Exit application.");
 			}
 		}
 	}
@@ -85,8 +83,7 @@ void MainMenu::Draw(sf::RenderTarget& window){
 	window.draw(title);
 
 	switch (currentState) {
-	case(MenuState::Navigation):
-		window.draw(prompt);
+	case(MenuState::Navigation):		
 		for (auto& n : navigationElements)
 			n->Draw(window);
 		break;

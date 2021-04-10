@@ -1,14 +1,16 @@
 #include "Label.h"
 
-Label::Label(sf::Vector2f lblPosition, std::string lblText, sf::Font* lblFont): font(lblFont){
+Label::Label(sf::Vector2f lblPosition, sf::Vector2f size, ResourceManager* resource, std::string message, float fontScale = 0.5) : UIElement(lblPosition, size, resource){
 
-	text.setFont(*font);
-	text.setString(lblText);
-	text.setScale(sf::Vector2f(0.5, 0.5));
-	text.setFillColor(color);
-	text.setOutlineThickness(0);
-	text.setLetterSpacing(1.f);	
-	text.setPosition(lblPosition);
+	DisableClick();
+	DisableHover();
+	SetColor(sf::Color::White);
+	SetTextColor(sf::Color(40, 40, 40));
+	SetHoverColor(sf::Color::White);
+	SetAccentColor(sf::Color::White);
+	text.setScale(fontScale, fontScale);
+	text.setString(message);
+	text.setOrigin(0, text.getOrigin().y);
 
 }
 

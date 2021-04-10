@@ -27,7 +27,9 @@ protected:
 
 	bool isHovering = false;
 	bool isClicking = false;
+	
 	bool hoverable = true;
+	bool clickable = true;
 
 	bool onScreen = false;
 
@@ -79,6 +81,19 @@ public:
 	}	
 
 	inline virtual bool IsHovering() { return isHovering; }
+
+	inline void EnableClick() { clickable = true; }
+	inline void DisableClick() { clickable = false; }
+	inline void EnableHover() { hoverable = true; }
+	inline void DisableHover() { hoverable = false; }
+
+	inline void SetFont(sf::Font* newFont) {
+		if (newFont != nullptr) {
+			font = newFont;
+			text.setFont(*font);
+		}
+	}
+	inline void SetText(std::string newString) { text.setString(newString); }
 
 	virtual sf::Vector2f GetSize() { return size; }
 	virtual sf::Vector2f GetPosition() { return position; }
