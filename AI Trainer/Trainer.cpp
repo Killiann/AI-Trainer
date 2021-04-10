@@ -11,8 +11,8 @@ Trainer::Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, Track& t, sf::F
 	//setup trainer
 	if (generationSize > 0) {
 		NewScene();
-		LoadBestCar();
-		NextGeneration();
+		//LoadBestCar();
+		//NextGeneration();
 	}
 	else std::cout << "Trainer setup failed: generation size must be bigger than 0." << std::endl;
 }

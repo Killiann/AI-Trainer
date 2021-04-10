@@ -35,9 +35,10 @@ namespace lin {
 	const float EULER = std::exp(1.f);
 	
 	//activation functions
-	float sigmoid(float input);
-	float leakyRelu(float input);
-	float binary(float input);
+	float act_sigmoid(float input);
+	float act_leakyRelu(float input);
+	float act_binary(float input);
+	float act_tanh(float input);
 
 	sf::Vector2f Normalise(const sf::Vector2f& source);
 

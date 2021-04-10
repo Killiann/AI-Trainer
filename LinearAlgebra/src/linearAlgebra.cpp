@@ -73,14 +73,17 @@ namespace lin {
 	/// </summary>
 	/// <param name="input"></param>
 	/// <returns></returns>
-	float sigmoid(float input) {
+	float act_sigmoid(float input) {
 		return 1.f / (1.f + std::pow(EULER, -input));
 	}
-	float leakyRelu(float input){
+	float act_leakyRelu(float input){
 		return std::max(input * 0.01f, input);
 	}
-	float binary(float input) {
+	float act_binary(float input) {
 		return input > 0 ? true : false;
+	}
+	float act_tanh(float input) {
+		return std::tanh(input);
 	}
 
 	sf::Vector2f Normalise(const sf::Vector2f& source) {

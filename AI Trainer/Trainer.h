@@ -25,7 +25,7 @@ class Trainer
 	
 	//network settings
 	int inputNodes = 8;
-	std::vector<int> hiddenNodes = { 6, 5 };
+	std::vector<int> hiddenNodes = { 7, 6 };
 	int outputNodes = 5;
 	sf::FloatRect nnDimensions;
 
