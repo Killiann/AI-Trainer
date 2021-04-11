@@ -100,6 +100,7 @@ public:
 	inline void SetFontScale(float scale) { text.setScale(scale, scale); }	
 
 	inline void SetText(std::string newString) { text.setString(newString); }
+	inline std::string GetText() { return text.getString(); }
 
 	virtual sf::Vector2f GetSize() { return size; }
 	virtual sf::Vector2f GetPosition() { return position; }

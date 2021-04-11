@@ -33,7 +33,7 @@ public:
 class Dropdown : public UIElement
 {
 	bool isOpen = false;
-	int selectedIndex = -1;
+	int selectedIndex = 0;
 
 	sf::Sprite arrow;
 	std::vector<DropdownItem> items;

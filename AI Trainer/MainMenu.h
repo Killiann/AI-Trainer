@@ -11,26 +11,10 @@
 
 class MainMenu
 {
-	sf::Vector2f size = sf::Vector2f(900.f, 500.f);
-	sf::Vector2f position = sf::Vector2f(300.f, 200.f);
-	float padding = 35.f;
-	sf::RectangleShape background;
 	ResourceManager* resourceManager;
-	
-	unsigned int hiddenLayers = 1;
-	
-	unsigned int maxHiddenLayers = 4;
-	unsigned int minHiddenLayers = 1;
-	unsigned int maxCarsPerThread = 50;
-	unsigned int maxNodes = 10;
 
-	sf::Text title;
-
-	std::map <std::string, std::shared_ptr<UIElement>> newSimulationElements;
-	std::vector<std::shared_ptr<UIElement>> navigationElements;
-	std::vector<std::shared_ptr<UIElement>> loadSimulationElements;
-
-	bool exit = false;
+	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
+	std::vector<std::string> navigationButtonIDS{ "btn_newSim", "btn_loadSim", "btn_exitSim" };
 
 	enum class MenuState {
 		Navigation,
@@ -40,11 +24,65 @@ class MainMenu
 
 	MenuState currentState = MenuState::Navigation;
 
+	//limits
+	const unsigned int maxHiddenLayers = 4;
+	const unsigned int minHiddenLayers = 1;
+	const unsigned int maxCarsPerThread = 50;
+	const unsigned int maxNodes = 10;
+	unsigned int maxThreads = 1;
+	std::vector<int> hiddenLayerData;
+	
+	//setting inputs
+	unsigned int hiddenLayers = 1;
+	unsigned int threadCount = 1;
+	unsigned int carsPerThread = 50;
+	unsigned int generationSize = threadCount * carsPerThread;
+	unsigned int hiddenFuncID = 0;
+	unsigned int outputFuncID = 0;
+
+	//helpers
+	bool exit = false;
+
+	//styling
+	unsigned int padding = 35;
+	unsigned int marginTop = 70;
+	unsigned int margin = 40;
+
+	//middle column
+	unsigned int marginLeft = 285;
+
+	//settings
+	unsigned int leftColW = 200;
+	unsigned int rightColW = 30;
+	unsigned int settingsMargin = 26;
+	unsigned int rowH = 26;
+	unsigned int s_marginTop = marginTop + padding + position.y;
+	unsigned int s_marginLeft = 570;
+
+	//SFML
+	sf::Vector2f size = sf::Vector2f(900.f, 500.f);
+	sf::Vector2f position = sf::Vector2f(300.f, 200.f);	
+	sf::RectangleShape background;
+	sf::Text title;
+	
+	//UI elements
+	std::map <std::string, std::shared_ptr<UIElement>> newSimulationElements;
+	std::map <std::string, std::shared_ptr<UIElement>> navigationElements;
+	std::map <std::string, std::shared_ptr<UIElement>> loadSimulationElements;
+
+	//initialisation
+	void InitializeNavigation();
+	void InitializeNewSimulation();
+	void InitalizeSettings();
+
+	//update functions per state
 	void NavigationState(sf::RenderWindow& window, sf::Event& event);
 	void NewSimulationState(sf::RenderWindow& window, sf::Event& event);
 	void LoadSimulationState(sf::RenderWindow& window, sf::Event& event);
 
-	inline void ResetHLElements() {
+	//update functions
+	void UpdateSettings();
+	inline void UpdateHLElements() {
 		for (unsigned int i = 0; i < maxHiddenLayers; ++i) {
 			(*newSimulationElements.find("lbl_layerCount_" + std::to_string(i))).second->Hide();
 			(*newSimulationElements.find("txt_layerCount_" + std::to_string(i))).second->Hide();
@@ -60,23 +98,34 @@ public:
 	void Update(sf::RenderWindow& window, sf::Event& event);
 	void Draw(sf::RenderTarget& window);	
 
-	//navigation
-	inline void NewSim() { currentState = MenuState::NewSimulation; }
-	inline void LoadSim() { currentState = MenuState::LoadSimulation; }
+	//button actions
+	inline void NewSim() { 
+		currentState = MenuState::NewSimulation; 
+		title.setString("Create new Trainer");
+	}
+	inline void LoadSim() {
+		currentState = MenuState::LoadSimulation; 
+		title.setString("Load Trainer");
+	}
 	inline void ExitApp() { exit = true; }
+	inline void CreateNewSim() { std::cout << "create." << std::endl; }
 
-	//new simulation
-	//new sim
+	//add/remove layers on simulation setup screen
 	inline void AddHiddenLayer() { 
 		if (hiddenLayers < maxHiddenLayers) ++hiddenLayers; 
 		(*newSimulationElements.find("lbl_hiddenLayers")).second->SetTextString("Hidden Layers: " + std::to_string(hiddenLayers));
-		ResetHLElements();
+		UpdateHLElements();
 	}
 	inline void SubHiddenLayer() {
 		if (hiddenLayers > minHiddenLayers) --hiddenLayers;
 		(*newSimulationElements.find("lbl_hiddenLayers")).second->SetTextString("Hidden Layers: " + std::to_string(hiddenLayers));
-		ResetHLElements();
+		UpdateHLElements();
  	}
-	inline void Back() { currentState = MenuState::Navigation; }
+
+	//shared
+	inline void Back() { 
+		currentState = MenuState::Navigation; 
+		title.setString("Car Controller Neural Net Trainer");
+	}
 };
 
