@@ -8,7 +8,7 @@
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "TrackManager.h"
-#include "Minimap.h"
+//#include "Minimap.h"
 #include "Trainer.h"
 
 #include "ThreadPool.h"
@@ -51,9 +51,10 @@ int main()
     InputManager inputManager(&consoleManager, &trainer);          
 
     //Minimap setup
-    Minimap minimap = Minimap(&trainer.GetCars(), &trackManager.GetCurrentTrack(), &consoleManager);    
+    //Minimap minimap = Minimap(&trainer.GetCars(), &trackManager.GetCurrentTrack(), &consoleManager);    
+    //Minimap minimap = Minimap(&trainer.GetCars(), &trackManager.GetCurrentTrack(), &consoleManager);    
 
-    MainMenu menu(&resourceManager);
+    MainMenu menu(&resourceManager, &trainer);
 
     //initialise thread pool
     ThreadPool pool(12);
@@ -94,7 +95,7 @@ int main()
 
         //update 
         inputManager.Update();
-        //trainer.Update(dt.asSeconds(), pool);
+        trainer.Update(dt.asSeconds(), pool);
 
 
         //draw entities
@@ -108,7 +109,7 @@ int main()
         window.setView(window.getDefaultView());
         
         consoleManager.Draw(window);
-        minimap.Draw(window);
+        //minimap.Draw(window);
         trainer.DrawUI(window);
 
         //temp

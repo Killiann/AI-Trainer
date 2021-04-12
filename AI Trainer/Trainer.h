@@ -10,23 +10,27 @@
 
 class Trainer
 {	
+	unsigned int hiddenActivationID = 0;
+	unsigned int outputActivationID = 0;
+
 	//training settings
-	int threadCount;
-	int generationSize;
+	int threadCount = 1;
+	int carsPerThread = 50;
+	int generationSize = 50;
 	int currentGeneration = 1;
+	bool running = false;
 
 	sf::Clock timer;
 	const float maxGenTime = 40; //seconds
 
-	const int carsPerThread = 50;
 	const int surviverPool = 10;
 	const float mutationRate = 0.01f;
 	const float slightMutationRate = 0.05f;	
 	
 	//network settings
-	int inputNodes = 8;
-	std::vector<int> hiddenNodes = { 6, 5 };
-	int outputNodes = 5;
+	const int inputNodes = 8;
+	const int outputNodes = 5;
+	std::vector<int> hiddenNodes = { 6, 5 };	
 	sf::FloatRect nnDimensions;
 
 	//entities
@@ -37,7 +41,7 @@ class Trainer
 
 	std::map<float, Network> topPerformers;
 	int topPerformersCount = 10;			
-	float bestFitness;
+	float bestFitness = 0.f;
 	Network bestNetwork;
 
 	//private funcs
@@ -55,6 +59,7 @@ class Trainer
 	
 public:
 	Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, Track& track, sf::FloatRect nnDim);	
+	void SetupTrainer(int threadCount, int carsPerThread, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID);
 
 	void Update(float dt, ThreadPool &pool);
 	void DrawEntities(sf::RenderTarget& window);
@@ -63,6 +68,7 @@ public:
 
 	static float Divide(float n);
 
+	inline bool IsRunning() { return running; }
 	inline std::vector<Car>& GetCars() { return cars; }
 	inline int GetCurrentID() { return currentId; }
 	inline void SetCurrentID(int newID) { currentId = newID; }

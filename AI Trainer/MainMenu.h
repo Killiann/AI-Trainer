@@ -8,10 +8,12 @@
 #include "Dropdown.h"
 #include "Label.h"
 #include "UIElement.h"
+#include "Trainer.h"
 
 class MainMenu
 {
 	ResourceManager* resourceManager;
+	Trainer* trainer;
 
 	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
 	std::vector<std::string> navigationButtonIDS{ "btn_newSim", "btn_loadSim", "btn_exitSim" };
@@ -36,12 +38,13 @@ class MainMenu
 	unsigned int hiddenLayers = 1;
 	unsigned int threadCount = 1;
 	unsigned int carsPerThread = 50;
-	unsigned int generationSize = threadCount * carsPerThread;
+	unsigned int generationSize = (1 + threadCount) * carsPerThread;
 	unsigned int hiddenFuncID = 0;
 	unsigned int outputFuncID = 0;
 
 	//helpers
 	bool exit = false;
+	bool hidden = false;
 
 	//styling
 	unsigned int padding = 35;
@@ -94,9 +97,12 @@ class MainMenu
 	}
 
 public:
-	MainMenu(ResourceManager* resource);
+	MainMenu(ResourceManager* resource, Trainer* trainer);
 	void Update(sf::RenderWindow& window, sf::Event& event);
 	void Draw(sf::RenderTarget& window);	
+
+	void Hide();
+	void Show();
 
 	//button actions
 	inline void NewSim() { 
@@ -108,7 +114,11 @@ public:
 		title.setString("Load Trainer");
 	}
 	inline void ExitApp() { exit = true; }
-	inline void CreateNewSim() { std::cout << "create." << std::endl; }
+	inline void CreateNewSim() { 
+		hiddenLayerData.resize(hiddenLayers);
+		trainer->SetupTrainer(threadCount, carsPerThread, hiddenLayerData, hiddenFuncID, outputFuncID);
+		Hide();
+	}
 
 	//add/remove layers on simulation setup screen
 	inline void AddHiddenLayer() { 
@@ -120,7 +130,7 @@ public:
 		if (hiddenLayers > minHiddenLayers) --hiddenLayers;
 		(*newSimulationElements.find("lbl_hiddenLayers")).second->SetTextString("Hidden Layers: " + std::to_string(hiddenLayers));
 		UpdateHLElements();
- 	}
+ 	}	
 
 	//shared
 	inline void Back() { 

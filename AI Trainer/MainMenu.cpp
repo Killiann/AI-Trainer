@@ -13,7 +13,7 @@ void ForwardSubLayer(void* menu) { ((MainMenu*)menu)->SubHiddenLayer(); }
 void ForwardAddLayer(void* menu) { ((MainMenu*)menu)->AddHiddenLayer(); }
 void ForwardContinue(void* menu) { ((MainMenu*)menu)->CreateNewSim(); }
 
-MainMenu::MainMenu(ResourceManager *resource): resourceManager(resource) {
+MainMenu::MainMenu(ResourceManager *resource, Trainer* t): resourceManager(resource), trainer(t) {
 	//find max available threads in system
 	maxThreads = std::thread::hardware_concurrency();
 
@@ -61,7 +61,7 @@ void MainMenu::InitializeNavigation() {
 void MainMenu::InitializeNewSimulation() {
 	//threads used
 	Label lbl_performance = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop), sf::Vector2f(190, 30), resourceManager, "Performance:", 0.6);
-	Label lbl_threadCount = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin), sf::Vector2f(190, 30), resourceManager, "Number of threads (max:" + std::to_string(maxThreads) + "):", 0.5f);
+	Label lbl_threadCount = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin), sf::Vector2f(190, 30), resourceManager, "Helper threads (max:" + std::to_string(maxThreads) + "):", 0.5f);
 	Textbox txt_threadCount = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin), sf::Vector2f(30, 30), resourceManager, true, maxThreads);
 	newSimulationElements.emplace("lbl_performance", std::make_shared<Label>(lbl_performance));
 	newSimulationElements.emplace("lbl_threadCount", std::make_shared<Label>(lbl_threadCount));
@@ -227,7 +227,7 @@ void MainMenu::UpdateSettings() {
 	hiddenFuncID = hiddenActivation.GetSelected();
 	outputFuncID = outputActivation.GetSelected();
 
-	generationSize = threadCount * carsPerThread;
+	generationSize = (threadCount + 1)* carsPerThread;
 
 	//update labels
 	(*newSimulationElements.find("lbl_settingsThreadCountVal")).second->SetText(std::to_string(threadCount));
@@ -254,23 +254,45 @@ void MainMenu::UpdateSettings() {
 
 //draw========================
 void MainMenu::Draw(sf::RenderTarget& window) {
-	window.draw(background);
-	window.draw(title);
+	if (!hidden) {
+		window.draw(background);
+		window.draw(title);
 
-	switch (currentState) {
-	case(MenuState::Navigation):
-		for (auto& m : navigationElements)
-			m.second->Draw(window);
-		break;
-	case(MenuState::NewSimulation):
-		for (const auto& m : newSimulationElements)
-			m.second->Draw(window);
-		(*newSimulationElements.find("dd_outputActivation")).second->Draw(window);
-		(*newSimulationElements.find("dd_hiddenActivation")).second->Draw(window);
-		break;
-	case(MenuState::LoadSimulation):
-		for (auto& m : loadSimulationElements)
-			m.second->Draw(window);
-		break;
+		switch (currentState) {
+		case(MenuState::Navigation):
+			for (auto& m : navigationElements)
+				m.second->Draw(window);
+			break;
+		case(MenuState::NewSimulation):
+			for (const auto& m : newSimulationElements)
+				m.second->Draw(window);
+			(*newSimulationElements.find("dd_outputActivation")).second->Draw(window);
+			(*newSimulationElements.find("dd_hiddenActivation")).second->Draw(window);
+			break;
+		case(MenuState::LoadSimulation):
+			for (auto& m : loadSimulationElements)
+				m.second->Draw(window);
+			break;
+		}
 	}
+}
+
+void MainMenu::Hide() {
+	hidden = true;
+	for (auto& m : navigationElements)
+		m.second->Hide();
+	for (auto& m : newSimulationElements)
+		m.second->Hide();
+	for (auto& m : loadSimulationElements)
+		m.second->Hide();	
+}
+
+void MainMenu::Show() {
+	hidden = false;
+	for (auto& m : navigationElements)
+		m.second->Show();
+	for (auto& m : newSimulationElements)
+		m.second->Show();
+	for (auto& m : loadSimulationElements)
+		m.second->Show();
 }

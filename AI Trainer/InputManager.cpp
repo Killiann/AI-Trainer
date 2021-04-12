@@ -61,36 +61,38 @@ void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
     }
     if (event.type == sf::Event::KeyPressed) {
         //cycle through cars
-        if (event.key.code == sf::Keyboard::Key::Num1) {
-            if (!isCycleDown) {
-                isCycleDown = true;
-                trainer->GetCars()[trainer->GetCurrentID()].Deselect();
-                if (trainer->GetCurrentID() == (trainer->GetCars().size() - 1))
-                    trainer->SetCurrentID(0);
-                else trainer->SetCurrentID(trainer->GetCurrentID() + 1);
-                trainer->GetCars()[trainer->GetCurrentID()].Select();
+        if (trainer->IsRunning()) {
+            if (event.key.code == sf::Keyboard::Key::Num1) {
+                if (!isCycleDown) {
+                    isCycleDown = true;
+                    trainer->GetCars()[trainer->GetCurrentID()].Deselect();
+                    if (trainer->GetCurrentID() == (trainer->GetCars().size() - 1))
+                        trainer->SetCurrentID(0);
+                    else trainer->SetCurrentID(trainer->GetCurrentID() + 1);
+                    trainer->GetCars()[trainer->GetCurrentID()].Select();
+                }
             }
-        }
 
-        //reset scene
-        if (event.key.code == sf::Keyboard::Key::Num0) {
-            if (!isResetDown) {
-                trainer->ResetScene();
-                isResetDown = true;
+            //reset scene
+            if (event.key.code == sf::Keyboard::Key::Num0) {
+                if (!isResetDown) {
+                    trainer->ResetScene();
+                    isResetDown = true;
+                }
             }
-        }
-        //reset scene
-        if (event.key.code == sf::Keyboard::Key::Num2) {
-            if (!isNextGenDown) {
-                trainer->NextGeneration();
-                isNextGenDown = true;
+            //reset scene
+            if (event.key.code == sf::Keyboard::Key::Num2) {
+                if (!isNextGenDown) {
+                    trainer->NextGeneration();
+                    isNextGenDown = true;
+                }
             }
-        }
-        //save best car
-        if (event.key.code == sf::Keyboard::Key::S) {
-            if (!isSaveDown) {
-                trainer->SaveBestCar();
-                isSaveDown = true;
+            //save best car
+            if (event.key.code == sf::Keyboard::Key::S) {
+                if (!isSaveDown) {
+                    trainer->SaveBestCar();
+                    isSaveDown = true;
+                }
             }
         }
         //toggle console
