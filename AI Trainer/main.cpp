@@ -40,7 +40,7 @@ int main()
 
     //UI
     MainMenu menu(&resourceManager, &trainer);
-    Overlay overlay(&resourceManager, &trainer);
+    Overlay overlay(&resourceManager, &trainer, &menu);
 
     //misc
     sf::Vector2f mouseCoords;

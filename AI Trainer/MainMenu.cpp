@@ -4,6 +4,7 @@
 void ForwardBack(void* menu) { ((MainMenu*)menu)->Back(); }
 
 //navigation
+void ForwardContinueCurrent(void* menu) { ((MainMenu*)menu)->ContinueSim(); }
 void ForwardNewSim(void* menu) { ((MainMenu*)menu)->NewSim(); }
 void ForwardLoadSim(void* menu) { ((MainMenu*)menu)->LoadSim(); }
 void ForwardSimExit(void* menu) { ((MainMenu*)menu)->ExitApp(); }
@@ -44,15 +45,20 @@ MainMenu::MainMenu(ResourceManager *resource, Trainer* t): resourceManager(resou
 //initialise=================
 void MainMenu::InitializeNavigation() {
 	//navigation 
-	Button btn_newSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "New", ForwardNewSim, this);
-	Button btn_loadSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 150), sf::Vector2f(150, 40), resourceManager, "Load", ForwardLoadSim, this);
-	Button btn_exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 200), sf::Vector2f(150, 40), resourceManager, "Exit", ForwardSimExit, this);
+	float topPadding = 50;
+	if (withContinue) topPadding = 100;
+
+	Button btn_continue = Button(sf::Vector2f(position.x + padding, position.y + padding + topPadding), sf::Vector2f(150, 40), resourceManager, "Continue", ForwardContinueCurrent, this);
+	Button btn_newSim = Button(sf::Vector2f(position.x + padding, position.y + padding + topPadding + 50), sf::Vector2f(150, 40), resourceManager, "New", ForwardNewSim, this);
+	Button btn_loadSim = Button(sf::Vector2f(position.x + padding, position.y + padding + topPadding + 100), sf::Vector2f(150, 40), resourceManager, "Load", ForwardLoadSim, this);
+	Button btn_exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + topPadding + 150), sf::Vector2f(150, 40), resourceManager, "Exit", ForwardSimExit, this);
 
 	sf::Vector2f promptPos(position.x + btn_newSim.GetSize().x + (padding * 2), position.y + padding + 100);
 	Label lbl_prompt = Label(promptPos, sf::Vector2f(0, 0), resourceManager, "", 0.55);
 	lbl_prompt.SetFont(resourceManager->GetRobotoLight());
 
 	navigationElements.emplace("lbl_prompt", std::make_shared<Label>(lbl_prompt));
+	if(withContinue) navigationElements.emplace("btn_continueSim", std::make_shared<Button>(btn_continue));
 	navigationElements.emplace("btn_newSim", std::make_shared<Button>(btn_newSim));
 	navigationElements.emplace("btn_loadSim", std::make_shared<Button>(btn_loadSim));
 	navigationElements.emplace("btn_exitSim", std::make_shared<Button>(btn_exitSim));
@@ -184,16 +190,18 @@ void MainMenu::NavigationState(sf::RenderWindow& window, sf::Event& event) {
 		if (m.first == "btn_newSim") nameId = 0;
 		if (m.first == "btn_loadSim") nameId = 1;
 		if (m.first == "btn_exitSim") nameId = 2;
+		if (m.first == "btn_continueSim") nameId = 3;
 
 		if (m.second->IsHovering()) {
 			
 			switch (nameId) {
 				//new sim	
-			case(0): (*navigationElements.find("lbl_prompt")).second->SetText("Start training a new model with custom parameters."); break;
+			case(0): (*navigationElements.find("lbl_prompt")).second->SetText("Start training a new model with custom parameters"); break;
 				//load sim
-			case(1):(*navigationElements.find("lbl_prompt")).second->SetText("Continue training a previously created model."); break;
+			case(1):(*navigationElements.find("lbl_prompt")).second->SetText("Continue training a previously created model"); break;
 				//exit application
-			case(2): (*navigationElements.find("lbl_prompt")).second->SetText("Exit application."); break;
+			case(2): (*navigationElements.find("lbl_prompt")).second->SetText("Exit application"); break;
+			case(3): (*navigationElements.find("lbl_prompt")).second->SetText("Continue"); break;
 			default:break;
 			}
 		}
@@ -287,7 +295,16 @@ void MainMenu::Hide() {
 		m.second->Hide();	
 }
 
-void MainMenu::Show() {
+void MainMenu::Show(bool cont) {
+	//load continue button if applicable + reset
+	withContinue = cont;
+	navigationElements.clear();
+	newSimulationElements.clear();
+	InitializeNavigation();
+	InitializeNewSimulation();
+	currentState = MenuState::Navigation;
+	title.setString("Car Controller Neural Net Trainer");
+
 	hidden = false;
 	for (auto& m : navigationElements)
 		m.second->Show();

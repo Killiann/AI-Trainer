@@ -28,10 +28,10 @@ void ForwardOpExit(void* overlay) {
 	((Overlay*)overlay)->ExitSim();
 }
 
-Overlay::Overlay(ResourceManager* resource, Trainer* t): resourceManager(resource), trainer(t) {
+Overlay::Overlay(ResourceManager* resource, Trainer* t, MainMenu* menu) : resourceManager(resource), trainer(t), mainMenu(menu){
 	background.setPosition(sf::Vector2f(position.x, position.y + navSize.y));
 	background.setSize(size);
-	background.setFillColor(backgroundColor);	
+	background.setFillColor(backgroundColor);
 
 	Button btn_settings = Button(position, navSize, resourceManager, "Options", ForwardOptions, this);
 	Button btn_data = Button(sf::Vector2f(position.x + navSize.x, position.y), navSize, resourceManager, "Data", ForwardData, this);

@@ -96,6 +96,9 @@ public:
 	inline void SaveBestCar() { bestNetwork.SaveToFile("best.txt", bestFitness); }
 	inline void LoadBestCar() { bestFitness = bestNetwork.LoadFromFile("best.txt"); }	
 	inline void ResetScene() { if (generationSize > 0) NewScene(); else std::cout << "Could not reset scene."; }
+	
+	inline void Pause() { running = false; }
+	inline void Continue() { running = true; }
 
 	//get data for UI
 	inline TrainerData GetData() {

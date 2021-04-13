@@ -5,6 +5,7 @@
 #include "Trainer.h"
 #include "Button.h"
 #include "Label.h"
+#include "MainMenu.h"
 
 enum class NavItem {
 	None,
@@ -28,6 +29,8 @@ class Overlay
 
 	ResourceManager* resourceManager = nullptr;
 	Trainer* trainer = nullptr;
+	MainMenu* mainMenu = nullptr;
+
 	bool exit = false;
 	bool devOverlay = false;
 
@@ -57,7 +60,7 @@ class Overlay
 	std::string TruncateFloat(float n);
 public :
 	Overlay(){}
-	Overlay(ResourceManager *resource, Trainer *t);
+	Overlay(ResourceManager* resource, Trainer* t, MainMenu* menu);
 	void Update(sf::RenderWindow& window, sf::Event& event);
 	void UpdateData(std::string fps);
 	void Draw(sf::RenderTarget& window);	
@@ -83,7 +86,11 @@ public :
 		}
 		(*optionElements.find("btn_showHide")).second->CenterText();
 	}
-	inline void OpenMainMenu() { std::cout << "open mm\n"; }
+	inline void OpenMainMenu() { 
+		currentState = NavItem::None;
+		trainer->Pause(); 
+		mainMenu->Show(true);
+	}
 	inline void SaveSim() { std::cout << "save sim\n"; }
 	inline void ExitSim() { exit = true; }
 };

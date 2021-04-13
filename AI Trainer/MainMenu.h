@@ -45,6 +45,7 @@ class MainMenu
 	//helpers
 	bool exit = false;
 	bool hidden = false;
+	bool withContinue = false;
 
 	//styling
 	unsigned int padding = 35;
@@ -102,7 +103,7 @@ public:
 	void Draw(sf::RenderTarget& window);	
 
 	void Hide();
-	void Show();
+	void Show(bool withContinue = false);
 
 	//button actions
 	inline void NewSim() { 
@@ -117,6 +118,10 @@ public:
 	inline void CreateNewSim() { 
 		std::vector<int> hlVec(hiddenLayerData[0], hiddenLayerData[hiddenLayers]);
 		trainer->SetupTrainer(threadCount, carsPerThread, hlVec, hiddenFuncID, outputFuncID);
+		Hide();
+	}
+	inline void ContinueSim() { 
+		trainer->Continue(); 
 		Hide();
 	}
 
