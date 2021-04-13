@@ -120,6 +120,8 @@ class Car
 	void CalculateDistances();
 	void CheckPointHandling();
 
+	bool passedFinish = false;
+
 public:	
 	Car(){}
 	Car(int id, sf::Vector2f pos, ConsoleManager *console, ResourceManager *resource, Track* track);
@@ -166,6 +168,9 @@ public:
 			I_rightSteer = inputs[3];
 			I_leftSteer = inputs[4];
 		}
-	}		
+	}	
+
+	inline bool HasPassedFinish() { return passedFinish; }
+	inline float GetFastestLap() { return checkPointTracker.GetFastestLap(); }
 };
 

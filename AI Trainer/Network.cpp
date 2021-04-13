@@ -140,7 +140,7 @@ void Network::Draw(sf::RenderTarget& window) {
 
 void Network::SetupRendering() {
 	sf::CircleShape circle;
-	float radius = 13;
+	float radius = 7.5;
 	circle.setRadius(radius);
 	circle.setOrigin(radius, radius);
 	circle.setFillColor(sf::Color::White);

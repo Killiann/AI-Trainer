@@ -51,6 +51,7 @@ void Overlay::InitData() {
 	unsigned int leftColW = 350;
 	unsigned int rowH = 20;
 	unsigned int rowMargin = 25;
+
 	//fps
 	Label lbl_fps = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y), sf::Vector2f(leftColW, rowH), resourceManager, "FPS: ", 0.5f);
 	Label lbl_fps_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
@@ -125,7 +126,7 @@ void Overlay::Update(sf::RenderWindow& window, sf::Event &event) {
 
 	switch (currentState) {
 	case(NavItem::Options):UpdateOptions(window, event); break;
-	case(NavItem::Data):UpdateData(window, event); break;
+	//case(NavItem::Data):UpdateData(window, event); break;
 	}
 }
 
@@ -134,9 +135,21 @@ void Overlay::UpdateOptions(sf::RenderWindow& window, sf::Event& event) {
 		e.second->Update(window, event);
 }
 
-void Overlay::UpdateData(sf::RenderWindow& window, sf::Event& event) {
-	for (auto& e : dataElements)
-		e.second->Update(window, event);
+void Overlay::UpdateData(std::string fps) {
+	if (trainer->IsRunning() && currentState == NavItem::Data) {
+		TrainerData data = trainer->GetData();
+		(*(dataElements).find("lbl_fps_val")).second->SetText(fps);
+		(*(dataElements).find("lbl_genSize_val")).second->SetText(std::to_string(data.generationSize));
+		(*(dataElements).find("lbl_currentGen_val")).second->SetText(std::to_string(data.currentGeneration));
+		(*(dataElements).find("lbl_lapTime_val")).second->SetText(FloatToTime(data.bestLapTime));
+		(*(dataElements).find("lbl_lapTimePrev_val")).second->SetText(FloatToTime(data.bestLapTimePrev));
+		(*(dataElements).find("lbl_fitness_val")).second->SetText(TruncateFloat(data.bestFitness));
+		(*(dataElements).find("lbl_fitnessPrev_val")).second->SetText(TruncateFloat(data.bestFitnessPrev));
+		(*(dataElements).find("lbl_currentTime_val")).second->SetText(FloatToTime(data.currentTime));
+		(*(dataElements).find("lbl_totalTime_val")).second->SetText(FloatToTime(data.totalTime));
+		(*(dataElements).find("lbl_hlActivation_val")).second->SetText(data.hlActivation);
+		(*(dataElements).find("lbl_olActivation_val")).second->SetText(data.olActivation);
+	}
 }
 
 void Overlay::Draw(sf::RenderTarget &window) {
@@ -155,6 +168,25 @@ void Overlay::Draw(sf::RenderTarget &window) {
 		for (auto& e : dataElements)
 			e.second->Draw(window); break;
 	}
+}
+std::string Overlay::FloatToTime(float n) {
+	unsigned int ms = (n / 1000);
+	unsigned int sec = ms / 60;
+	unsigned int min = sec / 60;
+	unsigned int hr = min / 60;
+
+	std::stringstream stream;
+	stream << std::right << std::setfill('0') << std::setw(2) << hr << ":" <<
+		std::right << std::setfill('0') << std::setw(2) << (sec % 60) << ":" <<
+		std::right << std::setfill('0') << std::setw(2) << (ms % 60) << ":" <<
+		std::right << std::setfill('0') << std::setw(2) << ((int)n % 1000);
+	return stream.str();
+}
+
+std::string Overlay::TruncateFloat(float n) {
+	std::stringstream stream;
+	stream << std::fixed << std::setprecision(2) << n;
+	return stream.str();
 }
 
 void Overlay::SetNavColor() {

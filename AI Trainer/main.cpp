@@ -37,8 +37,8 @@ int main()
    
     //neural net positioning on UI
     sf::FloatRect dimensions = sf::FloatRect(
-        sf::Vector2f(window.getViewport(window.getDefaultView()).width * 0.75f, window.getViewport(window.getDefaultView()).height * 0.25f),
-        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 4.f, window.getViewport(window.getDefaultView()).height / 4.f)
+        sf::Vector2f(window.getViewport(window.getDefaultView()).width / 2 - 200, 15),
+        sf::Vector2f(400, 200)
     );
 
     //managers 
@@ -96,6 +96,8 @@ int main()
         //update 
         inputManager.Update();
         trainer.Update(dt.asSeconds(), pool);
+        std::string frames = std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size()));
+        overlay.UpdateData(frames);
 
         //draw entities
         window.clear(sf::Color(139, 69, 19));

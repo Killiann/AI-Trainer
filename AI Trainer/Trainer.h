@@ -8,8 +8,23 @@
 #include "Track.h"
 #include "ThreadPool.h"
 
+struct TrainerData {
+	TrainerData() {}
+	unsigned int generationSize = 0;
+	unsigned int currentGeneration = 0;
+	float bestLapTime = 0.f; //ms
+	float bestLapTimePrev = 0.f; //ms
+	float bestFitness = 0.f;
+	float bestFitnessPrev = 0.f;
+	float currentTime = 0.f;
+	float totalTime = 0.f;
+	std::string hlActivation;
+	std::string olActivation;
+};
+
 class Trainer
 {	
+	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
 	unsigned int hiddenActivationID = 0;
 	unsigned int outputActivationID = 0;
 
@@ -20,7 +35,8 @@ class Trainer
 	int currentGeneration = 1;
 	bool running = false;
 
-	sf::Clock timer;
+	sf::Clock totalTime;
+	sf::Clock generationTimer;
 	const float maxGenTime = 40; //seconds
 
 	const int surviverPool = 10;
@@ -40,9 +56,15 @@ class Trainer
 	int currentId = 0;
 
 	std::map<float, Network> topPerformers;
-	int topPerformersCount = 10;			
-	float bestFitness = 0.f;
+	int topPerformersCount = 10;				
 	Network bestNetwork;
+
+	//data
+	std::vector<float> currentLapTimes;
+	float bestLapTime = 0.f;
+	float bestLapTimePrev = 0.f;
+	float bestFitness = 0.f;
+	float bestFitnessPrev = 0.f;
 
 	//private funcs
 	void NewScene();
@@ -75,5 +97,21 @@ public:
 	inline void SaveBestCar() { bestNetwork.SaveToFile("best.txt", bestFitness); }
 	inline void LoadBestCar() { bestFitness = bestNetwork.LoadFromFile("best.txt"); }	
 	inline void ResetScene() { if (generationSize > 0) NewScene(); else std::cout << "Could not reset scene."; }
+
+	//get data for UI
+	inline TrainerData GetData() {
+		TrainerData tData;
+		tData.generationSize = generationSize;
+		tData.currentGeneration = currentGeneration;
+		tData.bestLapTime = bestLapTime;
+		tData.bestLapTimePrev = bestLapTimePrev;
+		tData.bestFitness = bestFitness;
+		tData.bestFitnessPrev = bestFitnessPrev;
+		tData.currentTime = generationTimer.getElapsedTime().asMilliseconds();
+		tData.totalTime = totalTime.getElapsedTime().asMilliseconds();
+		tData.hlActivation = activationFuncs[hiddenActivationID];
+		tData.olActivation = activationFuncs[outputActivationID];
+		return tData;
+	}
 };
 

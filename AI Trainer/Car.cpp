@@ -403,9 +403,13 @@ bool Car::containsPoint(sf::Vector2f P) {
 }
 
 void Car::CheckPointHandling() {
+	if (passedFinish) passedFinish = false;
 	if (globalBounds.getGlobalBounds().intersects(nextCheckpointBounds)) {
+		float prevFastest = checkPointTracker.GetFastestLap();
 		checkPointTracker.CompleteSegment();
 		nextCheckpointBounds = checkPointTracker.GetNextCheckpointBounds();
+		if (checkPointTracker.GetFastestLap() != prevFastest)
+			passedFinish = true;
 	}
 }
 

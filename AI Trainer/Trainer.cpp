@@ -45,7 +45,8 @@ void Trainer::NewScene() {
 	bestNetwork = Network();
 	bestFitness = 0;	
 
-	timer.restart(); //start timer
+	generationTimer.restart(); //start timer
+	totalTime.restart();
 	running = true;
 }
 
@@ -54,6 +55,7 @@ void Trainer::UpdateRange(float dt, int min, int max) {
 	for (int i = min; i < max; ++i) {
 		cars[i].Update(dt);
 		cars[i].SetInputs(networks[i].FeedForward(cars[i].GetVision()));
+		if (cars[i].HasPassedFinish())currentLapTimes.push_back(cars[i].GetFastestLap());
 	}
 }
 
@@ -77,7 +79,7 @@ void Trainer::Update(float dt, ThreadPool& pool) {
 			if (c.IsAlive() && c.HasStarted() && allDead)
 				allDead = false;
 
-		if ((allDead && timer.getElapsedTime().asSeconds() > 5) || timer.getElapsedTime().asSeconds() > maxGenTime) NextGeneration();
+		if ((allDead && generationTimer.getElapsedTime().asSeconds() > 5) || generationTimer.getElapsedTime().asSeconds() > maxGenTime) NextGeneration();
 
 		//console
 		consoleManager->UpdateMessageValue("Generation Size", std::to_string(generationSize));
@@ -85,7 +87,7 @@ void Trainer::Update(float dt, ThreadPool& pool) {
 		consoleManager->UpdateMessageValue("Generation", std::to_string(currentGeneration));
 		consoleManager->UpdateMessageValue("Time Limit", std::to_string(maxGenTime));
 		consoleManager->UpdateMessageValue("Best Fitness", std::to_string(bestFitness));
-		consoleManager->UpdateMessageValue("Current Time", std::to_string(timer.getElapsedTime().asSeconds())); \
+		consoleManager->UpdateMessageValue("Current Time", std::to_string(generationTimer.getElapsedTime().asSeconds())); \
 	}
 }
 
@@ -115,7 +117,13 @@ void Trainer::NextGeneration() {
 		if (cars[0].GetFitness() > bestFitness) {
 			bestFitness = cars[0].GetFitness();
 			bestNetwork = bestNetworks[0];
-		}
+		} bestFitnessPrev = cars[0].GetFitness();
+
+		//update fastest lap
+		std::sort(currentLapTimes.begin(), currentLapTimes.end());
+		if(currentLapTimes.size() > 0) bestLapTimePrev = currentLapTimes[0];
+		bestLapTime = std::min(bestLapTime, bestLapTimePrev);
+		currentLapTimes.clear();
 
 		//add best network so far to pool
 		bestNetworks.insert(bestNetworks.begin(), bestNetwork);
@@ -177,7 +185,7 @@ void Trainer::NextGeneration() {
 			networks.push_back(nn);
 		}
 		currentGeneration++;
-		timer.restart();
+		generationTimer.restart();
 	}
 }	
 

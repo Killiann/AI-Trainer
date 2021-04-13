@@ -1,4 +1,6 @@
 #pragma once
+#include <iomanip>
+#include <sstream>
 #include "UIElement.h"
 #include "Trainer.h"
 #include "Button.h"
@@ -36,14 +38,16 @@ class Overlay
 
 	void InitOptions();
 	void InitData();
-	void UpdateOptions(sf::RenderWindow& window, sf::Event& event);
-	void UpdateData(sf::RenderWindow& window, sf::Event& event);
+	void UpdateOptions(sf::RenderWindow& window, sf::Event& event);	
 	void SetNavColor();
-	
+
+	std::string FloatToTime(float n);
+	std::string TruncateFloat(float n);
 public :
 	Overlay(){}
 	Overlay(ResourceManager *resource, Trainer *t);
 	void Update(sf::RenderWindow& window, sf::Event& event);
+	void UpdateData(std::string fps);
 	void Draw(sf::RenderTarget& window);	
 	
 	inline void Switch(NavItem screen){
