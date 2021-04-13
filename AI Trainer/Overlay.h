@@ -14,10 +14,21 @@ enum class NavItem {
 
 class Overlay
 {	
+	std::vector<std::string> optionButtonIDS{ "btn_nextGen", "btn_restart", "btn_showHide", "btn_save", "btn_mainMenu", "btn_exit" };
+	std::vector<std::string> promptMessages = {
+		"Skip to next generation",
+		"Restart simulation without saving",
+		"Toggle overlay",
+		"Save simulation",
+		"Go to Main Menu",
+		"Exit application"
+	};
+
 	NavItem currentState = NavItem::None;
 
 	ResourceManager* resourceManager = nullptr;
 	Trainer* trainer = nullptr;
+	bool exit = false;
 
 	const sf::Vector2f navSize = sf::Vector2f(150, 30);
 	const sf::Vector2f position = sf::Vector2f(0,0);
@@ -55,8 +66,13 @@ public :
 		else currentState = screen;
 		SetNavColor();
 	}	
+
+	inline void NextGen() { trainer->NextGeneration(); }
+	inline void RestartSim() { trainer->ResetScene(); }
+	inline void ShowHide() { std::cout << "show hide\n"; }
+
 	inline void OpenMainMenu() { std::cout << "open mm\n"; }
 	inline void SaveSim() { std::cout << "save sim\n"; }
-	inline void ExitSim() { std::cout << "exit sim\n"; }
+	inline void ExitSim() { exit = true; }
 };
 

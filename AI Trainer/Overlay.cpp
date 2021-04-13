@@ -9,6 +9,15 @@ void ForwardData(void* overlay) {
 }
 
 //options
+void ForwardNextGen(void* overlay) {
+	((Overlay*)overlay)->NextGen();
+}
+void ForwardRestartSim(void* overlay) {
+	((Overlay*)overlay)->RestartSim();
+}
+void ForwardShowHide(void* overlay) {
+	((Overlay*)overlay)->ShowHide();
+}
 void ForwardMainMenu(void* overlay) {
 	((Overlay*)overlay)->OpenMainMenu();
 }
@@ -34,16 +43,32 @@ Overlay::Overlay(ResourceManager* resource, Trainer* t): resourceManager(resourc
 }
 
 void Overlay::InitOptions() {
-	//main menu button	
-	Button btn_mainMenu = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y), sf::Vector2f(150, 30), resourceManager, "Main Menu", ForwardMainMenu, this);
-	optionElements.emplace("btn_mainMenu", std::make_shared<Button>(btn_mainMenu));
+	Label lbl_prompt = Label(sf::Vector2f(position.x + padding + 150 + 30, position.y + navSize.y + padding), sf::Vector2f(250, 100), resourceManager, "", 0.5);
+	lbl_prompt.SetFont(resourceManager->GetRobotoLight());
+	optionElements.emplace("lbl_prompt", std::make_shared<Label>(lbl_prompt));
+
+	//skip to next generation
+	Button btn_nextGen = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y), sf::Vector2f(150, 30), resourceManager, "Next Gen", ForwardNextGen, this);
+	optionElements.emplace("btn_nextGen", std::make_shared<Button>(btn_nextGen));
+	
+	//restart with same settings
+	Button btn_restart = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin), sf::Vector2f(150, 30), resourceManager, "Restart", ForwardRestartSim, this);
+	optionElements.emplace("btn_restart", std::make_shared<Button>(btn_restart));
+	
+	//show/hide overlay
+	Button btn_showHide = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 2), sf::Vector2f(150, 30), resourceManager, "Show Overlay", ForwardShowHide, this);
+	optionElements.emplace("btn_showHide", std::make_shared<Button>(btn_showHide));
 
 	//save
-	Button btn_save = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin), sf::Vector2f(150, 30), resourceManager, "Save", ForwardSave, this);
+	Button btn_save = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 4), sf::Vector2f(150, 30), resourceManager, "Save", ForwardSave, this);
 	optionElements.emplace("btn_save", std::make_shared<Button>(btn_save));
 
+	//main menu button	
+	Button btn_mainMenu = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 5), sf::Vector2f(150, 30), resourceManager, "Main Menu", ForwardMainMenu, this);
+	optionElements.emplace("btn_mainMenu", std::make_shared<Button>(btn_mainMenu));	
+
 	//Exit
-	Button btn_exit = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + (2* btnMargin)), sf::Vector2f(150, 30), resourceManager, "Exit", ForwardOpExit, this);
+	Button btn_exit = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 6), sf::Vector2f(150, 30), resourceManager, "Exit", ForwardOpExit, this);
 	optionElements.emplace("btn_exit", std::make_shared<Button>(btn_exit));
 }
 
@@ -120,19 +145,29 @@ void Overlay::InitData() {
 }
 
 void Overlay::Update(sf::RenderWindow& window, sf::Event &event) {
+	if (exit) window.close();
 	//keep nav updating
 	for (auto& e : navElements)
 		e.second->Update(window, event);
 
 	switch (currentState) {
 	case(NavItem::Options):UpdateOptions(window, event); break;
-	//case(NavItem::Data):UpdateData(window, event); break;
 	}
+}
+
+int GetStringIndex(std::string s, std::vector<std::string> v) {
+	for (unsigned int i = 0; i < v.size(); ++i) 
+		if (v[i] == s) return i;
+	return 0;
 }
 
 void Overlay::UpdateOptions(sf::RenderWindow& window, sf::Event& event) {
 	for (auto& e : optionElements)
 		e.second->Update(window, event);
+
+	for (auto& e : optionElements) 
+		if (e.second->IsHovering())
+			(*optionElements.find("lbl_prompt")).second->SetText(promptMessages[GetStringIndex(e.first, optionButtonIDS)]);	
 }
 
 void Overlay::UpdateData(std::string fps) {
