@@ -2,7 +2,7 @@
 
 ResourceManager::ResourceManager() {
     //load textures
-    std::cout << "Loading textures.." << std::endl;    
+    std::cout << "Loading resources..images";    
     if (!carTexture.loadFromFile("Resources/car_01.png")) {
         std::cout << "Could not get car (01) texture." << std::endl;
     }
@@ -15,7 +15,10 @@ ResourceManager::ResourceManager() {
     if (!checkpointTexture.loadFromFile("Resources/checkpoints.png")) {
         std::cout << "Could not get checkpoints.png";
     }
-    std::cout << "Done. \nLoading fonts..." << std::endl;
+    if (!ddArrowTexture.loadFromFile("Resources/ddArrow.png")) {
+        std::cout << "Could not get checkpoints.png";
+    }
+    std::cout << "fonts..";
     
     //load fonts
     if (!consoleFont.loadFromFile("Resources/Roboto-Black.ttf")) {
@@ -23,6 +26,26 @@ ResourceManager::ResourceManager() {
     }
     if (!pixelFont.loadFromFile("Resources/DotGothic.ttf")) {
         std::cout << "Could not get Pixel Font (DotGothic)" << std::endl;
-    }    
-    std::cout << "Done." << std::endl;
+    }   
+    if (!robotoLight.loadFromFile("Resources/Roboto-Light.ttf")) {
+        std::cout << "Could not get Roboto Light" << std::endl;
+    }
+    if (!robotoRegular.loadFromFile("Resources/Roboto-Medium.ttf")) {
+        std::cout << "Could not get Roboto Medium" << std::endl;
+    }
+
+    //load cursors
+    std::cout << "cursors..";
+    if (!handCursor.loadFromSystem(sf::Cursor::Hand)) {
+        std::cout << "Could not load hand cursor.";
+    }
+    if (!arrowCursor.loadFromSystem(sf::Cursor::Arrow)) {
+        std::cout << "Could not load arrow cursor.";
+    }
+    if (!textCursor.loadFromSystem(sf::Cursor::Text)) {
+        std::cout << "Could not load text cursor.";
+    }
+
+    std::cout << "done." << std::endl;
+
 }

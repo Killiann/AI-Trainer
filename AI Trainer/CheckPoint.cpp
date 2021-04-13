@@ -1,6 +1,6 @@
 #include "CheckPoint.h"
 
-CheckPoint::CheckPoint(int id, sf::Vector2f pos, PosInTile pit, sf::Texture* tex, ConsoleManager* cm) : ID(id), position(pos), PIT(pit), texture(tex), console(cm) {
+CheckPoint::CheckPoint(int id, sf::Vector2f pos, PosInTile pit, sf::Texture* tex) : ID(id), position(pos), PIT(pit), texture(tex) {
 	isStart = ID == 0 ? true : false;
 
 	int interval = tileSize / 8;
@@ -51,8 +51,8 @@ CheckPoint::CheckPoint(int id, sf::Vector2f pos, PosInTile pit, sf::Texture* tex
 
 void CheckPoint::Draw(sf::RenderTarget& window) {
 	window.draw(sprite);
-	if (console->IsDisplayed()) {
+	//if (console->IsDisplayed()) {
 		window.draw(collisionRect);
 		window.draw(centerShape);
-	}
+	//}
 }

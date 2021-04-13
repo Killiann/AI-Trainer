@@ -1,6 +1,6 @@
 #include "Network.h"
 
-Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d) : dimensions(d) {
+Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d, int hlActivationID, int olActivationID) : dimensions(d) {
 	assert(hiddenLayers.size() > 0); //will not work with 0 hidden layers
 
 	//setup nodes
@@ -30,6 +30,21 @@ Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer,
 	}
 	biases_o = lin::Matrix(outputLayer, 1);
 	biases_o.Randomise(-1, 1);
+
+	//fetch activation functions - hidden layer
+	switch (hlActivationID) {
+	case(0): hiddenActivation = &lin::sigmoid; break;
+	case(1): hiddenActivation = &lin::leakyRelu; break;
+	case(2): hiddenActivation = &lin::binary; break;
+	default: hiddenActivation = &lin::sigmoid; break;
+	}
+	//output layer
+	switch (olActivationID) {
+	case(0): outputActivation = &lin::sigmoid; break;
+	case(1): outputActivation = &lin::leakyRelu; break;
+	case(2): outputActivation = &lin::binary; break;
+	default: outputActivation = &lin::sigmoid; break;
+	}
 
 	//SFML
 	SetupRendering();
@@ -125,7 +140,7 @@ void Network::Draw(sf::RenderTarget& window) {
 
 void Network::SetupRendering() {
 	sf::CircleShape circle;
-	float radius = 13;
+	float radius = 7.5;
 	circle.setRadius(radius);
 	circle.setOrigin(radius, radius);
 	circle.setFillColor(sf::Color::White);

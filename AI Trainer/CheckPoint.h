@@ -1,6 +1,5 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "ConsoleManager.h"
 
 enum class PosInTile {
 	TL, //top left
@@ -27,11 +26,10 @@ class CheckPoint {
 	sf::Vector2f center;
 	sf::CircleShape centerShape;	
 
-	ConsoleManager* console = nullptr;
 
 public:
 	CheckPoint(){}
-	CheckPoint(int ID, sf::Vector2f pos, PosInTile pit, sf::Texture* texture, ConsoleManager* cm);	
+	CheckPoint(int ID, sf::Vector2f pos, PosInTile pit, sf::Texture* texture);	
 
 	inline sf::FloatRect getGlobalBounds() { return collisionRect.getGlobalBounds(); }
 	inline int getID() { return ID; }

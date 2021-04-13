@@ -151,29 +151,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="CheckPointManager.cpp" />
     <ClCompile Include="CheckPointTracker.cpp" />
-    <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="CheckPoint.cpp" />
+    <ClCompile Include="Dropdown.cpp" />
+    <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="Overlay.cpp" />
+    <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Minimap.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="TrackManager.cpp" />
     <ClCompile Include="Trainer.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="TrackPiece.cpp" />
+    <ClCompile Include="UIElement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Car.h" />
     <ClInclude Include="CheckPointManager.h" />
     <ClInclude Include="CheckPointTracker.h" />
-    <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="CheckPoint.h" />
+    <ClInclude Include="Dropdown.h" />
+    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="Overlay.h" />
+    <ClInclude Include="Textbox.h" />
     <ClInclude Include="InputManager.h" />
-    <ClInclude Include="Minimap.h" />
+    <ClInclude Include="Label.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SafeQueue.h" />
@@ -182,6 +191,7 @@
     <ClInclude Include="Trainer.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="TrackPiece.h" />
+    <ClInclude Include="UIElement.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LinearAlgebra\LinearAlgebra.vcxproj">
