@@ -33,17 +33,19 @@ Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer,
 
 	//fetch activation functions - hidden layer
 	switch (hlActivationID) {
-	case(0): hiddenActivation = &lin::sigmoid; break;
-	case(1): hiddenActivation = &lin::leakyRelu; break;
-	case(2): hiddenActivation = &lin::binary; break;
-	default: hiddenActivation = &lin::sigmoid; break;
+	case(0): hiddenActivation = &lin::act_sigmoid; break;
+	case(1): hiddenActivation = &lin::act_leakyRelu; break;
+	case(2): hiddenActivation = &lin::act_binary; break;
+	case(3): hiddenActivation = &lin::act_tanh; break;
+	default: hiddenActivation = &lin::act_sigmoid; break;
 	}
 	//output layer
 	switch (olActivationID) {
-	case(0): outputActivation = &lin::sigmoid; break;
-	case(1): outputActivation = &lin::leakyRelu; break;
-	case(2): outputActivation = &lin::binary; break;
-	default: outputActivation = &lin::sigmoid; break;
+	case(0): outputActivation = &lin::act_sigmoid; break;
+	case(1): outputActivation = &lin::act_leakyRelu; break;
+	case(2): outputActivation = &lin::act_binary; break;
+	case(3): hiddenActivation = &lin::act_tanh; break;
+	default: outputActivation = &lin::act_sigmoid; break;
 	}
 
 	//SFML
