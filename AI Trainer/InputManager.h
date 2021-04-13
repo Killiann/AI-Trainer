@@ -2,8 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include "Trainer.h"
 
-#include "ConsoleManager.h"
-
 class InputManager
 {
 	//car controls
@@ -23,10 +21,9 @@ class InputManager
 	bool isConsoleDown = false;
 
 	Trainer* trainer;	
-	ConsoleManager* consoleManager = nullptr;
 
 public:
-	InputManager(ConsoleManager* c, Trainer* t);
+	InputManager(Trainer* t);
 	void Update();
 	void UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords);
 

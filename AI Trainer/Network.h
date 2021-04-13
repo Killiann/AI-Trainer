@@ -33,9 +33,12 @@ class Network {
 	void UpdateRender();
 	sf::VertexArray CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weight);
 
+	float (*hiddenActivation)(float) = nullptr;
+	float (*outputActivation)(float) = nullptr;
+
 public:
 	Network() {};
-	Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d);
+	Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d, int hlActivationID, int olActivationID);
 
 	void SetWeights(std::vector<lin::Matrix> newWeights);
 	void SetBiases(std::vector<lin::Matrix> newBiases);

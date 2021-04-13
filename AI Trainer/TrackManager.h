@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include "Track.h"
 #include "CheckPoint.h"
-#include "ConsoleManager.h"
 #include "ResourceManager.h"
 
 class TrackManager
@@ -11,12 +10,11 @@ class TrackManager
 	std::vector<Track> tracks;
 	int currentTrack = 0;
 
-	ConsoleManager* consoleManager = nullptr;
 	ResourceManager* resourceManager = nullptr;
 
 public:
 	TrackManager() {}
-	TrackManager(ResourceManager* resource, ConsoleManager* console);
+	TrackManager(ResourceManager* resource);
 	
 	inline Track& GetCurrentTrack() { return tracks[currentTrack]; }
 	Track& GetNextTrack() {
@@ -26,6 +24,6 @@ public:
 		return GetCurrentTrack();
 	}
 
-	void DrawTrack(sf::RenderTarget& window);
+	void DrawTrack(sf::RenderTarget& window, bool displayOverlay);
 };
 

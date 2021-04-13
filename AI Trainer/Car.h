@@ -8,7 +8,6 @@
 #include <cassert>
 #include <linearAlgebra.h>
 
-#include "ConsoleManager.h"
 #include "ResourceManager.h"
 #include "CheckPointManager.h"
 #include "CheckPointTracker.h"
@@ -76,9 +75,6 @@ class Car
 	std::vector<sf::RectangleShape> wheels;
 	std::vector<sf::Sprite> skidMarks;	
 
-	//manage
-	ConsoleManager* consoleManager = nullptr;
-
 	sf::ConvexShape collisionBounds;
 	sf::RectangleShape globalBounds;
 
@@ -120,12 +116,14 @@ class Car
 	void CalculateDistances();
 	void CheckPointHandling();
 
+	bool passedFinish = false;
+
 public:	
 	Car(){}
-	Car(int id, sf::Vector2f pos, ConsoleManager *console, ResourceManager *resource, Track* track);
+	Car(int id, sf::Vector2f pos, ResourceManager *resource, Track* track);
 	
 	void Update(float dt);
-	void Draw(sf::RenderTarget& window);
+	void Draw(sf::RenderTarget& window, bool devOverlay);
 	bool containsPoint(sf::Vector2f);	
 	bool IsOnTrack();
 	
@@ -166,6 +164,9 @@ public:
 			I_rightSteer = inputs[3];
 			I_leftSteer = inputs[4];
 		}
-	}		
+	}	
+
+	inline bool HasPassedFinish() { return passedFinish; }
+	inline float GetFastestLap() { return checkPointTracker.GetFastestLap(); }
 };
 
