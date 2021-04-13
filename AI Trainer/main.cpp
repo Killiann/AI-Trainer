@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <numeric>
 
 #include "InputManager.h"
@@ -42,9 +43,9 @@ int main()
     Overlay overlay(&resourceManager, &trainer);
 
     //misc
-    std::deque<float> allFPS;
     sf::Vector2f mouseCoords;
     bool displayDev = false;
+    std::deque<float> allFPS;
 
     //main clock
     sf::Clock clk;
@@ -56,17 +57,17 @@ int main()
 
     //main loop
     while (window.isOpen())
-    {
-        //time between loops
-        dt = clk.restart();
-        
+    {                
         //handle fps
         float fps = 1.f / clk.getElapsedTime().asSeconds();
         allFPS.push_back(fps);
         if (allFPS.size() > 30) allFPS.pop_front();
 
+        //keep after fps fetch
+        dt = clk.restart();
+
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);
+        mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);        
 
         //manage events
         sf::Event event;
@@ -88,6 +89,8 @@ int main()
 
             inputManager.UpdateUIControls(event, mouseCoords);
         }
+        //dev overlay
+        displayDev = overlay.IsDevOn();
 
         //update 
         inputManager.Update();
@@ -99,7 +102,7 @@ int main()
         window.clear(sf::Color(139, 69, 19));
         window.setView(camera);        
         trackManager.DrawTrack(window, displayDev);
-        trainer.DrawEntities(window);
+        trainer.DrawEntities(window, displayDev);
 
         //UI------- 
         window.setView(window.getDefaultView());        
@@ -109,7 +112,6 @@ int main()
 
         window.display();
     }
-
     pool.shutdown();
     return 0;
 }

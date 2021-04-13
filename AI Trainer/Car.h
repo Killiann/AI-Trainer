@@ -123,7 +123,7 @@ public:
 	Car(int id, sf::Vector2f pos, ResourceManager *resource, Track* track);
 	
 	void Update(float dt);
-	void Draw(sf::RenderTarget& window);
+	void Draw(sf::RenderTarget& window, bool devOverlay);
 	bool containsPoint(sf::Vector2f);	
 	bool IsOnTrack();
 	

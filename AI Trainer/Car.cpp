@@ -214,15 +214,15 @@ void Car::Update(float dt) {
 	}	
 }
 
-void Car::Draw(sf::RenderTarget& window){
+void Car::Draw(sf::RenderTarget& window, bool devOverlay){
 	
 	//dev mode below car
 	if (selected) {
-		/*if (consoleManager->IsDisplayed()) {*/
+		if(devOverlay){
 			//distance lines
 			for (auto& l : distanceLines)
 				window.draw(l);
-		//}
+		}
 	}
 
 	//temporarily removed due to performance - add option to add back / find way of fixing performance (NOT IMPORTANT)
@@ -273,7 +273,7 @@ void Car::Draw(sf::RenderTarget& window){
 	window.draw(carBody, transform2);		
 
 	//dev display (above car)
-	//if (consoleManager->IsDisplayed()) {
+	if (devOverlay) {
 		//line distances
 		if (selected) {
 			for (auto& t : infoText) {
@@ -282,7 +282,7 @@ void Car::Draw(sf::RenderTarget& window){
 			window.draw(globalBounds);
 		}
 		window.draw(collisionBounds);
-	//}
+	}
 }
 
 void Car::addSkidMarks() {

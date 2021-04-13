@@ -83,11 +83,11 @@ void Trainer::Update(float dt, ThreadPool& pool) {
 	}
 }
 
-void Trainer::DrawEntities(sf::RenderTarget& window) {
+void Trainer::DrawEntities(sf::RenderTarget& window, bool devOverlay) {
 	if (running) {
 		if (cars.size() != 0)
 			for (auto& c : cars)
-				c.Draw(window);
+				c.Draw(window, devOverlay);
 	}
 }
 
@@ -106,7 +106,7 @@ void Trainer::NextGeneration() {
 		bestNetworks.resize(surviverPool);
 
 		//check if best fitness so far has been beaten
-		if (cars[0].GetFitness() > bestFitness) {
+		if (cars[0].GetFitness() > bestFitness || currentGeneration == 1) {
 			bestFitness = cars[0].GetFitness();
 			bestNetwork = bestNetworks[0];
 		} bestFitnessPrev = cars[0].GetFitness();

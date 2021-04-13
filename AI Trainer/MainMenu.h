@@ -115,8 +115,8 @@ public:
 	}
 	inline void ExitApp() { exit = true; }
 	inline void CreateNewSim() { 
-		hiddenLayerData.resize(hiddenLayers);
-		trainer->SetupTrainer(threadCount, carsPerThread, hiddenLayerData, hiddenFuncID, outputFuncID);
+		std::vector<int> hlVec(hiddenLayerData[0], hiddenLayerData[hiddenLayers]);
+		trainer->SetupTrainer(threadCount, carsPerThread, hlVec, hiddenFuncID, outputFuncID);
 		Hide();
 	}
 

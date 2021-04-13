@@ -29,6 +29,7 @@ class Overlay
 	ResourceManager* resourceManager = nullptr;
 	Trainer* trainer = nullptr;
 	bool exit = false;
+	bool devOverlay = false;
 
 	const sf::Vector2f navSize = sf::Vector2f(150, 30);
 	const sf::Vector2f position = sf::Vector2f(0,0);
@@ -65,12 +66,23 @@ public :
 		if (currentState == screen) currentState = NavItem::None;
 		else currentState = screen;
 		SetNavColor();
-	}	
+	}		
+
+	inline bool IsDevOn() { return devOverlay; }
 
 	inline void NextGen() { trainer->NextGeneration(); }
 	inline void RestartSim() { trainer->ResetScene(); }
-	inline void ShowHide() { std::cout << "show hide\n"; }
-
+	inline void ShowHide() { 
+		if (devOverlay) {
+			devOverlay = false;
+			(*optionElements.find("btn_showHide")).second->SetText("Show Overlay");			
+		}
+		else {
+			devOverlay = true;
+			(*optionElements.find("btn_showHide")).second->SetText("Hide Overlay");
+		}
+		(*optionElements.find("btn_showHide")).second->CenterText();
+	}
 	inline void OpenMainMenu() { std::cout << "open mm\n"; }
 	inline void SaveSim() { std::cout << "save sim\n"; }
 	inline void ExitSim() { exit = true; }

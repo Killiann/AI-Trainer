@@ -83,7 +83,7 @@ public:
 	void SetupTrainer(int threadCount, int carsPerThread, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID);
 
 	void Update(float dt, ThreadPool &pool);
-	void DrawEntities(sf::RenderTarget& window);
+	void DrawEntities(sf::RenderTarget& window, bool devOverlay);
 	void DrawUI(sf::RenderTarget& window);	
 	void NextGeneration();
 

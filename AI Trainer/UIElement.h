@@ -102,6 +102,11 @@ public:
 	inline void SetText(std::string newString) { text.setString(newString); }
 	inline std::string GetText() { return text.getString(); }
 
+	inline void CenterText() {
+		text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
+		text.setPosition(sf::Vector2f(position.x + (size.x / 2), position.y + (size.y / 2.f) - 4));
+	}
+
 	virtual sf::Vector2f GetSize() { return size; }
 	virtual sf::Vector2f GetPosition() { return position; }
 	virtual void OffsetText(float x, float y) { text.setPosition(text.getPosition().x + x, text.getPosition().y + y); }
