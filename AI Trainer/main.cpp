@@ -108,7 +108,8 @@ int main()
         window.setView(window.getDefaultView());        
         trainer.DrawUI(window);        
         menu.Draw(window);        
-        overlay.Draw(window);
+        if (trainer.IsRunning())
+            overlay.Draw(window);
 
         window.display();
     }
