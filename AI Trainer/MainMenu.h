@@ -59,7 +59,7 @@ class MainMenu
 	unsigned int rightColW = 30;
 	unsigned int settingsMargin = 26;
 	unsigned int rowH = 26;
-	unsigned int s_marginTop = marginTop + padding + position.y;
+	unsigned int s_marginTop = marginTop + padding + (unsigned)position.y;
 	unsigned int s_marginLeft = 570;
 
 	//SFML

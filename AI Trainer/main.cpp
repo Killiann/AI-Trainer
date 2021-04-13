@@ -8,12 +8,12 @@
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "TrackManager.h"
-//#include "Minimap.h"
 #include "Trainer.h"
 
 #include "ThreadPool.h"
 
 #include "MainMenu.h"
+#include "Overlay.h"
 
 //game clock
 sf::Clock clk;
@@ -50,11 +50,8 @@ int main()
     Trainer trainer(&resourceManager, &consoleManager, trackManager.GetCurrentTrack(), dimensions);
     InputManager inputManager(&consoleManager, &trainer);          
 
-    //Minimap setup
-    //Minimap minimap = Minimap(&trainer.GetCars(), &trackManager.GetCurrentTrack(), &consoleManager);    
-    //Minimap minimap = Minimap(&trainer.GetCars(), &trackManager.GetCurrentTrack(), &consoleManager);    
-
     MainMenu menu(&resourceManager, &trainer);
+    Overlay overlay(&resourceManager, &trainer);
 
     //initialise thread pool
     ThreadPool pool(12);
@@ -90,13 +87,15 @@ int main()
             }                                 
                    
             menu.Update(window, event);
+            if(trainer.IsRunning())
+                overlay.Update(window, event);
+
             inputManager.UpdateUIControls(event, mouseCoords);
         }
 
         //update 
         inputManager.Update();
         trainer.Update(dt.asSeconds(), pool);
-
 
         //draw entities
         window.clear(sf::Color(139, 69, 19));
@@ -109,11 +108,12 @@ int main()
         window.setView(window.getDefaultView());
         
         consoleManager.Draw(window);
-        //minimap.Draw(window);
         trainer.DrawUI(window);
 
-        //temp
+        //menus
         menu.Draw(window);
+        
+        overlay.Draw(window);
 
         window.display();
     }

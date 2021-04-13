@@ -6,7 +6,7 @@ void ForwardBack(void* menu) { ((MainMenu*)menu)->Back(); }
 //navigation
 void ForwardNewSim(void* menu) { ((MainMenu*)menu)->NewSim(); }
 void ForwardLoadSim(void* menu) { ((MainMenu*)menu)->LoadSim(); }
-void ForwardExit(void* menu) { ((MainMenu*)menu)->ExitApp(); }
+void ForwardSimExit(void* menu) { ((MainMenu*)menu)->ExitApp(); }
 
 //new simulation
 void ForwardSubLayer(void* menu) { ((MainMenu*)menu)->SubHiddenLayer(); }
@@ -46,7 +46,7 @@ void MainMenu::InitializeNavigation() {
 	//navigation 
 	Button btn_newSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 100), sf::Vector2f(150, 40), resourceManager, "New", ForwardNewSim, this);
 	Button btn_loadSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 150), sf::Vector2f(150, 40), resourceManager, "Load", ForwardLoadSim, this);
-	Button btn_exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 200), sf::Vector2f(150, 40), resourceManager, "Exit", ForwardExit, this);
+	Button btn_exitSim = Button(sf::Vector2f(position.x + padding, position.y + padding + 200), sf::Vector2f(150, 40), resourceManager, "Exit", ForwardSimExit, this);
 
 	sf::Vector2f promptPos(position.x + btn_newSim.GetSize().x + (padding * 2), position.y + padding + 100);
 	Label lbl_prompt = Label(promptPos, sf::Vector2f(0, 0), resourceManager, "", 0.55);

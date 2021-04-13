@@ -33,8 +33,8 @@ class Network {
 	void UpdateRender();
 	sf::VertexArray CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weight);
 
-	float (*hiddenActivation)(float);
-	float (*outputActivation)(float);
+	float (*hiddenActivation)(float) = nullptr;
+	float (*outputActivation)(float) = nullptr;
 
 public:
 	Network() {};
