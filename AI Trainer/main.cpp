@@ -1,26 +1,14 @@
-#include <linearAlgebra.h>
 #include <SFML/Graphics.hpp>
-#include <linearAlgebra.h>
-#include <algorithm>
 #include <numeric>
 
-#include "ConsoleManager.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "TrackManager.h"
 #include "Trainer.h"
-
-#include "ThreadPool.h"
-
 #include "MainMenu.h"
 #include "Overlay.h"
 
-//game clock
-sf::Clock clk;
-sf::Time dt;
-
-std::deque<float> allFPS;
-sf::Vector2f mouseCoords;
+#include "ThreadPool.h"
 
 int main()
 {
@@ -43,15 +31,24 @@ int main()
 
     //managers 
     ResourceManager resourceManager;
-    ConsoleManager consoleManager(resourceManager.GetConsoleFont());
-    TrackManager trackManager(&resourceManager, &consoleManager);
+    TrackManager trackManager(&resourceManager);
    
     //NN Trainers
-    Trainer trainer(&resourceManager, &consoleManager, trackManager.GetCurrentTrack(), dimensions);
-    InputManager inputManager(&consoleManager, &trainer);          
+    Trainer trainer(&resourceManager, trackManager.GetCurrentTrack(), dimensions);
+    InputManager inputManager(&trainer);          
 
+    //UI
     MainMenu menu(&resourceManager, &trainer);
     Overlay overlay(&resourceManager, &trainer);
+
+    //misc
+    std::deque<float> allFPS;
+    sf::Vector2f mouseCoords;
+    bool displayDev = false;
+
+    //main clock
+    sf::Clock clk;
+    sf::Time dt;
 
     //initialise thread pool
     ThreadPool pool(12);
@@ -59,20 +56,19 @@ int main()
 
     //main loop
     while (window.isOpen())
-    {     
+    {
+        //time between loops
+        dt = clk.restart();
+        
         //handle fps
         float fps = 1.f / clk.getElapsedTime().asSeconds();
         allFPS.push_back(fps);
         if (allFPS.size() > 30) allFPS.pop_front();
-        consoleManager.UpdateMessageValue("framerate", std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size())) + " fps");
 
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        //sf::Vector2i mousePos = sf::Vector2i(mouseP.x - window.getPosition().x, mouseP.y - window.getPosition().y);
         mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);
 
-        //time between loops
-        dt = clk.restart();
-
+        //manage events
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -81,11 +77,11 @@ int main()
 
             if (event.type == sf::Event::Resized)
             {
-                // update the view to the new size of the window
                 sf::FloatRect visibleArea(0.f, 0.f, (float)event.size.width, (float)event.size.height);
                 window.setView(sf::View(visibleArea));
             }                                 
-                   
+
+            //update UI
             menu.Update(window, event);
             if(trainer.IsRunning())
                 overlay.Update(window, event);
@@ -101,20 +97,14 @@ int main()
 
         //draw entities
         window.clear(sf::Color(139, 69, 19));
-        window.setView(camera);
-        
-        trackManager.DrawTrack(window);
+        window.setView(camera);        
+        trackManager.DrawTrack(window, displayDev);
         trainer.DrawEntities(window);
 
         //UI------- 
-        window.setView(window.getDefaultView());
-        
-        consoleManager.Draw(window);
-        trainer.DrawUI(window);
-
-        //menus
-        menu.Draw(window);
-        
+        window.setView(window.getDefaultView());        
+        trainer.DrawUI(window);        
+        menu.Draw(window);        
         overlay.Draw(window);
 
         window.display();

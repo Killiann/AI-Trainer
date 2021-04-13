@@ -155,7 +155,6 @@
     <ClCompile Include="Car.cpp" />
     <ClCompile Include="CheckPointManager.cpp" />
     <ClCompile Include="CheckPointTracker.cpp" />
-    <ClCompile Include="ConsoleManager.cpp" />
     <ClCompile Include="CheckPoint.cpp" />
     <ClCompile Include="Dropdown.cpp" />
     <ClCompile Include="MainMenu.cpp" />
@@ -164,7 +163,6 @@
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Minimap.cpp" />
     <ClCompile Include="Network.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="TrackManager.cpp" />
@@ -178,7 +176,6 @@
     <ClInclude Include="Car.h" />
     <ClInclude Include="CheckPointManager.h" />
     <ClInclude Include="CheckPointTracker.h" />
-    <ClInclude Include="ConsoleManager.h" />
     <ClInclude Include="CheckPoint.h" />
     <ClInclude Include="Dropdown.h" />
     <ClInclude Include="MainMenu.h" />
@@ -186,7 +183,6 @@
     <ClInclude Include="Textbox.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Label.h" />
-    <ClInclude Include="Minimap.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SafeQueue.h" />

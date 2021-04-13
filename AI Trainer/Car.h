@@ -8,7 +8,6 @@
 #include <cassert>
 #include <linearAlgebra.h>
 
-#include "ConsoleManager.h"
 #include "ResourceManager.h"
 #include "CheckPointManager.h"
 #include "CheckPointTracker.h"
@@ -76,9 +75,6 @@ class Car
 	std::vector<sf::RectangleShape> wheels;
 	std::vector<sf::Sprite> skidMarks;	
 
-	//manage
-	ConsoleManager* consoleManager = nullptr;
-
 	sf::ConvexShape collisionBounds;
 	sf::RectangleShape globalBounds;
 
@@ -124,7 +120,7 @@ class Car
 
 public:	
 	Car(){}
-	Car(int id, sf::Vector2f pos, ConsoleManager *console, ResourceManager *resource, Track* track);
+	Car(int id, sf::Vector2f pos, ResourceManager *resource, Track* track);
 	
 	void Update(float dt);
 	void Draw(sf::RenderTarget& window);

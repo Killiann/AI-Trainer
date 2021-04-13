@@ -1,7 +1,7 @@
 #include "Trainer.h"
 
-Trainer::Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, Track& t, sf::FloatRect nnDim)
-: resourceManager(rMngr), consoleManager(coMngr), track(t), nnDimensions(nnDim) {
+Trainer::Trainer(ResourceManager* rMngr, Track& t, sf::FloatRect nnDim)
+: resourceManager(rMngr), track(t), nnDimensions(nnDim) {
 	
 	////get number of cores in the system and alter generatiion size accordingly
 	//threadCount = std::thread::hardware_concurrency();
@@ -33,7 +33,7 @@ void Trainer::NewScene() {
 	cars.clear();
 	networks.clear();
 	for (int i = 0; i < generationSize; ++i) {
-		Car car = Car(i, sf::Vector2f(550.0f, 800.0f), consoleManager, resourceManager, &track);
+		Car car = Car(i, sf::Vector2f(550.0f, 800.0f), resourceManager, &track);
 		cars.push_back(car);
 
 		Network nn(inputNodes, hiddenNodes, outputNodes, nnDimensions, hiddenActivationID, outputActivationID);
@@ -80,14 +80,6 @@ void Trainer::Update(float dt, ThreadPool& pool) {
 				allDead = false;
 
 		if ((allDead && generationTimer.getElapsedTime().asSeconds() > 5) || generationTimer.getElapsedTime().asSeconds() > maxGenTime) NextGeneration();
-
-		//console
-		consoleManager->UpdateMessageValue("Generation Size", std::to_string(generationSize));
-		consoleManager->UpdateMessageValue("Mutation Rate", "5%");
-		consoleManager->UpdateMessageValue("Generation", std::to_string(currentGeneration));
-		consoleManager->UpdateMessageValue("Time Limit", std::to_string(maxGenTime));
-		consoleManager->UpdateMessageValue("Best Fitness", std::to_string(bestFitness));
-		consoleManager->UpdateMessageValue("Current Time", std::to_string(generationTimer.getElapsedTime().asSeconds())); \
 	}
 }
 
@@ -137,7 +129,7 @@ void Trainer::NextGeneration() {
 		networks.clear();
 		for (int i = 0; i < generationSize; ++i) {
 			//reset cars
-			Car car = Car(i, sf::Vector2f(550.0f, 800.0f), consoleManager, resourceManager, &track);
+			Car car = Car(i, sf::Vector2f(550.0f, 800.0f), resourceManager, &track);
 			cars.push_back(car);
 
 			//select two networks from pool, biased to top performers

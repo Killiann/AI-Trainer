@@ -77,10 +77,9 @@ class Trainer
 
 	//managers
 	ResourceManager* resourceManager;
-	ConsoleManager* consoleManager;
 	
 public:
-	Trainer(ResourceManager* rMngr, ConsoleManager* coMngr, Track& track, sf::FloatRect nnDim);	
+	Trainer(ResourceManager* rMngr, Track& track, sf::FloatRect nnDim);	
 	void SetupTrainer(int threadCount, int carsPerThread, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID);
 
 	void Update(float dt, ThreadPool &pool);

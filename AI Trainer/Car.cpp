@@ -11,8 +11,8 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi)
 	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
-Car::Car(int id, sf::Vector2f pos, ConsoleManager *console, ResourceManager *resource, Track* trk)
-	:ID(id), consoleManager(console), track(trk){
+Car::Car(int id, sf::Vector2f pos, ResourceManager *resource, Track* trk)
+	:ID(id), track(trk){
 
 	position.x = pos.x / scale;
 	position.y = pos.y / scale;
@@ -211,32 +211,18 @@ void Car::Update(float dt) {
 		infoText[infoText.size() - 1].setPosition(collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(3)));
 		CheckPointHandling();
 		fitness = CalculateFitness();
-	}
-
-	//update console
-	if (selected) {
-		consoleManager->UpdateMessageValue("steer angle", std::to_string(steerAngle));
-		consoleManager->UpdateMessageValue("velocity.x", std::to_string(velocity.x));
-		consoleManager->UpdateMessageValue("velocity.y", std::to_string(velocity.y));
-		consoleManager->UpdateMessageValue("absolute velocity", std::to_string(absVel));
-		consoleManager->UpdateMessageValue("current segment", std::to_string(checkPointTracker.GetCurrentSegmentTime() / 1000.f));
-		consoleManager->UpdateMessageValue("fastest time", std::to_string(checkPointTracker.GetFastestLap() / 1000.f));
-		consoleManager->UpdateMessageValue("last lap", std::to_string(checkPointTracker.GetLastLapTime() / 1000.f));
-		consoleManager->UpdateMessageValue("on track", std::to_string(onTrack));
-		consoleManager->UpdateMessageValue("fitness", std::to_string(fitness));
-		consoleManager->UpdateMessageValue("alive", std::to_string(alive));
-	}
+	}	
 }
 
 void Car::Draw(sf::RenderTarget& window){
 	
 	//dev mode below car
 	if (selected) {
-		if (consoleManager->IsDisplayed()) {
+		/*if (consoleManager->IsDisplayed()) {*/
 			//distance lines
 			for (auto& l : distanceLines)
 				window.draw(l);
-		}
+		//}
 	}
 
 	//temporarily removed due to performance - add option to add back / find way of fixing performance (NOT IMPORTANT)
@@ -287,7 +273,7 @@ void Car::Draw(sf::RenderTarget& window){
 	window.draw(carBody, transform2);		
 
 	//dev display (above car)
-	if (consoleManager->IsDisplayed()) {
+	//if (consoleManager->IsDisplayed()) {
 		//line distances
 		if (selected) {
 			for (auto& t : infoText) {
@@ -296,7 +282,7 @@ void Car::Draw(sf::RenderTarget& window){
 			window.draw(globalBounds);
 		}
 		window.draw(collisionBounds);
-	}
+	//}
 }
 
 void Car::addSkidMarks() {
@@ -460,7 +446,6 @@ void Car::operator=(Car c) {
 	wheels = c.wheels;
 	skidMarks = c.skidMarks;
 
-	consoleManager = c.consoleManager;
 	track = c.track;
 	tileSize = c.tileSize;
 

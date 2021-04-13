@@ -1,13 +1,6 @@
 #include "InputManager.h"
 
-InputManager::InputManager(ConsoleManager *c, Trainer* t) : consoleManager(c), trainer(t){
-	consoleManager->AddMessage("=======INPUTS=======");
-	consoleManager->AddMessage("throttle");
-	consoleManager->AddMessage("brake");
-	consoleManager->AddMessage("ebrake");
-	consoleManager->AddMessage("left steer");
-	consoleManager->AddMessage("right steer");
-}
+InputManager::InputManager(Trainer* t) : trainer(t){}
 
 void InputManager::Update(){
 	//throttle
@@ -34,12 +27,6 @@ void InputManager::Update(){
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		steerRight = 1;
 	else steerRight = 0;
-
-	consoleManager->UpdateMessageValue("throttle", std::to_string(throttle));
-	consoleManager->UpdateMessageValue("brake", std::to_string(brake));
-	consoleManager->UpdateMessageValue("ebrake", std::to_string(ebrake));
-	consoleManager->UpdateMessageValue("left steer", std::to_string(steerLeft));
-	consoleManager->UpdateMessageValue("right steer", std::to_string(steerRight));
 }
 
 void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
@@ -94,15 +81,7 @@ void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
                     isSaveDown = true;
                 }
             }
-        }
-        //toggle console
-        if (event.key.code == (sf::Keyboard::Key::C)) {
-            if (!isConsoleDown) {
-                if (consoleManager->IsDisplayed()) consoleManager->Hide();
-                else consoleManager->Show();
-                isConsoleDown = true;
-            }
-        }
+        }                
     }
     if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::Key::Num1) {
