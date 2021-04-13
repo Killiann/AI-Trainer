@@ -10,9 +10,11 @@
 #include "Overlay.h"
 
 #include "ThreadPool.h"
+#include "WindowsDialogHandler.h"
 
-int main()
-{
+int main(){
+    //openTest();
+
     //window setup
     sf::ContextSettings settings;    
     settings.antialiasingLevel = 8;    

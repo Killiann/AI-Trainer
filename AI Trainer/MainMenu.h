@@ -111,6 +111,8 @@ public:
 		title.setString("Create new Trainer");
 	}
 	inline void LoadSim() {
+		trainer->LoadScene("test2.sim");
+		Hide();
 		currentState = MenuState::LoadSimulation; 
 		title.setString("Load Trainer");
 	}

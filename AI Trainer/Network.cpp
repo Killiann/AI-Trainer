@@ -56,7 +56,7 @@ void Network::SetWeights(std::vector<lin::Matrix> newWeights) {
 	if (newWeights.size() == weights_hl.size() + 2) {
 		weights_ih = newWeights[0];
 		weights_ho = newWeights[1];
-		for (unsigned int i = 2; i < newWeights.size(); ++i) 
+		for (unsigned int i = 2; i < newWeights.size(); ++i)
 			weights_hl[i - 2] = newWeights[i];
 	}
 	else std::cout << "Incorrect number of new weights for network.\n";
@@ -125,18 +125,18 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 
 void Network::Draw(sf::RenderTarget& window) {
 
-	for (auto &l : connectionLines)
+	for (auto& l : connectionLines)
 		window.draw(l);
 
-	for (auto &c : inputNodes)
+	for (auto& c : inputNodes)
 		window.draw(c);
 
 	for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
-		for (auto &n : hiddenNodes[i])
+		for (auto& n : hiddenNodes[i])
 			window.draw(n);
 	}
 
-	for (auto &o : outputNodes)
+	for (auto& o : outputNodes)
 		window.draw(o);
 }
 
@@ -157,7 +157,7 @@ void Network::SetupRendering() {
 	for (unsigned int j = 0; j < nodes_hl.size(); ++j) {
 		nodeCount += nodes_hl[j].GetRows();
 		hiddenNodes.push_back(std::vector<sf::CircleShape>());
-		
+
 		padding = (dimensions.height - ((yInterval * nodes_hl[j].GetRows()) - yInterval)) / 2;
 		for (unsigned int i = 0; i < nodes_hl[j].GetRows(); ++i) {
 			circle.setPosition(sf::Vector2f(dimensions.left + xInterval * (j + 2), dimensions.top + padding + (i * yInterval)));
@@ -176,7 +176,7 @@ void Network::SetupRendering() {
 			}
 		}
 	}
-	
+
 	//output nodes
 	padding = (dimensions.height - ((yInterval * nodes_o.GetRows()) - yInterval)) / 2;
 	for (unsigned int i = 0; i < nodes_o.GetRows(); ++i) {
@@ -195,7 +195,7 @@ void Network::SetupRendering() {
 	for (unsigned int i = 0; i < nodes_i.GetRows(); ++i) {
 		circle.setPosition(sf::Vector2f(dimensions.left + xInterval, dimensions.top + padding + (i * yInterval)));
 		inputNodes.push_back(circle);
-		
+
 		//weights
 		for (unsigned int r = 0; r < weights_ih.GetRows(); ++r) {
 			sf::VertexArray connection = CreateLine(circle.getPosition(), hiddenNodes[0][r].getPosition(), weights_ih[r][i]);
@@ -248,12 +248,7 @@ sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weig
 
 //SAVING / LOADING ============================
 
-void Network::SaveToFile(std::string fileName, float fitness) {
-	//save
-	std::ofstream file;
-	file.open(fileName);
-	
-	file << fitness << std::endl;
+void Network::SaveToFile(std::ofstream &file) {
 	//network details
 	file << nodes_i.GetRows() << " " << nodes_o.GetRows();
 	for (unsigned int i = 0; i < nodes_hl.size(); ++i) {
@@ -309,11 +304,9 @@ void Network::SaveToFile(std::string fileName, float fitness) {
 			file << std::endl;
 		}
 	}
-
-	file.close();
 }
 
-std::vector<std::string> splitString(std::string s, std::string delimiter) {
+std::vector<std::string> SplitString(std::string s, std::string delimiter) {
 	std::vector<std::string> res;
 	size_t pos = 0;
 	std::string token;
@@ -329,34 +322,27 @@ std::vector<std::string> splitString(std::string s, std::string delimiter) {
 void LoadMatrix(std::ifstream& file, lin::Matrix& m) {
 	std::string line;
 	std::getline(file, line);
-	std::vector<std::string> splitLine = splitString(line, " ");
+	std::vector<std::string> splitLine = SplitString(line, " ");
 	m = lin::Matrix(std::stoi(splitLine[0]), std::stoi(splitLine[1]));
 	for (unsigned int r = 0; r < m.GetRows(); ++r) {
 		splitLine.clear();
 		std::getline(file, line);
-		splitLine = splitString(line, " ");
+		splitLine = SplitString(line, " ");
 		for (unsigned int c = 0; c < m.GetCols(); ++c) {
 			m[r][c] = std::stof(splitLine[c]);
 		}
 	}
 }
 
-float Network::LoadFromFile(std::string fileName) {
-	//load 
-	std::ifstream file;
-	file.open(fileName);
-	std::string line;
-
-	//get fitness
-	float fitness;
-	std::getline(file, line);
-	fitness = std::stof(line);
+void Network::LoadFromFile(std::ifstream& file) {
 	
+	std::string line;	
+
 	//setup network size - fetch node counts
 	std::getline(file, line);
-	std::vector <std::string> splitLine = splitString(line, " ");
-	nodes_i = lin::Matrix(std::stoi(splitLine[0]), 0);    //input
-	nodes_o = lin::Matrix(std::stoi(splitLine[1]), 0);	  //output
+	std::vector <std::string> splitLine = SplitString(line, " ");
+	nodes_i = lin::Matrix(std::stoi(splitLine[0]), 1);    //input
+	nodes_o = lin::Matrix(std::stoi(splitLine[1]), 1);	  //output
 	for (unsigned int i = 2; i < splitLine.size(); ++i) {
 		nodes_hl.emplace_back(std::stoi(splitLine[i]), 1);//hidden
 	}
@@ -383,7 +369,5 @@ float Network::LoadFromFile(std::string fileName) {
 
 	//SFML
 	SetupRendering();
-
-	return fitness;
 }
 

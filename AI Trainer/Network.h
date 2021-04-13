@@ -6,6 +6,8 @@
 #include <sstream>
 #include <cassert>
 
+std::vector<std::string> SplitString(std::string, std::string);
+
 class Network {
 	//nodes
 	lin::Matrix nodes_i; //input nodes
@@ -47,8 +49,8 @@ public:
 
 	std::vector<float> FeedForward(std::vector<float> inputs);			
 
-	void SaveToFile(std::string fileName, float fitness);
-	float LoadFromFile(std::string fileName);
+	void SaveToFile(std::ofstream& file);
+	void LoadFromFile(std::ifstream& file);
 
 	void Draw(sf::RenderTarget& window);
 };

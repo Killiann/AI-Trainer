@@ -35,6 +35,7 @@ class Trainer
 	int currentGeneration = 1;
 	bool running = false;
 
+	float elapsedTime = 0.f;
 	sf::Clock totalTime;
 	sf::Clock generationTimer;
 	const float maxGenTime = 40; //seconds
@@ -55,8 +56,7 @@ class Trainer
 	std::vector<Network> networks;
 	int currentId = 0;
 
-	std::map<float, Network> topPerformers;
-	int topPerformersCount = 10;				
+	std::vector<Network> bestNetworks;
 	Network bestNetwork;
 
 	//data
@@ -85,7 +85,10 @@ public:
 	void Update(float dt, ThreadPool &pool);
 	void DrawEntities(sf::RenderTarget& window, bool devOverlay);
 	void DrawUI(sf::RenderTarget& window);	
-	void NextGeneration();
+	void NextGeneration(bool skipReset);
+
+	void SaveScene(std::string filename);
+	void LoadScene(std::string filename);
 
 	static float Divide(float n);
 
@@ -93,12 +96,10 @@ public:
 	inline std::vector<Car>& GetCars() { return cars; }
 	inline int GetCurrentID() { return currentId; }
 	inline void SetCurrentID(int newID) { currentId = newID; }
-	inline void SaveBestCar() { bestNetwork.SaveToFile("best.txt", bestFitness); }
-	inline void LoadBestCar() { bestFitness = bestNetwork.LoadFromFile("best.txt"); }	
 	inline void ResetScene() { if (generationSize > 0) NewScene(); else std::cout << "Could not reset scene."; }
 	
 	inline void Pause() { running = false; }
-	inline void Continue() { running = true; }
+	inline void Continue() { running = true; }	
 
 	//get data for UI
 	inline TrainerData GetData() {
@@ -110,7 +111,7 @@ public:
 		tData.bestFitness = bestFitness;
 		tData.bestFitnessPrev = bestFitnessPrev;
 		tData.currentTime = generationTimer.getElapsedTime().asMilliseconds();
-		tData.totalTime = totalTime.getElapsedTime().asMilliseconds();
+		tData.totalTime = elapsedTime + totalTime.getElapsedTime().asMilliseconds();
 		tData.hlActivation = activationFuncs[hiddenActivationID];
 		tData.olActivation = activationFuncs[outputActivationID];
 		return tData;

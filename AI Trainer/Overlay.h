@@ -73,7 +73,7 @@ public :
 
 	inline bool IsDevOn() { return devOverlay; }
 
-	inline void NextGen() { trainer->NextGeneration(); }
+	inline void NextGen() { trainer->NextGeneration(false); }
 	inline void RestartSim() { trainer->ResetScene(); }
 	inline void ShowHide() { 
 		if (devOverlay) {
@@ -91,7 +91,7 @@ public :
 		trainer->Pause(); 
 		mainMenu->Show(true);
 	}
-	inline void SaveSim() { std::cout << "save sim\n"; }
+	inline void SaveSim() { trainer->SaveScene("test2.sim"); }
 	inline void ExitSim() { exit = true; }
 };
 

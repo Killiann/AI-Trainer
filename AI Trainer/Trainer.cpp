@@ -1,20 +1,7 @@
 #include "Trainer.h"
 
 Trainer::Trainer(ResourceManager* rMngr, Track& t, sf::FloatRect nnDim)
-: resourceManager(rMngr), track(t), nnDimensions(nnDim) {
-	
-	////get number of cores in the system and alter generatiion size accordingly
-	//threadCount = std::thread::hardware_concurrency();
-	//generationSize = (threadCount + 1) * carsPerThread;
-
-	////setup trainer
-	//if (generationSize > 0) {
-	//	NewScene();
-	//	LoadBestCar();
-	//	NextGeneration();
-	//}
-	//else std::cout << "Trainer setup failed: generation size must be bigger than 0." << std::endl;
-}
+: resourceManager(rMngr), track(t), nnDimensions(nnDim) {}
 
 void Trainer::SetupTrainer(int threads, int cars, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID) {
 	threadCount = threads;
@@ -43,7 +30,11 @@ void Trainer::NewScene() {
 	currentGeneration = 1;
 	cars[currentId].Select();
 	bestNetwork = Network();
-	bestFitness = 0;	
+	bestFitness = 0.f;	
+	bestFitnessPrev = 0.f;
+	bestLapTime = 0.f;
+	bestLapTimePrev = 0.f;
+	elapsedTime = 0.f;
 
 	generationTimer.restart(); //start timer
 	totalTime.restart();
@@ -79,7 +70,7 @@ void Trainer::Update(float dt, ThreadPool& pool) {
 			if (c.IsAlive() && c.HasStarted() && allDead)
 				allDead = false;
 
-		if ((allDead && generationTimer.getElapsedTime().asSeconds() > 5) || generationTimer.getElapsedTime().asSeconds() > maxGenTime) NextGeneration();
+		if ((allDead && generationTimer.getElapsedTime().asSeconds() > 5) || generationTimer.getElapsedTime().asSeconds() > maxGenTime) NextGeneration(false);
 	}
 }
 
@@ -98,27 +89,32 @@ void Trainer::DrawUI(sf::RenderTarget& window) {
 	}
 }
 
-void Trainer::NextGeneration() {
+void Trainer::NextGeneration(bool skipReset) {
 	if (running) {
 		//get best cars of the generation (capped to survivor pool size + sorted)
-		SortCars(0, cars.size() - 1);
-		std::vector<Network> bestNetworks = networks;
-		bestNetworks.resize(surviverPool);
+		if (!skipReset) {
+			SortCars(0, cars.size() - 1);
 
-		//check if best fitness so far has been beaten
-		if (cars[0].GetFitness() > bestFitness || currentGeneration == 1) {
-			bestFitness = cars[0].GetFitness();
-			bestNetwork = bestNetworks[0];
-		} bestFitnessPrev = cars[0].GetFitness();
+			bestNetworks.clear();
+			bestNetworks = networks;
 
-		//update fastest lap
-		std::sort(currentLapTimes.begin(), currentLapTimes.end());
-		if(currentLapTimes.size() > 0) bestLapTimePrev = currentLapTimes[0];
-		bestLapTime = std::min(bestLapTime, bestLapTimePrev);
-		currentLapTimes.clear();
+			bestNetworks.resize(surviverPool);
 
-		//add best network so far to pool
-		bestNetworks.insert(bestNetworks.begin(), bestNetwork);
+			//check if best fitness so far has been beaten
+			if (cars[0].GetFitness() > bestFitness || currentGeneration == 1) {
+				bestFitness = cars[0].GetFitness();
+				bestNetwork = bestNetworks[0];
+			} bestFitnessPrev = cars[0].GetFitness();
+
+			//update fastest lap
+			std::sort(currentLapTimes.begin(), currentLapTimes.end());
+			if (currentLapTimes.size() > 0) bestLapTimePrev = currentLapTimes[0];
+			bestLapTime = std::min(bestLapTime, bestLapTimePrev);
+			currentLapTimes.clear();
+
+			//add best network so far to pool
+			bestNetworks.insert(bestNetworks.begin(), bestNetwork);
+		}
 
 		//reset scene with new networks using bestNetworks[]
 		std::random_device rd;
@@ -174,9 +170,9 @@ void Trainer::NextGeneration() {
 				if (mutate) Mutate(parentBiases[i]);
 			}
 			nn.SetBiases(parentBiases);
-			networks.push_back(nn);
+			networks.push_back(nn);			
 		}
-		currentGeneration++;
+		if (!skipReset) currentGeneration++;
 		generationTimer.restart();
 	}
 }	
@@ -235,4 +231,81 @@ int Trainer::Partition(int low, int high) {
 	return (i + 1);
 }
 
+void Trainer::SaveScene(std::string fileName) {
+	std::ofstream file;	
+	file.open(fileName);
+
+	//single data
+	file << carsPerThread << std::endl
+		<< threadCount << std::endl
+		<< bestLapTime << std::endl
+		<< bestLapTimePrev << std::endl
+		<< bestFitness << std::endl
+		<< bestFitnessPrev << std::endl
+		<< totalTime.getElapsedTime().asMilliseconds() - generationTimer.getElapsedTime().asMilliseconds() << std::endl
+		<< currentGeneration << std::endl
+		<< hiddenActivationID << std::endl
+		<< outputActivationID << std::endl;
+	
+	//node structure	
+	for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
+		if (i > 0) file << ",";
+		file << hiddenNodes[i];
+	}
+	file << std::endl;
+
+	//best networks
+	for (unsigned int i = 0; i < bestNetworks.size(); ++i)
+		bestNetworks[i].SaveToFile(file);
+	
+	file.close();
+}
+
+void Trainer::LoadScene(std::string fileName) {
+	std::ifstream file;
+	file.open(fileName);
+	
+	std::string line;
+	std::getline(file, line); //cars per thread
+	carsPerThread = std::stoi(line);
+	std::getline(file, line); //thread count
+	threadCount = std::stoi(line);
+	std::getline(file, line); //best lap time
+	bestLapTime = std::stof(line);
+	std::getline(file, line); //best lap time (prev)
+	bestLapTimePrev = std::stof(line);
+	std::getline(file, line); //best fitness
+	bestFitness = std::stof(line);
+	std::getline(file, line); //best fitness (prev)
+	bestFitnessPrev = std::stof(line);
+	std::getline(file, line); //total time	
+	elapsedTime = std::stof(line);
+	std::getline(file, line); //current generation
+	currentGeneration = std::stoi(line);
+	std::getline(file, line); //hidden activation ID
+	hiddenActivationID = std::stoi(line);
+	std::getline(file, line); //output activation ID
+	outputActivationID = std::stoi(line);
+
+	//nodes
+	std::getline(file, line);
+	std::vector<std::string> splitLine = SplitString(line, ",");
+	hiddenNodes.clear();
+	for (unsigned int i = 0; i < splitLine.size(); ++i)
+		hiddenNodes.push_back(std::stoi(splitLine[i]));
+
+	//get networks
+	bestNetworks.clear();
+	for (unsigned int i = 0; i < surviverPool + 1; ++i) {
+		Network network;
+		network.LoadFromFile(file);
+		bestNetworks.push_back(network);
+	}	
+	if(bestNetworks.size() > 0) bestNetwork = bestNetworks[0];
+
+	totalTime.restart();
+	running = true;
+	NextGeneration(true);
+	file.close();
+}
 

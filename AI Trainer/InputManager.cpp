@@ -70,14 +70,14 @@ void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
             //reset scene
             if (event.key.code == sf::Keyboard::Key::Num2) {
                 if (!isNextGenDown) {
-                    trainer->NextGeneration();
+                    trainer->NextGeneration(false);
                     isNextGenDown = true;
                 }
             }
             //save best car
             if (event.key.code == sf::Keyboard::Key::S) {
                 if (!isSaveDown) {
-                    trainer->SaveBestCar();
+                    //trainer->SaveBestCar();
                     isSaveDown = true;
                 }
             }
