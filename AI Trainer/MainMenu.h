@@ -77,6 +77,7 @@ class MainMenu
 	//initialisation
 	void InitializeNavigation();
 	void InitializeNewSimulation();
+	void InitializeLoadSimulation();
 	void InitalizeSettings();
 
 	//update functions per state
@@ -111,10 +112,13 @@ public:
 		title.setString("Create new Trainer");
 	}
 	inline void LoadSim() {
-		trainer->LoadScene("test2.sim");
-		Hide();
-		currentState = MenuState::LoadSimulation; 
-		title.setString("Load Trainer");
+		if (trainer->LoadScene("trainer.sim")) {
+			Hide();
+		}
+		else {
+			(*navigationElements.find("lbl_error")).second->SetText("Could not load file.");
+			(*navigationElements.find("lbl_error")).second->Show();
+		}
 	}
 	inline void ExitApp() { exit = true; }
 	inline void CreateNewSim() { 

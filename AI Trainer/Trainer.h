@@ -87,8 +87,8 @@ public:
 	void DrawUI(sf::RenderTarget& window);	
 	void NextGeneration(bool skipReset);
 
-	void SaveScene(std::string filename);
-	void LoadScene(std::string filename);
+	bool SaveScene(std::string filename);
+	bool LoadScene(std::string filename);
 
 	static float Divide(float n);
 

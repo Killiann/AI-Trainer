@@ -35,11 +35,7 @@ MainMenu::MainMenu(ResourceManager *resource, Trainer* t): resourceManager(resou
 	s_marginTop = marginTop + padding + position.y; // styling needs updating with new pos
 	InitializeNavigation();
 	InitializeNewSimulation();
-
-	//add shared back button
-	Button btn_back = Button(sf::Vector2f(position.x + padding, position.y + size.y - 40 - padding), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);		
-	newSimulationElements.emplace("btn_back", std::make_shared<Button>(btn_back));
-	loadSimulationElements.emplace("btn_back", std::make_shared<Button>(btn_back));
+	InitializeLoadSimulation();
 }
 
 //initialise=================
@@ -57,7 +53,16 @@ void MainMenu::InitializeNavigation() {
 	Label lbl_prompt = Label(promptPos, sf::Vector2f(0, 0), resourceManager, "", 0.55);
 	lbl_prompt.SetFont(resourceManager->GetRobotoLight());
 
+	//load error
+	sf::Vector2f errorPromptPos(position.x + btn_newSim.GetSize().x + (padding * 2), position.y + padding + 150);
+	Label lbl_error = Label(errorPromptPos, sf::Vector2f(0, 0), resourceManager, "", 0.55);
+	lbl_error.SetColor(sf::Color::Red);
+	lbl_error.SetFont(resourceManager->GetRobotoRegular());
+	lbl_error.Hide();
+
 	navigationElements.emplace("lbl_prompt", std::make_shared<Label>(lbl_prompt));
+	navigationElements.emplace("lbl_error", std::make_shared<Label>(lbl_error));
+
 	if(withContinue) navigationElements.emplace("btn_continueSim", std::make_shared<Button>(btn_continue));
 	navigationElements.emplace("btn_newSim", std::make_shared<Button>(btn_newSim));
 	navigationElements.emplace("btn_loadSim", std::make_shared<Button>(btn_loadSim));
@@ -124,9 +129,20 @@ void MainMenu::InitializeNewSimulation() {
 	Button btn_continue = Button(sf::Vector2f(position.x + size.x - 150 - padding, position.y + size.y - 40 - padding), sf::Vector2f(150, 40), resourceManager, "Continue", ForwardContinue, this);
 	newSimulationElements.emplace("btn_continue", std::make_shared<Button>(btn_continue));
 
+	//back button
+	Button btn_back = Button(sf::Vector2f(position.x + padding, position.y + size.y - 40 - padding), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);
+	newSimulationElements.emplace("btn_back", std::make_shared<Button>(btn_back));
+	
 	//settings
 	InitalizeSettings();
 	UpdateSettings();
+}
+
+void MainMenu::InitializeLoadSimulation() {
+
+	//back button
+	Button btn_back = Button(sf::Vector2f(position.x + padding, position.y + size.y - 40 - padding), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);
+	loadSimulationElements.emplace("btn_back", std::make_shared<Button>(btn_back));
 }
 
 void MainMenu::InitalizeSettings() {
@@ -299,7 +315,7 @@ void MainMenu::Show(bool cont) {
 	//load continue button if applicable + reset
 	withContinue = cont;
 	navigationElements.clear();
-	newSimulationElements.clear();
+	newSimulationElements.clear();	
 	InitializeNavigation();
 	InitializeNewSimulation();
 	currentState = MenuState::Navigation;
@@ -312,4 +328,6 @@ void MainMenu::Show(bool cont) {
 		m.second->Show();
 	for (auto& m : loadSimulationElements)
 		m.second->Show();
+
+	UpdateHLElements();
 }

@@ -66,6 +66,7 @@ public :
 	void Draw(sf::RenderTarget& window);	
 	
 	inline void Switch(NavItem screen){
+		(*optionElements.find("lbl_saveSuccess")).second->Hide();
 		if (currentState == screen) currentState = NavItem::None;
 		else currentState = screen;
 		SetNavColor();
@@ -91,7 +92,18 @@ public :
 		trainer->Pause(); 
 		mainMenu->Show(true);
 	}
-	inline void SaveSim() { trainer->SaveScene("test2.sim"); }
+	inline void SaveSim() {
+		if (trainer->SaveScene("trainer.sim")) {
+			(*optionElements.find("lbl_saveSuccess")).second->SetTextColor(sf::Color(60,60,60));
+			(*optionElements.find("lbl_saveSuccess")).second->SetText("File Saved");
+			(*optionElements.find("lbl_saveSuccess")).second->Show();
+		}
+		else {
+			(*optionElements.find("lbl_saveSuccess")).second->SetTextColor(sf::Color::Red);
+			(*optionElements.find("lbl_saveSuccess")).second->SetText("Error saving file.");
+			(*optionElements.find("lbl_saveSuccess")).second->Show();
+		}
+	}
 	inline void ExitSim() { exit = true; }
 };
 

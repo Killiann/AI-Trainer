@@ -231,81 +231,99 @@ int Trainer::Partition(int low, int high) {
 	return (i + 1);
 }
 
-void Trainer::SaveScene(std::string fileName) {
-	std::ofstream file;	
-	file.open(fileName);
+bool Trainer::SaveScene(std::string fileName) {
+	try {
+		if (currentGeneration < 2) throw(0);
 
-	//single data
-	file << carsPerThread << std::endl
-		<< threadCount << std::endl
-		<< bestLapTime << std::endl
-		<< bestLapTimePrev << std::endl
-		<< bestFitness << std::endl
-		<< bestFitnessPrev << std::endl
-		<< totalTime.getElapsedTime().asMilliseconds() - generationTimer.getElapsedTime().asMilliseconds() << std::endl
-		<< currentGeneration << std::endl
-		<< hiddenActivationID << std::endl
-		<< outputActivationID << std::endl;
-	
-	//node structure	
-	for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
-		if (i > 0) file << ",";
-		file << hiddenNodes[i];
+		std::ofstream file;
+		file.open(fileName);
+
+		//single data
+		file << carsPerThread << std::endl
+			<< threadCount << std::endl
+			<< bestLapTime << std::endl
+			<< bestLapTimePrev << std::endl
+			<< bestFitness << std::endl
+			<< bestFitnessPrev << std::endl
+			<< totalTime.getElapsedTime().asMilliseconds() - generationTimer.getElapsedTime().asMilliseconds() << std::endl
+			<< currentGeneration << std::endl
+			<< hiddenActivationID << std::endl
+			<< outputActivationID << std::endl;
+
+		//node structure	
+		for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
+			if (i > 0) file << ",";
+			file << hiddenNodes[i];
+		}
+		file << std::endl;
+
+		//best networks
+		for (unsigned int i = 0; i < bestNetworks.size(); ++i)
+			bestNetworks[i].SaveToFile(file);
+
+		file.close();
+		return true;
 	}
-	file << std::endl;
-
-	//best networks
-	for (unsigned int i = 0; i < bestNetworks.size(); ++i)
-		bestNetworks[i].SaveToFile(file);
-	
-	file.close();
+	catch (int e) {		
+		std::cout << "Could not save scene.\n";
+		if (e == 0) std::cout << "Generation size must be bigger than 1\n";
+		return false;
+	}
 }
 
-void Trainer::LoadScene(std::string fileName) {
-	std::ifstream file;
-	file.open(fileName);
-	
-	std::string line;
-	std::getline(file, line); //cars per thread
-	carsPerThread = std::stoi(line);
-	std::getline(file, line); //thread count
-	threadCount = std::stoi(line);
-	std::getline(file, line); //best lap time
-	bestLapTime = std::stof(line);
-	std::getline(file, line); //best lap time (prev)
-	bestLapTimePrev = std::stof(line);
-	std::getline(file, line); //best fitness
-	bestFitness = std::stof(line);
-	std::getline(file, line); //best fitness (prev)
-	bestFitnessPrev = std::stof(line);
-	std::getline(file, line); //total time	
-	elapsedTime = std::stof(line);
-	std::getline(file, line); //current generation
-	currentGeneration = std::stoi(line);
-	std::getline(file, line); //hidden activation ID
-	hiddenActivationID = std::stoi(line);
-	std::getline(file, line); //output activation ID
-	outputActivationID = std::stoi(line);
+bool Trainer::LoadScene(std::string fileName) {
+	try {
+		std::ifstream file;
+		file.open(fileName);
 
-	//nodes
-	std::getline(file, line);
-	std::vector<std::string> splitLine = SplitString(line, ",");
-	hiddenNodes.clear();
-	for (unsigned int i = 0; i < splitLine.size(); ++i)
-		hiddenNodes.push_back(std::stoi(splitLine[i]));
+		std::string line;
+		std::getline(file, line); //cars per thread
+		if (line == "")throw(0);
+		carsPerThread = std::stoi(line);
+		std::getline(file, line); //thread count
+		threadCount = std::stoi(line);
+		std::getline(file, line); //best lap time
+		bestLapTime = std::stof(line);
+		std::getline(file, line); //best lap time (prev)
+		bestLapTimePrev = std::stof(line);
+		std::getline(file, line); //best fitness
+		bestFitness = std::stof(line);
+		std::getline(file, line); //best fitness (prev)
+		bestFitnessPrev = std::stof(line);
+		std::getline(file, line); //total time	
+		elapsedTime = std::stof(line);
+		std::getline(file, line); //current generation
+		currentGeneration = std::stoi(line);
+		std::getline(file, line); //hidden activation ID
+		hiddenActivationID = std::stoi(line);
+		std::getline(file, line); //output activation ID
+		outputActivationID = std::stoi(line);
 
-	//get networks
-	bestNetworks.clear();
-	for (unsigned int i = 0; i < surviverPool + 1; ++i) {
-		Network network;
-		network.LoadFromFile(file);
-		bestNetworks.push_back(network);
-	}	
-	if(bestNetworks.size() > 0) bestNetwork = bestNetworks[0];
+		//nodes
+		std::getline(file, line);
+		std::vector<std::string> splitLine = SplitString(line, ",");
+		hiddenNodes.clear();
+		for (unsigned int i = 0; i < splitLine.size(); ++i)
+			hiddenNodes.push_back(std::stoi(splitLine[i]));
 
-	totalTime.restart();
-	running = true;
-	NextGeneration(true);
-	file.close();
+		//get networks
+		bestNetworks.clear();
+		for (unsigned int i = 0; i < surviverPool + 1; ++i) {
+			Network network;
+			network.LoadFromFile(file);
+			bestNetworks.push_back(network);
+		}
+		if (bestNetworks.size() > 0) bestNetwork = bestNetworks[0];
+
+		totalTime.restart();
+		running = true;
+		NextGeneration(true);
+		file.close();
+		return true;
+	}
+	catch (int e) {
+		std::cout << "Error loading sim.\n";
+		return false;
+	}
 }
 
