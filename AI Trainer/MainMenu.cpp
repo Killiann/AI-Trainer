@@ -35,7 +35,6 @@ MainMenu::MainMenu(ResourceManager *resource, Trainer* t): resourceManager(resou
 	s_marginTop = marginTop + padding + position.y; // styling needs updating with new pos
 	InitializeNavigation();
 	InitializeNewSimulation();
-	InitializeLoadSimulation();
 }
 
 //initialise=================
@@ -138,13 +137,6 @@ void MainMenu::InitializeNewSimulation() {
 	UpdateSettings();
 }
 
-void MainMenu::InitializeLoadSimulation() {
-
-	//back button
-	Button btn_back = Button(sf::Vector2f(position.x + padding, position.y + size.y - 40 - padding), sf::Vector2f(150, 40), resourceManager, "Back", ForwardBack, this);
-	loadSimulationElements.emplace("btn_back", std::make_shared<Button>(btn_back));
-}
-
 void MainMenu::InitalizeSettings() {
 	//title
 	Label lbl_settingsHeader = Label(sf::Vector2f(position.x + padding + s_marginLeft, position.y + padding + marginTop), sf::Vector2f(150, 30), resourceManager, "Settings:", 0.6);
@@ -194,7 +186,6 @@ void MainMenu::Update(sf::RenderWindow& window, sf::Event& event) {
 	switch (currentState) {
 	case(MenuState::Navigation): NavigationState(window, event); break;
 	case(MenuState::NewSimulation): NewSimulationState(window, event); break;
-	case(MenuState::LoadSimulation): LoadSimulationState(window, event); break;	
 	}
 }
 
@@ -231,11 +222,6 @@ void MainMenu::NewSimulationState(sf::RenderWindow& window, sf::Event& event) {
 	for (const auto& m : newSimulationElements)
 		m.second->Update(window, event);
 	UpdateSettings();
-}
-
-void MainMenu::LoadSimulationState(sf::RenderWindow& window, sf::Event& event) {
-	for (auto& m : loadSimulationElements)
-		m.second->Update(window, event);
 }
 
 void MainMenu::UpdateSettings() {
@@ -293,10 +279,6 @@ void MainMenu::Draw(sf::RenderTarget& window) {
 			(*newSimulationElements.find("dd_outputActivation")).second->Draw(window);
 			(*newSimulationElements.find("dd_hiddenActivation")).second->Draw(window);
 			break;
-		case(MenuState::LoadSimulation):
-			for (auto& m : loadSimulationElements)
-				m.second->Draw(window);
-			break;
 		}
 	}
 }
@@ -307,8 +289,6 @@ void MainMenu::Hide() {
 		m.second->Hide();
 	for (auto& m : newSimulationElements)
 		m.second->Hide();
-	for (auto& m : loadSimulationElements)
-		m.second->Hide();	
 }
 
 void MainMenu::Show(bool cont) {
@@ -325,8 +305,6 @@ void MainMenu::Show(bool cont) {
 	for (auto& m : navigationElements)
 		m.second->Show();
 	for (auto& m : newSimulationElements)
-		m.second->Show();
-	for (auto& m : loadSimulationElements)
 		m.second->Show();
 
 	UpdateHLElements();

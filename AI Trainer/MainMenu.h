@@ -16,12 +16,10 @@ class MainMenu
 	Trainer* trainer;
 
 	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
-	std::vector<std::string> navigationButtonIDS{ "btn_newSim", "btn_loadSim", "btn_exitSim" };
 
 	enum class MenuState {
 		Navigation,
 		NewSimulation,
-		LoadSimulation
 	};
 
 	MenuState currentState = MenuState::Navigation;
@@ -72,18 +70,15 @@ class MainMenu
 	//UI elements
 	std::map <std::string, std::shared_ptr<UIElement>> newSimulationElements;
 	std::map <std::string, std::shared_ptr<UIElement>> navigationElements;
-	std::map <std::string, std::shared_ptr<UIElement>> loadSimulationElements;
 
 	//initialisation
 	void InitializeNavigation();
 	void InitializeNewSimulation();
-	void InitializeLoadSimulation();
 	void InitalizeSettings();
 
 	//update functions per state
 	void NavigationState(sf::RenderWindow& window, sf::Event& event);
 	void NewSimulationState(sf::RenderWindow& window, sf::Event& event);
-	void LoadSimulationState(sf::RenderWindow& window, sf::Event& event);
 
 	//update functions
 	void UpdateSettings();
