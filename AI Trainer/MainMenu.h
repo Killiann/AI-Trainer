@@ -16,12 +16,10 @@ class MainMenu
 	Trainer* trainer;
 
 	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
-	std::vector<std::string> navigationButtonIDS{ "btn_newSim", "btn_loadSim", "btn_exitSim" };
 
 	enum class MenuState {
 		Navigation,
 		NewSimulation,
-		LoadSimulation
 	};
 
 	MenuState currentState = MenuState::Navigation;
@@ -72,7 +70,6 @@ class MainMenu
 	//UI elements
 	std::map <std::string, std::shared_ptr<UIElement>> newSimulationElements;
 	std::map <std::string, std::shared_ptr<UIElement>> navigationElements;
-	std::map <std::string, std::shared_ptr<UIElement>> loadSimulationElements;
 
 	//initialisation
 	void InitializeNavigation();
@@ -82,7 +79,6 @@ class MainMenu
 	//update functions per state
 	void NavigationState(sf::RenderWindow& window, sf::Event& event);
 	void NewSimulationState(sf::RenderWindow& window, sf::Event& event);
-	void LoadSimulationState(sf::RenderWindow& window, sf::Event& event);
 
 	//update functions
 	void UpdateSettings();
@@ -111,8 +107,13 @@ public:
 		title.setString("Create new Trainer");
 	}
 	inline void LoadSim() {
-		currentState = MenuState::LoadSimulation; 
-		title.setString("Load Trainer");
+		if (trainer->LoadScene("trainer.sim")) {
+			Hide();
+		}
+		else {
+			(*navigationElements.find("lbl_error")).second->SetText("Could not load file.");
+			(*navigationElements.find("lbl_error")).second->Show();
+		}
 	}
 	inline void ExitApp() { exit = true; }
 	inline void CreateNewSim() { 

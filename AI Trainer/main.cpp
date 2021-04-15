@@ -11,8 +11,9 @@
 
 #include "ThreadPool.h"
 
-int main()
-{
+int main(){
+    //openTest();
+
     //window setup
     sf::ContextSettings settings;    
     settings.antialiasingLevel = 8;    
@@ -49,7 +50,7 @@ int main()
 
     //main clock
     sf::Clock clk;
-    sf::Time dt;
+    float dt;
 
     //initialise thread pool
     ThreadPool pool(12);
@@ -64,7 +65,9 @@ int main()
         if (allFPS.size() > 30) allFPS.pop_front();
 
         //keep after fps fetch
-        dt = clk.restart();
+        dt = clk.restart().asSeconds();
+
+        if (dt > 0.05) dt = 0.05;
 
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         mouseCoords = window.mapPixelToCoords(sf::Mouse::getPosition(window), camera);        
@@ -94,7 +97,7 @@ int main()
 
         //update 
         inputManager.Update();
-        trainer.Update(dt.asSeconds(), pool);
+        trainer.Update(dt, pool);
         std::string frames = std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size()));
         overlay.UpdateData(frames);
 

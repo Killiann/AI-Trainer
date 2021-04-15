@@ -1,0 +1,13 @@
+Node structure,8 1 5
+Hidden Layer Activation Function,Sigmoid
+Output Layer Activation Function,Sigmoid
+Generation Size,100
+Total Generations Completed,2
+Mutation Rate %,0.01
+Mutation Rate % (minor),0.05
+Total elapsed time,00:00:14:309
+Best fitness,4.04357
+Average fitness,4.04357
+====DATA====
+Generation,Best Fitness,Average Fitness
+1,4.04357,0.69658
