@@ -11,7 +11,9 @@
 #include "Track.h"
 #include "ThreadPool.h"
 
+//helpers (saving / display)
 std::string FloatToTime(float n);
+std::string TruncateFloat(float n);
 
 struct TrainerData {
 	TrainerData() {}

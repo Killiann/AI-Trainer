@@ -15,6 +15,7 @@ enum class NavItem {
 
 class Overlay
 {
+	//prompt info
 	std::vector<std::string> optionButtonIDS{ "btn_nextGen", "btn_restart", "btn_showHide", "btn_export", "btn_save", "btn_mainMenu", "btn_exit" };
 	std::vector<std::string> promptMessages = {
 		"Skip to next generation -shortcut=2",
@@ -26,45 +27,49 @@ class Overlay
 		"Exit application"
 	};
 
+	//state
 	NavItem currentState = NavItem::None;
+	bool exit = false;
+	bool devOverlay = false;
 
+	//ptr
 	ResourceManager* resourceManager = nullptr;
 	Trainer* trainer = nullptr;
 	MainMenu* mainMenu = nullptr;
 
-	bool exit = false;
-	bool devOverlay = false;
-
-	const sf::Vector2f navSize = sf::Vector2f(150, 30);
-	const sf::Vector2f position = sf::Vector2f(0, 0);
-	const sf::Vector2f size = sf::Vector2f(500, 320);
-
-	sf::RectangleShape background;
-	sf::Color backgroundColor = sf::Color(255, 255, 255);
-
-	std::map<std::string, std::shared_ptr<UIElement>> navElements;
-	std::map<std::string, std::shared_ptr<UIElement>> optionElements;
-	std::map<std::string, std::shared_ptr<UIElement>> dataElements;
-
-	sf::Color selectedColor = sf::Color(80, 80, 80);
-
 	//styling
 	unsigned int padding = 20;
 	unsigned int btnMargin = 40;
+	unsigned int dataLeftColW = 350;
+	unsigned int dataRowHeight = 20;
+	unsigned int dataRowMargin = 25;
+	const sf::Vector2f navSize = sf::Vector2f(150, 30);
+	const sf::Vector2f position = sf::Vector2f(0, 0);
+	const sf::Vector2f size = sf::Vector2f(500, 320);
+	
+	sf::RectangleShape background;
+	sf::Color backgroundColor = sf::Color(255, 255, 255);
+	sf::Color selectedColor = sf::Color(80, 80, 80);
+
+	//UI Elements
+	std::map<std::string, std::shared_ptr<UIElement>> navElements;
+	std::map<std::string, std::shared_ptr<UIElement>> optionElements;
+	std::map<std::string, std::shared_ptr<UIElement>> dataElements;
 
 	void InitOptions();
 	void InitData();
 	void UpdateOptions(sf::RenderWindow& window, sf::Event& event);
 	void SetNavColor();
-
-	std::string TruncateFloat(float n);
+	
 public:
 	Overlay() {}
 	Overlay(ResourceManager* resource, Trainer* t, MainMenu* menu);
 	void Update(sf::RenderWindow& window, sf::Event& event);
 	void UpdateData(std::string fps);
 	void Draw(sf::RenderTarget& window);
+	inline bool IsDevOn() { return devOverlay; }
 
+	//toggle navigation
 	inline void Switch(NavItem screen) {
 		(*optionElements.find("lbl_saveSuccess")).second->Hide();
 		if (currentState == screen) currentState = NavItem::None;
@@ -72,8 +77,7 @@ public:
 		SetNavColor();
 	}
 
-	inline bool IsDevOn() { return devOverlay; }
-
+	//button functions
 	inline void NextGen() { trainer->NextGeneration(false); }
 	inline void RestartSim() { trainer->ResetScene(); }
 	inline void ShowHide() {
@@ -95,7 +99,7 @@ public:
 		}
 		else {
 			(*optionElements.find("lbl_saveSuccess")).second->SetTextColor(sf::Color::Red);
-			(*optionElements.find("lbl_saveSuccess")).second->SetText("Error exporting file.");
+			(*optionElements.find("lbl_saveSuccess")).second->SetText("Error exporting file. Check Console.");
 			(*optionElements.find("lbl_saveSuccess")).second->Show();
 		}
 	}
@@ -107,11 +111,10 @@ public:
 		}
 		else {
 			(*optionElements.find("lbl_saveSuccess")).second->SetTextColor(sf::Color::Red);
-			(*optionElements.find("lbl_saveSuccess")).second->SetText("Error saving file.");
+			(*optionElements.find("lbl_saveSuccess")).second->SetText("Error saving file. Check Console.");
 			(*optionElements.find("lbl_saveSuccess")).second->Show();
 		}
 	}
-
 	inline void OpenMainMenu() {
 		currentState = NavItem::None;
 		trainer->Pause();

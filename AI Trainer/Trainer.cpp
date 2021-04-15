@@ -245,6 +245,7 @@ int Trainer::Partition(int low, int high) {
 	return (i + 1);
 }
 
+//save scene to txt (.sim) file
 bool Trainer::SaveScene(std::string fileName) {
 	try {
 		if (currentGeneration < 2) throw(0);
@@ -287,17 +288,18 @@ bool Trainer::SaveScene(std::string fileName) {
 	}
 	catch (int e) {		
 		std::cout << "Could not save scene.\n";
-		if (e == 0) std::cout << "Generation size must be bigger than 1.\n";
+		if (e == 0) std::cout << "Curent generation must be larger than 1.\n";
 		else if (e == 1) std::cout << "Error with data.\n";
 		return false;
 	}
 }
 
+//load from file (.sim)
 bool Trainer::LoadScene(std::string fileName) {
 	try {
 		std::ifstream file;
 		file.open(fileName);
-
+		
 		std::string line;
 		std::getline(file, line); //cars per thread
 		if (line == "")throw(0);
@@ -349,6 +351,7 @@ bool Trainer::LoadScene(std::string fileName) {
 			else break;
 		}
 
+		//run trainer
 		totalTime.restart();
 		running = true;
 		NextGeneration(true);
@@ -361,8 +364,11 @@ bool Trainer::LoadScene(std::string fileName) {
 	}
 }
 
+//export to CSV
 bool Trainer::ExportData(std::string fileName) {
 	try {
+		if (SplitString(fileName, ".")[1] != "csv") throw(1);
+		if (currentGeneration < 2) throw (2);
 		std::ofstream file;
 		file.open(fileName);
 		
@@ -394,10 +400,14 @@ bool Trainer::ExportData(std::string fileName) {
 	}
 	catch (int e) {
 		std::cout << "Error exporting data.\n";
+		if (e == 0) std::cout << "Error with fitness data.\n";
+		else if (e == 1) std::cout << "File extension must be .csv.\n";
+		else if (e == 2) std::cout << "Curent generation must be larger than 1\n";
 		return false;
 	}
 }
 
+//convert float (ms) to time string 00:00:00:000
 std::string FloatToTime(float n) {
 	unsigned int ms = (n / 1000);
 	unsigned int sec = ms / 60;
@@ -409,5 +419,12 @@ std::string FloatToTime(float n) {
 		std::right << std::setfill('0') << std::setw(2) << (sec % 60) << ":" <<
 		std::right << std::setfill('0') << std::setw(2) << (ms % 60) << ":" <<
 		std::right << std::setfill('0') << std::setw(2) << ((int)n % 1000);
+	return stream.str();
+}
+
+//cap float to 2 dp
+std::string TruncateFloat(float n) {
+	std::stringstream stream;
+	stream << std::fixed << std::setprecision(2) << n;
 	return stream.str();
 }

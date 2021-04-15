@@ -12,8 +12,6 @@
 #include "ThreadPool.h"
 
 int main(){
-    //openTest();
-
     //window setup
     sf::ContextSettings settings;    
     settings.antialiasingLevel = 8;    

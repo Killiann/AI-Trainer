@@ -1,13 +1,22 @@
-Node structure,8 1 5
-Hidden Layer Activation Function,Sigmoid
-Output Layer Activation Function,Sigmoid
-Generation Size,100
-Total Generations Completed,2
+Node structure,8 4 5 5
+Hidden Layer Activation Function,Tanh
+Output Layer Activation Function,Binary Step
+Generation Size,195
+Total Generations Completed,11
 Mutation Rate %,0.01
 Mutation Rate % (minor),0.05
-Total elapsed time,00:00:14:309
-Best fitness,4.04357
-Average fitness,4.04357
+Total elapsed time,00:04:50:779
+Best fitness,30.0483
+Average fitness,19.236
 ====DATA====
 Generation,Best Fitness,Average Fitness
-1,4.04357,0.69658
+1,4.04839,0.544702
+2,6.02601,3.3169
+3,10.0324,5.73892
+4,30.0264,10.4858
+5,26.0664,8.63369
+6,30.0377,9.11928
+7,30.0483,8.15969
+8,28.037,10.5207
+9,28.0374,9.89044
+10,0,0

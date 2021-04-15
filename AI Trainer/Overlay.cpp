@@ -46,10 +46,12 @@ Overlay::Overlay(ResourceManager* resource, Trainer* t, MainMenu* menu) : resour
 }
 
 void Overlay::InitOptions() {
+	//prompt
 	Label lbl_prompt = Label(sf::Vector2f(position.x + padding + 150 + 30, position.y + navSize.y + padding), sf::Vector2f(250, 100), resourceManager, "", 0.5);
 	lbl_prompt.SetFont(resourceManager->GetRobotoLight());
 	optionElements.emplace("lbl_prompt", std::make_shared<Label>(lbl_prompt));
 
+	//error/success info label
 	Label lbl_saveSuccess = Label(sf::Vector2f(position.x + padding + 150 + 30, position.y + navSize.y + padding + btnMargin * 3), sf::Vector2f(250, 100), resourceManager, "", 0.5);
 	lbl_saveSuccess.SetFont(resourceManager->GetRobotoRegular());
 	lbl_saveSuccess.SetTextColor(sf::Color::Green);
@@ -86,73 +88,69 @@ void Overlay::InitOptions() {
 }
 
 void Overlay::InitData() {
-	unsigned int leftColW = 350;
-	unsigned int rowH = 20;
-	unsigned int rowMargin = 25;
-
 	//fps
-	Label lbl_fps = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y), sf::Vector2f(leftColW, rowH), resourceManager, "FPS: ", 0.5f);
-	Label lbl_fps_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_fps = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "FPS: ", 0.5f);
+	Label lbl_fps_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_fps", std::make_shared<Label>(lbl_fps));
 	dataElements.emplace("lbl_fps_val", std::make_shared<Label>(lbl_fps_val));
 
 	//generation size
-	Label lbl_genSize = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin), sf::Vector2f(leftColW, rowH), resourceManager, "Generation Size: ", 0.5f);
-	Label lbl_genSize_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_genSize = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Generation Size: ", 0.5f);
+	Label lbl_genSize_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_genSize", std::make_shared<Label>(lbl_genSize));
 	dataElements.emplace("lbl_genSize_val", std::make_shared<Label>(lbl_genSize_val));
 
 	//generation number
-	Label lbl_currentGen = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 2), sf::Vector2f(leftColW, rowH), resourceManager, "Current Generation: ", 0.5f);
-	Label lbl_currentGen_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 2), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_currentGen = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 2), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Current Generation: ", 0.5f);
+	Label lbl_currentGen_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 2), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_currentGen", std::make_shared<Label>(lbl_currentGen));
 	dataElements.emplace("lbl_currentGen_val", std::make_shared<Label>(lbl_currentGen_val));
 
 	//best lap time
-	Label lbl_lapTime = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 3), sf::Vector2f(leftColW, rowH), resourceManager, "Best Lap Time: ", 0.5f);
-	Label lbl_lapTime_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 3), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_lapTime = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 3), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Best Lap Time: ", 0.5f);
+	Label lbl_lapTime_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 3), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_lapTime", std::make_shared<Label>(lbl_lapTime));
 	dataElements.emplace("lbl_lapTime_val", std::make_shared<Label>(lbl_lapTime_val));
 
 	//best lap time(previous generation)
-	Label lbl_lapTimePrev = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 4), sf::Vector2f(leftColW, rowH), resourceManager, "Best Lap time (prev gen): ", 0.5f);
-	Label lbl_lapTimePrev_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 4), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_lapTimePrev = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 4), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Best Lap time (prev gen): ", 0.5f);
+	Label lbl_lapTimePrev_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 4), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_lapTimePrev", std::make_shared<Label>(lbl_lapTimePrev));
 	dataElements.emplace("lbl_lapTimePrev_val", std::make_shared<Label>(lbl_lapTimePrev_val));
 
 	//best fitness
-	Label lbl_fitness = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 5), sf::Vector2f(leftColW, rowH), resourceManager, "Best Fitness: ", 0.5f);
-	Label lbl_fitness_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 5), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_fitness = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 5), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Best Fitness: ", 0.5f);
+	Label lbl_fitness_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 5), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_fitness", std::make_shared<Label>(lbl_fitness));
 	dataElements.emplace("lbl_fitness_val", std::make_shared<Label>(lbl_fitness_val));
 
 	//best fitness(previous generation
-	Label lbl_fitnessPrev = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 6), sf::Vector2f(leftColW, rowH), resourceManager, "Best Fitness (prev gen): ", 0.5f);
-	Label lbl_fitnessPrev_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 6), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_fitnessPrev = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 6), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Best Fitness (prev gen): ", 0.5f);
+	Label lbl_fitnessPrev_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 6), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_fitnessPrev", std::make_shared<Label>(lbl_fitnessPrev));
 	dataElements.emplace("lbl_fitnessPrev_val", std::make_shared<Label>(lbl_fitnessPrev_val));
 
 	//current generation time
-	Label lbl_currentTime = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin *7), sf::Vector2f(leftColW, rowH), resourceManager, "Current Gen Time: ", 0.5f);
-	Label lbl_currentTime_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 7), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_currentTime = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin *7), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Current Gen Time: ", 0.5f);
+	Label lbl_currentTime_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 7), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_currentTime", std::make_shared<Label>(lbl_currentTime));
 	dataElements.emplace("lbl_currentTime_val", std::make_shared<Label>(lbl_currentTime_val));
 	
 	//total time
-	Label lbl_totalTime = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 8), sf::Vector2f(leftColW, rowH), resourceManager, "Total Run Time: ", 0.5f);
-	Label lbl_totalTime_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 8), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_totalTime = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 8), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Total Run Time: ", 0.5f);
+	Label lbl_totalTime_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 8), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_totalTime", std::make_shared<Label>(lbl_totalTime));
 	dataElements.emplace("lbl_totalTime_val", std::make_shared<Label>(lbl_totalTime_val));
 
 	//hl activation function
-	Label lbl_hlActivation = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 9), sf::Vector2f(leftColW, rowH), resourceManager, "Hidden Layer Activation Function: ", 0.5f);
-	Label lbl_hlActivation_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 9), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_hlActivation = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 9), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Hidden Layer Activation Function: ", 0.5f);
+	Label lbl_hlActivation_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 9), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_hlActivation", std::make_shared<Label>(lbl_hlActivation));
 	dataElements.emplace("lbl_hlActivation_val", std::make_shared<Label>(lbl_hlActivation_val));
 
 	//output activation function
-	Label lbl_olActivation = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + rowMargin * 10), sf::Vector2f(leftColW, rowH), resourceManager, "Output  Layer Activation Function: ", 0.5f);
-	Label lbl_olActivation_val = Label(sf::Vector2f(position.x + padding + leftColW, position.y + padding + navSize.y + rowMargin * 10), sf::Vector2f(rowH, rowH), resourceManager, "69", 0.5f);
+	Label lbl_olActivation = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + dataRowMargin * 10), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "Output  Layer Activation Function: ", 0.5f);
+	Label lbl_olActivation_val = Label(sf::Vector2f(position.x + padding + dataLeftColW, position.y + padding + navSize.y + dataRowMargin * 10), sf::Vector2f(dataRowHeight, dataRowHeight), resourceManager, "69", 0.5f);
 	dataElements.emplace("lbl_olActivation", std::make_shared<Label>(lbl_olActivation));
 	dataElements.emplace("lbl_olActivation_val", std::make_shared<Label>(lbl_olActivation_val));
 }
@@ -163,11 +161,12 @@ void Overlay::Update(sf::RenderWindow& window, sf::Event &event) {
 	for (auto& e : navElements)
 		e.second->Update(window, event);
 
-	switch (currentState) {
-	case(NavItem::Options):UpdateOptions(window, event); break;
-	}
+	//update options if open
+	if (currentState == NavItem::Options)
+		UpdateOptions(window, event);
 }
 
+//helper
 int GetStringIndex(std::string s, std::vector<std::string> v) {
 	for (unsigned int i = 0; i < v.size(); ++i) 
 		if (v[i] == s) return i;
@@ -183,6 +182,7 @@ void Overlay::UpdateOptions(sf::RenderWindow& window, sf::Event& event) {
 			(*optionElements.find("lbl_prompt")).second->SetText(promptMessages[GetStringIndex(e.first, optionButtonIDS)]);	
 }
 
+//gets called externally to fix timing issues with Event call in main loop
 void Overlay::UpdateData(std::string fps) {
 	if (trainer->IsRunning() && currentState == NavItem::Data) {
 		TrainerData data = trainer->GetData();
@@ -216,12 +216,6 @@ void Overlay::Draw(sf::RenderTarget &window) {
 		for (auto& e : dataElements)
 			e.second->Draw(window); break;
 	}
-}
-
-std::string Overlay::TruncateFloat(float n) {
-	std::stringstream stream;
-	stream << std::fixed << std::setprecision(2) << n;
-	return stream.str();
 }
 
 void Overlay::SetNavColor() {
