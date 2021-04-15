@@ -41,8 +41,8 @@ public:
 	void StartTracking();
 	void CompleteSegment();
 
-	inline float GetLastLapTime() { return lapTimes.size() > 0 ? lapTimes[lapTimes.size() - 1] : 0.f; }
-	inline float GetFastestLap() { return segments[currentSegmentID].GetFastest(); }
+	inline float GetLastLapTime() { return lapTimes.size() > 0 ? lapTimes[lapTimes.size() - 1] : 0.f; }	
+	inline float GetFastestOfSegment() { return segments[currentSegmentID].GetFastest(); }
 	inline float GetCurrentSegmentTime() { return !hasStarted ? 0.f : segmentClock.getElapsedTime().asMilliseconds(); }
 	
 	inline int GetCompletedSegments() { return completedSegments; }

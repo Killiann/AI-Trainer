@@ -129,6 +129,7 @@ public:
 	
 	void operator=(Car c);
 
+	//gets
 	inline int getID() { return ID; }
 	inline int GetLineCount() { return lineCount; }
 	inline int GetMaxLineLength() { return lineLength; }
@@ -137,12 +138,13 @@ public:
 	inline bool isSelected() { return selected; }
 	inline float GetFitness() { return fitness; }	
 	inline float GetRotation() { return heading * (180.f / (float)M_PI); }		
-	inline std::vector<float> GetDistances() { return distances; }
-	
+
+	inline std::vector<float> GetDistances() { return distances; }	
 	inline sf::Vector2f getPosition() { return sf::Vector2f(position.x * scale, position.y * scale); }
 	inline sf::RectangleShape getScanArea() { return scanArea; }
 	inline sf::RectangleShape getGlobalBounds() { return globalBounds; }
 
+	//toggle selection
 	inline void Select() {
 		selected = true;
 		collisionBounds.setOutlineColor(sf::Color::Green);
@@ -151,6 +153,7 @@ public:
 		selected = false;
 		collisionBounds.setOutlineColor(sf::Color::Red);
 	}			
+
 	inline std::vector<float> GetVision() {
 		std::vector<float> nnInput = distances;
 		nnInput.push_back(absVel / 30);
@@ -166,7 +169,8 @@ public:
 		}
 	}	
 
+	//checkpoint management
 	inline bool HasPassedFinish() { return passedFinish; }
-	inline float GetFastestLap() { return checkPointTracker.GetFastestLap(); }
+	inline float GetLastLap() { return checkPointTracker.GetLastLapTime(); }
 };
 

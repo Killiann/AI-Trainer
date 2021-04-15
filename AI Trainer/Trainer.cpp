@@ -52,7 +52,8 @@ void Trainer::UpdateRange(float dt, int min, int max) {
 	for (int i = min; i < max; ++i) {
 		cars[i].Update(dt);
 		cars[i].SetInputs(networks[i].FeedForward(cars[i].GetVision()));
-		if (cars[i].HasPassedFinish())currentLapTimes.push_back(cars[i].GetFastestLap());
+		if (cars[i].HasPassedFinish())
+			currentLapTimes.push_back(cars[i].GetLastLap());
 	}
 }
 
@@ -122,8 +123,12 @@ void Trainer::NextGeneration(bool skipReset) {
 
 			//update fastest lap
 			std::sort(currentLapTimes.begin(), currentLapTimes.end());
-			if (currentLapTimes.size() > 0) bestLapTimePrev = currentLapTimes[0];
-			bestLapTime = std::min(bestLapTime, bestLapTimePrev);
+			if (currentLapTimes.size() > 0) {
+				bestLapTimePrev = currentLapTimes[0];
+				if (bestLapTime == 0) bestLapTime = bestLapTimePrev;
+				bestLapTime = std::min(bestLapTime, bestLapTimePrev);
+			}
+			else bestLapTimePrev = 0;			
 			currentLapTimes.clear();
 
 			//add best network so far to pool
@@ -322,6 +327,8 @@ bool Trainer::LoadScene(std::string fileName) {
 		hiddenActivationID = std::stoi(line);
 		std::getline(file, line); //output activation ID
 		outputActivationID = std::stoi(line);
+
+		generationSize = (threadCount + 1) * carsPerThread;
 
 		//nodes
 		std::getline(file, line);
