@@ -1,37 +1,8 @@
 #include "InputManager.h"
 
-InputManager::InputManager(Trainer* t) : trainer(t){}
-
-void InputManager::Update(){
-	//throttle
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		throttle = 1;
-	else throttle = 0;
-
-	//brake
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-		brake = 1;
-	else brake = 0;
-
-	//ebrake
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-		ebrake = 1;
-	else ebrake = 0;
-
-	//left
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		steerLeft = 1;
-	else steerLeft = 0;
-
-	//right
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-		steerRight = 1;
-	else steerRight = 0;
-}
-
+InputManager::InputManager(Trainer* t, Overlay* o) : trainer(t), overlay(o){}
 void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
-    if (event.type == sf::Event::MouseButtonPressed)
-    {
+    if (event.type == sf::Event::MouseButtonPressed){
         //select cars
         if (event.mouseButton.button == sf::Mouse::Left)
         {
@@ -73,12 +44,33 @@ void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
                     trainer->NextGeneration(false);
                     isNextGenDown = true;
                 }
+            }            
+            //toggle overlay
+            if (event.key.code == sf::Keyboard::Key::C) {
+                if (trainer->IsRunning() && !isOverlayDown) {
+                    overlay->ShowHide();
+                    isOverlayDown = true;
+                }
             }
-            //save best car
+            //export
+            if (event.key.code == sf::Keyboard::Key::X) {
+                if (trainer->IsRunning() && !isExportDown) {
+                    trainer->ExportData("data.csv");
+                    isExportDown = true;
+                }
+            }
+            //save scene
             if (event.key.code == sf::Keyboard::Key::S) {
                 if (!isSaveDown) {
                     trainer->SaveScene("trainer.sim");
                     isSaveDown = true;
+                }
+            }            
+            //open main menu
+            if (event.key.code == sf::Keyboard::Key::Escape) {
+                if (trainer->IsRunning() && !isMainMenuDown) {
+                    overlay->OpenMainMenu();
+                    isMainMenuDown = true;
                 }
             }
         }                
@@ -97,7 +89,13 @@ void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
             if (isSaveDown) isSaveDown = false;
         }
         if (event.key.code == sf::Keyboard::Key::C) {
-            if (isConsoleDown) isConsoleDown = false;
+            if (isOverlayDown) isOverlayDown = false;
+        }
+        if (event.key.code == sf::Keyboard::Key::Escape) {
+            if (isMainMenuDown) isMainMenuDown = false;
+        }
+        if (event.key.code == sf::Keyboard::Key::X) {
+            if (isExportDown) isExportDown = false;
         }
     }
 }

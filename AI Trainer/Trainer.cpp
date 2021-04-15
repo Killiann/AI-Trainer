@@ -3,12 +3,15 @@
 Trainer::Trainer(ResourceManager* rMngr, Track& t, sf::FloatRect nnDim)
 : resourceManager(rMngr), track(t), nnDimensions(nnDim) {}
 
-void Trainer::SetupTrainer(int threads, int cars, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID) {
+void Trainer::SetupTrainer(int threads, int cars, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID, float mutRate, float minMutRate) {
 	threadCount = threads;
 	carsPerThread = cars;
 	hiddenNodes = hiddenLayers;
 	hiddenActivationID = hlActivationID;
 	outputActivationID = olActivationID;
+
+	mutationRate = mutRate;
+	mutationMinRate = minMutRate;
 
 	generationSize = (threadCount + 1) * carsPerThread;
 
@@ -212,7 +215,7 @@ void Trainer::Mutate(lin::Matrix &m){
 	for (unsigned int r = 0; r < m.GetRows(); ++r) {
 		for (unsigned int c = 0; c < m.GetCols(); ++c) {						
 			//alter value slightly
-			if ((float)perc(gen) / 100.f <= slightMutationRate) 		
+			if ((float)perc(gen) / 100.f <= mutationMinRate) 		
 				m[r][c] += (float)rnd(gen) / 300.f;									
 
 			//randomise value
@@ -268,7 +271,9 @@ bool Trainer::SaveScene(std::string fileName) {
 			<< totalTime.getElapsedTime().asMilliseconds() - generationTimer.getElapsedTime().asMilliseconds() << std::endl
 			<< currentGeneration << std::endl
 			<< hiddenActivationID << std::endl
-			<< outputActivationID << std::endl;
+			<< outputActivationID << std::endl
+			<< mutationRate << std::endl
+			<< mutationMinRate << std::endl;
 
 		//node structure	
 		for (unsigned int i = 0; i < hiddenNodes.size(); ++i) {
@@ -327,6 +332,10 @@ bool Trainer::LoadScene(std::string fileName) {
 		hiddenActivationID = std::stoi(line);
 		std::getline(file, line); //output activation ID
 		outputActivationID = std::stoi(line);
+		std::getline(file, line); //mutation rate
+		mutationRate = std::stoi(line);
+		std::getline(file, line); //mutation min rate
+		mutationMinRate = std::stoi(line);
 
 		generationSize = (threadCount + 1) * carsPerThread;
 
@@ -385,11 +394,11 @@ bool Trainer::ExportData(std::string fileName) {
 			file << hiddenNodes[i] << " ";
 		file << outputNodes << std::endl;
 		file << "Hidden Layer Activation Function" << ',' << activationFuncs[hiddenActivationID] << std::endl;
-		file << "Output Layer Activation Function" << ',' << activationFuncs[outputActivationID] << std::endl;
+		file << "Output Layer Activation Function" << ',' << activationFuncs[outputActivationID] << std::endl;		
 		file << "Generation Size" << ',' << generationSize << std::endl;
 		file << "Total Generations Completed" << ',' << currentGeneration << std::endl;
 		file << "Mutation Rate %" << ',' << mutationRate << std::endl;
-		file << "Mutation Rate % (minor)" << ',' << slightMutationRate << std::endl;
+		file << "Mutation Rate % (minor)" << ',' << mutationMinRate << std::endl;
 		file << "Total elapsed time" << ',' << FloatToTime(elapsedTime + totalTime.getElapsedTime().asMilliseconds()) << std::endl;
 		file << "Best fitness" << ',' << bestFitness << std::endl;
 		file << "Average fitness" << ',' << std::accumulate(bestFitnessPerGen.begin(), bestFitnessPerGen.end(), 0.0) / bestFitnessPerGen.size() << std::endl;

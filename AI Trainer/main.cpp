@@ -32,14 +32,14 @@ int main(){
     //managers 
     ResourceManager resourceManager;
     TrackManager trackManager(&resourceManager);
-   
+        
     //NN Trainers
-    Trainer trainer(&resourceManager, trackManager.GetCurrentTrack(), dimensions);
-    InputManager inputManager(&trainer);          
+    Trainer trainer(&resourceManager, trackManager.GetCurrentTrack(), dimensions);    
 
     //UI
     MainMenu menu(&resourceManager, &trainer);
     Overlay overlay(&resourceManager, &trainer, &menu);
+    InputManager inputManager(&trainer, &overlay);        
 
     //misc
     sf::Vector2f mouseCoords;
@@ -94,7 +94,6 @@ int main(){
         displayDev = overlay.IsDevOn();
 
         //update 
-        inputManager.Update();
         trainer.Update(dt, pool);
         std::string frames = std::to_string((int)(std::accumulate(allFPS.begin(), allFPS.end(), 0.0) / allFPS.size()));
         overlay.UpdateData(frames);

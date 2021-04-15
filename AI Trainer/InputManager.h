@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Trainer.h"
+#include "Overlay.h"
 
 class InputManager
 {
@@ -17,14 +18,16 @@ class InputManager
 	bool isCycleDown = false;
 	bool isResetDown = false;
 	bool isNextGenDown = false;
-	bool isSaveDown = false;
-	bool isConsoleDown = false;
+	bool isSaveDown = false;	
+	bool isExportDown = false;
+	bool isMainMenuDown = false;
+	bool isOverlayDown = false;
 
-	Trainer* trainer;	
+	Trainer* trainer = nullptr;	
+	Overlay* overlay = nullptr;
 
 public:
-	InputManager(Trainer* t);
-	void Update();
+	InputManager(Trainer* t, Overlay* o);
 	void UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords);
 
 	float GetThrottle() { return throttle; }

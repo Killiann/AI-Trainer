@@ -26,6 +26,15 @@ class Overlay
 		"Go to Main Menu",
 		"Exit application"
 	};
+	std::vector<std::string> shortcutMessages = {
+		"Shortcut: 1",
+		"Shortcut: 0",
+		"Shortcut: C",
+		"Shortcut: X",
+		"Shortcut: S",
+		"Shortcut: ESC",
+		"Exit application"
+	};
 
 	//state
 	NavItem currentState = NavItem::None;
@@ -41,8 +50,8 @@ class Overlay
 	unsigned int padding = 20;
 	unsigned int btnMargin = 40;
 	unsigned int dataLeftColW = 350;
-	unsigned int dataRowHeight = 20;
-	unsigned int dataRowMargin = 25;
+	unsigned int dataRowHeight = 15;
+	unsigned int dataRowMargin = 20;
 	const sf::Vector2f navSize = sf::Vector2f(150, 30);
 	const sf::Vector2f position = sf::Vector2f(0, 0);
 	const sf::Vector2f size = sf::Vector2f(500, 320);

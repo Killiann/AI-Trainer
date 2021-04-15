@@ -27,6 +27,8 @@ struct TrainerData {
 	float totalTime = 0.f;
 	std::string hlActivation;
 	std::string olActivation;
+	float mutationRate = 0.f;
+	float mutationRateMinor = 0.f;
 };
 
 class Trainer
@@ -48,8 +50,8 @@ class Trainer
 	const float maxGenTime = 40; //seconds
 
 	const int surviverPool = 10;
-	const float mutationRate = 0.01f;
-	const float slightMutationRate = 0.05f;	
+	float mutationRate = 0.01f;
+	float mutationMinRate = 0.05f;	
 	
 	//network settings
 	const int inputNodes = 8;
@@ -91,7 +93,7 @@ class Trainer
 	
 public:
 	Trainer(ResourceManager* rMngr, Track& track, sf::FloatRect nnDim);	
-	void SetupTrainer(int threadCount, int carsPerThread, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID);
+	void SetupTrainer(int threadCount, int carsPerThread, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID, float mutationRate, float minMutationRate);
 
 	void Update(float dt, ThreadPool &pool);
 	void DrawEntities(sf::RenderTarget& window, bool devOverlay);
@@ -127,6 +129,8 @@ public:
 		tData.totalTime = elapsedTime + totalTime.getElapsedTime().asMilliseconds();
 		tData.hlActivation = activationFuncs[hiddenActivationID];
 		tData.olActivation = activationFuncs[outputActivationID];
+		tData.mutationRate = mutationRate;
+		tData.mutationRateMinor = mutationMinRate;
 		return tData;
 	}
 };

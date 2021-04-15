@@ -39,6 +39,8 @@ class MainMenu
 	unsigned int generationSize = (1 + threadCount) * carsPerThread;
 	unsigned int hiddenFuncID = 0;
 	unsigned int outputFuncID = 0;
+	float mutationRate = 0.01f;
+	float mutationMinRate = 0.05f;
 
 	//helpers
 	bool exit = false;
@@ -48,7 +50,8 @@ class MainMenu
 	//styling
 	unsigned int padding = 35;
 	unsigned int marginTop = 70;
-	unsigned int margin = 40;
+	unsigned int margin = 30;
+	unsigned int rowHeight = 25;
 
 	//middle column
 	unsigned int marginLeft = 285;
@@ -119,7 +122,7 @@ public:
 	inline void CreateNewSim() { 
 		std::vector<int> hlVec = hiddenLayerData;
 		hlVec.resize(hiddenLayers);
-		trainer->SetupTrainer(threadCount, carsPerThread, hlVec, hiddenFuncID, outputFuncID);
+		trainer->SetupTrainer(threadCount, carsPerThread, hlVec, hiddenFuncID, outputFuncID, mutationRate, mutationMinRate);
 		Hide();
 	}
 	inline void ContinueSim() { 

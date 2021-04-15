@@ -70,29 +70,41 @@ void MainMenu::InitializeNavigation() {
 
 void MainMenu::InitializeNewSimulation() {
 	//threads used
-	Label lbl_performance = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop), sf::Vector2f(190, 30), resourceManager, "Performance:", 0.6);
-	Label lbl_threadCount = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin), sf::Vector2f(190, 30), resourceManager, "Helper threads (max:" + std::to_string(maxThreads) + "):", 0.5f);
-	Textbox txt_threadCount = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin), sf::Vector2f(30, 30), resourceManager, true, maxThreads);
+	Label lbl_performance = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop), sf::Vector2f(190, rowHeight), resourceManager, "Performance:", 0.6);
+	Label lbl_threadCount = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin), sf::Vector2f(190, rowHeight), resourceManager, "Helper threads (max:" + std::to_string(maxThreads) + "):", 0.5f);
+	Textbox txt_threadCount = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin), sf::Vector2f(28, rowHeight), resourceManager, true, maxThreads);
 	newSimulationElements.emplace("lbl_performance", std::make_shared<Label>(lbl_performance));
 	newSimulationElements.emplace("lbl_threadCount", std::make_shared<Label>(lbl_threadCount));
 	newSimulationElements.emplace("txt_threadCount", std::make_shared<Textbox>(txt_threadCount));
 
 	//cars per thread
-	Label lbl_carsPerThread = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 2), sf::Vector2f(190, 30), resourceManager, "Cars per thread (max:" + std::to_string(maxCarsPerThread) + "):", 0.5f);
-	Textbox txt_carsPerThread = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin * 2), sf::Vector2f(30, 30), resourceManager, true, maxCarsPerThread);
+	Label lbl_carsPerThread = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 2), sf::Vector2f(190, rowHeight), resourceManager, "Cars per thread (max:" + std::to_string(maxCarsPerThread) + "):", 0.5f);
+	Textbox txt_carsPerThread = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin * 2), sf::Vector2f(28, rowHeight), resourceManager, true, maxCarsPerThread);
 	newSimulationElements.emplace("lbl_carsPerThread", std::make_shared<Label>(lbl_carsPerThread));
 	newSimulationElements.emplace("txt_carsPerThread", std::make_shared<Textbox>(txt_carsPerThread));
 
+	//mutation rate
+	Label lbl_mutationRate = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 3), sf::Vector2f(190, rowHeight), resourceManager, "Mutation rate:(n/100)%", 0.5f);
+	Textbox txt_mutationRate = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin * 3), sf::Vector2f(42, rowHeight), resourceManager, true, 9999);
+	newSimulationElements.emplace("lbl_mutationRate", std::make_shared<Label>(lbl_mutationRate));
+	newSimulationElements.emplace("txt_mutationRate", std::make_shared<Textbox>(txt_mutationRate));
+
+	//mutation rate (lesser)
+	Label lbl_mutationRateMin = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 4), sf::Vector2f(190, rowHeight), resourceManager, "Minor mutation rate:(n/100)%", 0.5f);
+	Textbox txt_mutationRateMin = Textbox(sf::Vector2f(position.x + padding + 210, position.y + padding + marginTop + margin * 4), sf::Vector2f(42, rowHeight), resourceManager, true, 9999);
+	newSimulationElements.emplace("lbl_mutationRateMin", std::make_shared<Label>(lbl_mutationRateMin));
+	newSimulationElements.emplace("txt_mutationRateMin", std::make_shared<Textbox>(txt_mutationRateMin));
+
 	//activation function selection - hidden layer
-	Label lbl_activation = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 3), sf::Vector2f(190, 30), resourceManager, "Activation Functions:", 0.6);
-	Dropdown dd_hiddenActivation = Dropdown(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 4), sf::Vector2f(190, 30), resourceManager, "Hidden Layers");
+	Label lbl_activation = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 6), sf::Vector2f(190, rowHeight), resourceManager, "Activation Functions:", 0.6);
+	Dropdown dd_hiddenActivation = Dropdown(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 6), sf::Vector2f(190, 30), resourceManager, "Hidden Layers");
 	dd_hiddenActivation.AddItem("Sigmoid");
 	dd_hiddenActivation.AddItem("Leaky RELU");
 	dd_hiddenActivation.AddItem("Binary Step");
 	dd_hiddenActivation.AddItem("Tanh");
 
 	//output layer
-	Dropdown dd_outputActivation = Dropdown(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 5), sf::Vector2f(190, 30), resourceManager, "Output Layer");
+	Dropdown dd_outputActivation = Dropdown(sf::Vector2f(position.x + padding, position.y + padding + marginTop + margin * 7.2), sf::Vector2f(190, 30), resourceManager, "Output Layer");
 	dd_outputActivation.AddItem("Sigmoid");
 	dd_outputActivation.AddItem("Leaky RELU");
 	dd_outputActivation.AddItem("Binary Step");
@@ -102,10 +114,10 @@ void MainMenu::InitializeNewSimulation() {
 	newSimulationElements.emplace("dd_hiddenActivation", std::make_shared<Dropdown>(dd_hiddenActivation));
 
 	//hidden layer setup
-	Label lbl_hidden = Label(sf::Vector2f(position.x + padding + marginLeft, position.y + padding + marginTop), sf::Vector2f(190, 30), resourceManager, "Hidden Layer Setup:", 0.6);
-	Button btn_subLayer = Button(sf::Vector2f(position.x + padding + marginLeft, position.y + padding + marginTop + margin), sf::Vector2f(30, 30), resourceManager, "-", ForwardSubLayer, this);
-	Button btn_addLayer = Button(sf::Vector2f(position.x + padding + marginLeft + 210, position.y + padding + marginTop + margin), sf::Vector2f(30, 30), resourceManager, "+", ForwardAddLayer, this);
-	Label lbl_hiddenLayers = Label(sf::Vector2f(position.x + padding + marginLeft + 30, position.y + padding + marginTop + margin), sf::Vector2f(180, 30), resourceManager, "Hidden Layers: " + std::to_string(hiddenLayers), 0.5);
+	Label lbl_hidden = Label(sf::Vector2f(position.x + padding + marginLeft, position.y + padding + marginTop), sf::Vector2f(190, rowHeight), resourceManager, "Hidden Layer Setup:", 0.6);
+	Button btn_subLayer = Button(sf::Vector2f(position.x + padding + marginLeft, position.y + padding + marginTop + margin), sf::Vector2f(30, rowHeight), resourceManager, "-", ForwardSubLayer, this);
+	Button btn_addLayer = Button(sf::Vector2f(position.x + padding + marginLeft + 210, position.y + padding + marginTop + margin), sf::Vector2f(30, rowHeight), resourceManager, "+", ForwardAddLayer, this);
+	Label lbl_hiddenLayers = Label(sf::Vector2f(position.x + padding + marginLeft + 30, position.y + padding + marginTop + margin), sf::Vector2f(180, rowHeight), resourceManager, "Hidden Layers: " + std::to_string(hiddenLayers), 0.5);
 	lbl_hiddenLayers.CenterText();
 	btn_subLayer.SetFontScale(0.6);
 	btn_subLayer.SetFontScale(0.6);
@@ -117,8 +129,8 @@ void MainMenu::InitializeNewSimulation() {
 
 	//for each available hidden layer
 	for (unsigned int i = 0; i < maxHiddenLayers; ++i) {
-		Label lbl_layerCount = Label(sf::Vector2f(position.x + padding + marginLeft, position.y + padding + marginTop + ((2 + i) * margin)), sf::Vector2f(190, 30), resourceManager, "Nodes in layer " + std::to_string(i + 1) + ": (max: " + std::to_string(maxNodes) + ")", 0.5f);
-		Textbox txt_layerCount = Textbox(sf::Vector2f(position.x + padding + marginLeft + 210, position.y + padding + marginTop + ((2 + i) * margin)), sf::Vector2f(30, 30), resourceManager, true, maxNodes);
+		Label lbl_layerCount = Label(sf::Vector2f(position.x + padding + marginLeft, position.y + padding + marginTop + ((2 + i) * margin)), sf::Vector2f(190, rowHeight), resourceManager, "Nodes in layer " + std::to_string(i + 1) + ": (max: " + std::to_string(maxNodes) + ")", 0.5f);
+		Textbox txt_layerCount = Textbox(sf::Vector2f(position.x + padding + marginLeft + 210, position.y + padding + marginTop + ((2 + i) * margin)), sf::Vector2f(30, rowHeight), resourceManager, true, maxNodes);
 		newSimulationElements.emplace("lbl_layerCount_" + std::to_string(i), std::make_shared<Label>(lbl_layerCount));
 		newSimulationElements.emplace("txt_layerCount_" + std::to_string(i), std::make_shared<Textbox>(txt_layerCount));
 	}
@@ -160,22 +172,34 @@ void MainMenu::InitalizeSettings() {
 	newSimulationElements.emplace("lbl_settingsGenSize", std::make_shared<Label>(lbl_settingsGenSize));
 	newSimulationElements.emplace("lbl_settingsGenSizeVal", std::make_shared<Label>(lbl_settingsGenSizeVal));
 
+	//generation size
+	Label lbl_settingsMutationRate = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * 4)), sf::Vector2f(leftColW, rowH), resourceManager, "Mutation Rate: ", 0.5);
+	Label lbl_settingsMutationRateVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * 4)), sf::Vector2f(rightColW, rowH), resourceManager, TruncateFloat(mutationRate) + "%", 0.5);
+	newSimulationElements.emplace("lbl_settingsMutationRate", std::make_shared<Label>(lbl_settingsMutationRate));
+	newSimulationElements.emplace("lbl_settingsMutationRateVal", std::make_shared<Label>(lbl_settingsMutationRateVal));
+
+	//generation size
+	Label lbl_settingsMinMutationRate = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * 5)), sf::Vector2f(leftColW, rowH), resourceManager, "Mutation Rate(minor): ", 0.5);
+	Label lbl_settingsMinMutationRateVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * 5)), sf::Vector2f(rightColW, rowH), resourceManager, TruncateFloat(mutationMinRate) + "%", 0.5);
+	newSimulationElements.emplace("lbl_settingsMinMutationRate", std::make_shared<Label>(lbl_settingsMinMutationRate));
+	newSimulationElements.emplace("lbl_settingsMinMutationRateVal", std::make_shared<Label>(lbl_settingsMinMutationRateVal));
+
 	//hidden layer function
-	Label lbl_hlActivation = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * 4)), sf::Vector2f(leftColW, rowH), resourceManager, "HL Activation Function:", 0.5);
-	Label lbl_hlActivationVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * 4)), sf::Vector2f(rightColW, rowH), resourceManager, activationFuncs[hiddenFuncID], 0.5);
+	Label lbl_hlActivation = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * 6)), sf::Vector2f(leftColW, rowH), resourceManager, "HL Activation Function:", 0.5);
+	Label lbl_hlActivationVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * 6)), sf::Vector2f(rightColW, rowH), resourceManager, activationFuncs[hiddenFuncID], 0.5);
 	newSimulationElements.emplace("lbl_hlActivation", std::make_shared<Label>(lbl_hlActivation));
 	newSimulationElements.emplace("lbl_hlActivationVal", std::make_shared<Label>(lbl_hlActivationVal));
 
 	//output layer function
-	Label lbl_olActivation = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * 5)), sf::Vector2f(leftColW, rowH), resourceManager, "OL Activation Function:", 0.5);
-	Label lbl_olActivationVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * 5)), sf::Vector2f(rightColW, rowH), resourceManager, activationFuncs[outputFuncID], 0.5);
+	Label lbl_olActivation = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * 7)), sf::Vector2f(leftColW, rowH), resourceManager, "OL Activation Function:", 0.5);
+	Label lbl_olActivationVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * 7)), sf::Vector2f(rightColW, rowH), resourceManager, activationFuncs[outputFuncID], 0.5);
 	newSimulationElements.emplace("lbl_olActivation", std::make_shared<Label>(lbl_olActivation));
 	newSimulationElements.emplace("lbl_olActivationVal", std::make_shared<Label>(lbl_olActivationVal));
 
 	//hidden layer
 	for (unsigned int i = 0; i < maxHiddenLayers; ++i) {
-		Label lbl_hiddenLayer = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * (6 + i))), sf::Vector2f(leftColW, rowH), resourceManager, "Hidden layer " + std::to_string(i + 1) + " nodes:", 0.5);
-		Label lbl_hiddenLayerVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * (6 + i))), sf::Vector2f(rightColW, rowH), resourceManager, std::to_string(hiddenLayerData[i]), 0.5);
+		Label lbl_hiddenLayer = Label(sf::Vector2f(position.x + padding + s_marginLeft, s_marginTop + (settingsMargin * (8 + i))), sf::Vector2f(leftColW, rowH), resourceManager, "Hidden layer " + std::to_string(i + 1) + " nodes:", 0.5);
+		Label lbl_hiddenLayerVal = Label(sf::Vector2f(position.x + padding + s_marginLeft + leftColW, s_marginTop + (settingsMargin * (8 + i))), sf::Vector2f(rightColW, rowH), resourceManager, std::to_string(hiddenLayerData[i]), 0.5);
 		newSimulationElements.emplace("lbl_hiddenLayer_" + std::to_string(i), std::make_shared<Label>(lbl_hiddenLayer));
 		newSimulationElements.emplace("lbl_hiddenLayerVal_" + std::to_string(i), std::make_shared<Label>(lbl_hiddenLayerVal));
 	}
@@ -239,10 +263,18 @@ void MainMenu::UpdateSettings() {
 
 	generationSize = (threadCount + 1)* carsPerThread;
 
+	//get mutation rate
+	std::string mutationVal = (*newSimulationElements.find("txt_mutationRate")).second->GetText();
+	std::string mutationMinVal = (*newSimulationElements.find("txt_mutationRateMin")).second->GetText();
+	if (mutationVal != "") mutationRate = std::stof(mutationVal) / 100.f;
+	if (mutationMinVal != "") mutationMinRate = std::stof(mutationMinVal) / 100.f;
+
 	//update labels
 	(*newSimulationElements.find("lbl_settingsThreadCountVal")).second->SetText(std::to_string(threadCount));
 	(*newSimulationElements.find("lbl_settingsCarsPerThreadVal")).second->SetText(std::to_string(carsPerThread));
 	(*newSimulationElements.find("lbl_settingsGenSizeVal")).second->SetText(std::to_string(generationSize));
+	(*newSimulationElements.find("lbl_settingsMutationRateVal")).second->SetText(TruncateFloat(mutationRate) + "%");
+	(*newSimulationElements.find("lbl_settingsMinMutationRateVal")).second->SetText(TruncateFloat(mutationMinRate) + "%");
 	(*newSimulationElements.find("lbl_hlActivationVal")).second->SetText(activationFuncs[hiddenFuncID]);
 	(*newSimulationElements.find("lbl_olActivationVal")).second->SetText(activationFuncs[outputFuncID]);
 
