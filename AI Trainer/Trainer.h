@@ -1,12 +1,17 @@
 #pragma once
-
+#include <iomanip>
+#include <sstream>
 #include <linearAlgebra.h>
 #include <thread>
+#include <algorithm>
+#include <numeric>
 
 #include "Car.h"
 #include "Network.h"
 #include "Track.h"
 #include "ThreadPool.h"
+
+std::string FloatToTime(float n);
 
 struct TrainerData {
 	TrainerData() {}
@@ -59,6 +64,10 @@ class Trainer
 	std::vector<Network> bestNetworks;
 	Network bestNetwork;
 
+	//saved data
+	std::vector<float> bestFitnessPerGen;	
+	std::vector<float> avgFitnessPerGen;
+
 	//data
 	std::vector<float> currentLapTimes;
 	float bestLapTime = 0.f;
@@ -89,6 +98,8 @@ public:
 
 	bool SaveScene(std::string filename);
 	bool LoadScene(std::string filename);
+
+	bool ExportData(std::string filename);
 
 	static float Divide(float n);
 

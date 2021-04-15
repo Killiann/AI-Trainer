@@ -18,6 +18,9 @@ void ForwardRestartSim(void* overlay) {
 void ForwardShowHide(void* overlay) {
 	((Overlay*)overlay)->ShowHide();
 }
+void ForwardExport(void* overlay) {
+	((Overlay*)overlay)->ExportToCSV();
+}
 void ForwardMainMenu(void* overlay) {
 	((Overlay*)overlay)->OpenMainMenu();
 }
@@ -47,7 +50,7 @@ void Overlay::InitOptions() {
 	lbl_prompt.SetFont(resourceManager->GetRobotoLight());
 	optionElements.emplace("lbl_prompt", std::make_shared<Label>(lbl_prompt));
 
-	Label lbl_saveSuccess = Label(sf::Vector2f(position.x + padding + 150 + 30, position.y + navSize.y + padding + 160), sf::Vector2f(250, 100), resourceManager, "", 0.5);
+	Label lbl_saveSuccess = Label(sf::Vector2f(position.x + padding + 150 + 30, position.y + navSize.y + padding + btnMargin * 3), sf::Vector2f(250, 100), resourceManager, "", 0.5);
 	lbl_saveSuccess.SetFont(resourceManager->GetRobotoRegular());
 	lbl_saveSuccess.SetTextColor(sf::Color::Green);
 	lbl_saveSuccess.Hide();
@@ -64,6 +67,10 @@ void Overlay::InitOptions() {
 	//show/hide overlay
 	Button btn_showHide = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 2), sf::Vector2f(150, 30), resourceManager, "Show Overlay", ForwardShowHide, this);
 	optionElements.emplace("btn_showHide", std::make_shared<Button>(btn_showHide));
+
+	//export to CSV
+	Button btn_export = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 3), sf::Vector2f(150, 30), resourceManager, "Export to CSV", ForwardExport, this);
+	optionElements.emplace("btn_export", std::make_shared<Button>(btn_export));
 
 	//save
 	Button btn_save = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 4), sf::Vector2f(150, 30), resourceManager, "Save", ForwardSave, this);
@@ -209,19 +216,6 @@ void Overlay::Draw(sf::RenderTarget &window) {
 		for (auto& e : dataElements)
 			e.second->Draw(window); break;
 	}
-}
-std::string Overlay::FloatToTime(float n) {
-	unsigned int ms = (n / 1000);
-	unsigned int sec = ms / 60;
-	unsigned int min = sec / 60;
-	unsigned int hr = min / 60;
-
-	std::stringstream stream;
-	stream << std::right << std::setfill('0') << std::setw(2) << hr << ":" <<
-		std::right << std::setfill('0') << std::setw(2) << (sec % 60) << ":" <<
-		std::right << std::setfill('0') << std::setw(2) << (ms % 60) << ":" <<
-		std::right << std::setfill('0') << std::setw(2) << ((int)n % 1000);
-	return stream.str();
 }
 
 std::string Overlay::TruncateFloat(float n) {

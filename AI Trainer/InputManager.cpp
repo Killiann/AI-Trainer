@@ -77,7 +77,7 @@ void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
             //save best car
             if (event.key.code == sf::Keyboard::Key::S) {
                 if (!isSaveDown) {
-                    //trainer->SaveBestCar();
+                    trainer->SaveScene("trainer.sim");
                     isSaveDown = true;
                 }
             }

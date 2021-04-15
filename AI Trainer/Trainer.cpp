@@ -17,8 +17,13 @@ void Trainer::SetupTrainer(int threads, int cars, std::vector<int> hiddenLayers,
 
 // initialise new first generation with networks that have random weights and biases
 void Trainer::NewScene() {
+	//reset data
 	cars.clear();
 	networks.clear();
+	bestFitnessPerGen.clear();
+	avgFitnessPerGen.clear();	
+	
+	//populate gen 1
 	for (int i = 0; i < generationSize; ++i) {
 		Car car = Car(i, sf::Vector2f(550.0f, 800.0f), resourceManager, &track);
 		cars.push_back(car);
@@ -26,6 +31,7 @@ void Trainer::NewScene() {
 		Network nn(inputNodes, hiddenNodes, outputNodes, nnDimensions, hiddenActivationID, outputActivationID);
 		networks.push_back(nn);
 	}
+
 	currentId = 0;
 	currentGeneration = 1;
 	cars[currentId].Select();
@@ -35,7 +41,7 @@ void Trainer::NewScene() {
 	bestLapTime = 0.f;
 	bestLapTimePrev = 0.f;
 	elapsedTime = 0.f;
-
+	
 	generationTimer.restart(); //start timer
 	totalTime.restart();
 	running = true;
@@ -92,13 +98,21 @@ void Trainer::DrawUI(sf::RenderTarget& window) {
 void Trainer::NextGeneration(bool skipReset) {
 	if (running) {
 		//get best cars of the generation (capped to survivor pool size + sorted)
-		if (!skipReset) {
+		if (!skipReset) {			
 			SortCars(0, cars.size() - 1);
 
 			bestNetworks.clear();
 			bestNetworks = networks;
-
 			bestNetworks.resize(surviverPool);
+
+			//get average fitness of generation
+			float total = 0.f;
+			for (auto& c : cars)
+				total += c.GetFitness();
+			avgFitnessPerGen.push_back(total / cars.size());
+
+			//save best fitness
+			bestFitnessPerGen.push_back(cars[0].GetFitness());
 
 			//check if best fitness so far has been beaten
 			if (cars[0].GetFitness() > bestFitness || currentGeneration == 1) {
@@ -261,12 +275,20 @@ bool Trainer::SaveScene(std::string fileName) {
 		for (unsigned int i = 0; i < bestNetworks.size(); ++i)
 			bestNetworks[i].SaveToFile(file);
 
+		//set previous generation data
+		if (bestFitnessPerGen.size() == avgFitnessPerGen.size()) {
+			for (unsigned int i = 0; i < bestFitnessPerGen.size(); ++i)
+				file << bestFitnessPerGen[i] << "," << avgFitnessPerGen[i] << std::endl;
+		}
+		else throw 1;
+
 		file.close();
 		return true;
 	}
 	catch (int e) {		
 		std::cout << "Could not save scene.\n";
-		if (e == 0) std::cout << "Generation size must be bigger than 1\n";
+		if (e == 0) std::cout << "Generation size must be bigger than 1.\n";
+		else if (e == 1) std::cout << "Error with data.\n";
 		return false;
 	}
 }
@@ -315,6 +337,18 @@ bool Trainer::LoadScene(std::string fileName) {
 		}
 		if (bestNetworks.size() > 0) bestNetwork = bestNetworks[0];
 
+		//get previous generation data
+		bestFitnessPerGen.clear();
+		avgFitnessPerGen.clear();
+		while (std::getline(file, line)) {
+			if (line != "") {
+				splitLine = SplitString(line, ",");
+				bestFitnessPerGen.push_back(std::stof(splitLine[0]));
+				avgFitnessPerGen.push_back(std::stof(splitLine[1]));
+			}
+			else break;
+		}
+
 		totalTime.restart();
 		running = true;
 		NextGeneration(true);
@@ -327,3 +361,53 @@ bool Trainer::LoadScene(std::string fileName) {
 	}
 }
 
+bool Trainer::ExportData(std::string fileName) {
+	try {
+		std::ofstream file;
+		file.open(fileName);
+		
+		//important sim settings 
+		file << "Node structure" << ',' << inputNodes << " ";
+		for (unsigned int i = 0; i < hiddenNodes.size(); ++i)
+			file << hiddenNodes[i] << " ";
+		file << outputNodes << std::endl;
+		file << "Hidden Layer Activation Function" << ',' << activationFuncs[hiddenActivationID] << std::endl;
+		file << "Output Layer Activation Function" << ',' << activationFuncs[outputActivationID] << std::endl;
+		file << "Generation Size" << ',' << generationSize << std::endl;
+		file << "Total Generations Completed" << ',' << currentGeneration << std::endl;
+		file << "Mutation Rate %" << ',' << mutationRate << std::endl;
+		file << "Mutation Rate % (minor)" << ',' << slightMutationRate << std::endl;
+		file << "Total elapsed time" << ',' << FloatToTime(elapsedTime + totalTime.getElapsedTime().asMilliseconds()) << std::endl;
+		file << "Best fitness" << ',' << bestFitness << std::endl;
+		file << "Average fitness" << ',' << std::accumulate(bestFitnessPerGen.begin(), bestFitnessPerGen.end(), 0.0) / bestFitnessPerGen.size() << std::endl;
+		file << "====DATA====" << std::endl;
+		
+		//sim learning data
+		file << "Generation" << "," << "Best Fitness" << ',' << "Average Fitness" << std::endl;
+		if (bestFitnessPerGen.size() == avgFitnessPerGen.size()) {
+			for (unsigned int i = 0; i < bestFitnessPerGen.size(); ++i)
+				file << i + 1 << ',' << bestFitnessPerGen[i] << ',' << avgFitnessPerGen[i] << std::endl;
+		}
+		else throw 0; // error with data
+		file.close();
+		return true;
+	}
+	catch (int e) {
+		std::cout << "Error exporting data.\n";
+		return false;
+	}
+}
+
+std::string FloatToTime(float n) {
+	unsigned int ms = (n / 1000);
+	unsigned int sec = ms / 60;
+	unsigned int min = sec / 60;
+	unsigned int hr = min / 60;
+
+	std::stringstream stream;
+	stream << std::right << std::setfill('0') << std::setw(2) << hr << ":" <<
+		std::right << std::setfill('0') << std::setw(2) << (sec % 60) << ":" <<
+		std::right << std::setfill('0') << std::setw(2) << (ms % 60) << ":" <<
+		std::right << std::setfill('0') << std::setw(2) << ((int)n % 1000);
+	return stream.str();
+}

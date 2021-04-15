@@ -205,7 +205,7 @@ void MainMenu::NavigationState(sf::RenderWindow& window, sf::Event& event) {
 				//new sim	
 			case(0): (*navigationElements.find("lbl_prompt")).second->SetText("Start training a new model with custom parameters"); break;
 				//load sim
-			case(1):(*navigationElements.find("lbl_prompt")).second->SetText("Continue training a previously created model"); break;
+			case(1):(*navigationElements.find("lbl_prompt")).second->SetText("Continue training the previously created model"); break;
 				//exit application
 			case(2): (*navigationElements.find("lbl_prompt")).second->SetText("Exit application"); break;
 			case(3): (*navigationElements.find("lbl_prompt")).second->SetText("Continue"); break;
