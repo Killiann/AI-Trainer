@@ -49,10 +49,10 @@ CheckPoint::CheckPoint(int id, sf::Vector2f pos, PosInTile pit, sf::Texture* tex
 	centerShape.setOrigin(5, 5);
 }
 
-void CheckPoint::Draw(sf::RenderTarget& window) {
+void CheckPoint::Draw(sf::RenderTarget& window, bool isOverlay) {
 	window.draw(sprite);
-	//if (console->IsDisplayed()) {
+	if (isOverlay) {
 		window.draw(collisionRect);
 		window.draw(centerShape);
-	//}
+	}
 }

@@ -11,5 +11,5 @@ public:
 
 	inline std::vector<CheckPoint> &GetCheckpoints() { return checkpoints; }
 
-	void Draw(sf::RenderTarget& window);
+	void Draw(sf::RenderTarget& window, bool isOverlay);
 };

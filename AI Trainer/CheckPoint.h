@@ -35,5 +35,5 @@ public:
 	inline int getID() { return ID; }
 	inline sf::Vector2f GetCenter() { return center; }
 
-	void Draw(sf::RenderTarget& window);
+	void Draw(sf::RenderTarget& window, bool isOverlay);
 };

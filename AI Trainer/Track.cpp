@@ -24,5 +24,5 @@ void Track::Draw(sf::RenderTarget& window, bool devOverview) {
 	for (auto& t : trackPieces)
 		t.Draw(window);
 
-	cpManager.Draw(window);
+	cpManager.Draw(window, devOverview);
 }

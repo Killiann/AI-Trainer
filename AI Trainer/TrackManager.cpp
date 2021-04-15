@@ -26,7 +26,10 @@ TrackManager::TrackManager(ResourceManager* resource): resourceManager(resource)
     track1_checkpoints.emplace_back(11, sf::Vector2f(5, 3), PosInTile::LB, cpTexture);
     track1_checkpoints.emplace_back(12, sf::Vector2f(4, 3), PosInTile::LB, cpTexture);
     track1_checkpoints.emplace_back(13, sf::Vector2f(2, 2), PosInTile::RB, cpTexture);
-    track1_checkpoints.emplace_back(14, sf::Vector2f(1, 3), PosInTile::LB, cpTexture);
+    track1_checkpoints.emplace_back(14, sf::Vector2f(2, 3), PosInTile::LB, cpTexture);
+    track1_checkpoints.emplace_back(15, sf::Vector2f(1, 3), PosInTile::LB, cpTexture);
+    track1_checkpoints.emplace_back(16, sf::Vector2f(0, 2), PosInTile::BL, cpTexture);
+    track1_checkpoints.emplace_back(17, sf::Vector2f(0, 2), PosInTile::RT, cpTexture);
 
     Track track1 = Track(resourceManager, track1_checkpoints, track1_grid, 6, 4);
     tracks.push_back(track1);
