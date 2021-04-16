@@ -54,6 +54,8 @@ int main(){
     ThreadPool pool(12);
     pool.init();
 
+    bool focused = true;
+
     //main loop
     while (window.isOpen())
     {                
@@ -88,7 +90,10 @@ int main(){
             if(trainer.IsRunning())
                 overlay.Update(window, event);
 
-            inputManager.UpdateUIControls(event, mouseCoords);
+            if (event.type == sf::Event::LostFocus) focused = false;
+            else if (event.type == sf::Event::GainedFocus) focused = true;
+
+            if (focused) inputManager.UpdateUIControls(event, mouseCoords);
         }
         //dev overlay
         displayDev = overlay.IsDevOn();

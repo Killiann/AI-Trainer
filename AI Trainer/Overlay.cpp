@@ -174,7 +174,7 @@ void Overlay::InitData() {
 }
 
 void Overlay::Update(sf::RenderWindow& window, sf::Event &event) {
-	if (exit) window.close();
+	if (exit || trainer->IsExit()) window.close();
 	//keep nav updating
 	for (auto& e : navElements)
 		e.second->Update(window, event);

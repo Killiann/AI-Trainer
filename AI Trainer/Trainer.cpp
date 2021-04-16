@@ -195,6 +195,19 @@ void Trainer::NextGeneration(bool skipReset) {
 			networks.push_back(nn);			
 		}
 		if (!skipReset) currentGeneration++;
+
+		//temp
+		if (currentGeneration == 31) {
+			ExportData(activationFuncs[hiddenActivationID] + std::to_string(currentSim) + ".csv");
+			if (currentSim == 9) {
+				currentSim = 0;
+				if (hiddenActivationID < (activationFuncs.size() - 1))
+					hiddenActivationID++;
+				else exitIfTrue = true;
+			}
+			else currentSim++;
+			ResetScene();
+		}
 		generationTimer.restart();
 	}
 }	
@@ -401,7 +414,6 @@ bool Trainer::ExportData(std::string fileName) {
 		file << "Mutation Rate % (minor)" << ',' << mutationMinRate << std::endl;
 		file << "Total elapsed time" << ',' << FloatToTime(elapsedTime + totalTime.getElapsedTime().asMilliseconds()) << std::endl;
 		file << "Best fitness" << ',' << bestFitness << std::endl;
-		file << "Average fitness" << ',' << std::accumulate(bestFitnessPerGen.begin(), bestFitnessPerGen.end(), 0.0) / bestFitnessPerGen.size() << std::endl;
 		file << "====DATA====" << std::endl;
 		
 		//sim learning data

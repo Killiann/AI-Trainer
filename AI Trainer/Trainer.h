@@ -33,6 +33,10 @@ struct TrainerData {
 
 class Trainer
 {	
+	//temp 
+	int currentSim = 0;
+	bool exitIfTrue = false;
+
 	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
 	unsigned int hiddenActivationID = 0;
 	unsigned int outputActivationID = 0;
@@ -115,6 +119,9 @@ public:
 	
 	inline void Pause() { running = false; }
 	inline void Continue() { running = true; }	
+
+	//temp
+	inline bool IsExit() { return exitIfTrue; }
 
 	//get data for UI
 	inline TrainerData GetData() {
