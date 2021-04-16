@@ -1,8 +1,24 @@
 #include "Trainer.h"
 
+/// <summary>
+/// Initialise Trainer
+/// </summary>
+/// <param name="rMngr">ResourceManager* rMngr</param>
+/// <param name="t">Track* t</param>
+/// <param name="nnDim">sf::FloatRect neural network graphic dimensions</param>
 Trainer::Trainer(ResourceManager* rMngr, Track& t, sf::FloatRect nnDim)
 : resourceManager(rMngr), track(t), nnDimensions(nnDim) {}
 
+/// <summary>
+/// Setup trainer 
+/// </summary>
+/// <param name="threads">int, threads to use</param>
+/// <param name="cars">int, cars per thread</param>
+/// <param name="hiddenLayers">std::vector<int>, hidden layer count + node count</param>
+/// <param name="hlActivationID">int, hidden layer activation function ID</param>
+/// <param name="olActivationID">int, output layer activation function ID</param>
+/// <param name="mutRate">float, mutation rate</param>
+/// <param name="minMutRate">float, minor mutation rate</param>
 void Trainer::SetupTrainer(int threads, int cars, std::vector<int> hiddenLayers, int hlActivationID, int olActivationID, float mutRate, float minMutRate) {
 	threadCount = threads;
 	carsPerThread = cars;
@@ -19,6 +35,10 @@ void Trainer::SetupTrainer(int threads, int cars, std::vector<int> hiddenLayers,
 }
 
 // initialise new first generation with networks that have random weights and biases
+
+/// <summary>
+/// Create new trainer scene, resets all
+/// </summary>
 void Trainer::NewScene() {
 	//reset data
 	cars.clear();
@@ -51,6 +71,13 @@ void Trainer::NewScene() {
 }
 
 // Update a range of trainer cars / networks. Used to split up the task across threads
+
+/// <summary>
+/// Update range of cars and networks, used to split task up for multithreading
+/// </summary>
+/// <param name="dt">float dt</param>
+/// <param name="min">int, range minimum</param>
+/// <param name="max">int, range maximum</param>
 void Trainer::UpdateRange(float dt, int min, int max) {
 	for (int i = min; i < max; ++i) {
 		cars[i].Update(dt);
@@ -60,6 +87,11 @@ void Trainer::UpdateRange(float dt, int min, int max) {
 	}
 }
 
+/// <summary>
+/// Update Trainer
+/// </summary>
+/// <param name="dt">float, dt</param>
+/// <param name="pool">Threadpool reference</param>
 void Trainer::Update(float dt, ThreadPool& pool) {
 	if (running) {
 		//split generation update mmethods (Car physics + network FeedForward) across threads using threadpool
@@ -84,6 +116,11 @@ void Trainer::Update(float dt, ThreadPool& pool) {
 	}
 }
 
+/// <summary>
+/// Draw trainer entities
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
+/// <param name="devOverlay">bool, display overlay</param>
 void Trainer::DrawEntities(sf::RenderTarget& window, bool devOverlay) {
 	if (running) {
 		if (cars.size() != 0)
@@ -92,6 +129,10 @@ void Trainer::DrawEntities(sf::RenderTarget& window, bool devOverlay) {
 	}
 }
 
+/// <summary>
+/// Draw trainer UI (network)
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
 void Trainer::DrawUI(sf::RenderTarget& window) {
 	if (running) {
 		if (networks.size() != 0)
@@ -99,6 +140,10 @@ void Trainer::DrawUI(sf::RenderTarget& window) {
 	}
 }
 
+/// <summary>
+/// Move to next generation
+/// </summary>
+/// <param name="skipReset">bool, skip reset, used when loading data from file</param>
 void Trainer::NextGeneration(bool skipReset) {
 	if (running) {
 		//get best cars of the generation (capped to survivor pool size + sorted)
@@ -200,12 +245,20 @@ void Trainer::NextGeneration(bool skipReset) {
 }	
 
 //used when averaging weights
+
+/// <summary>
+/// Divide float n by 2, sent to Matrix.Map in NextGeneration()
+/// </summary>
+/// <param name="n"></param>
+/// <returns></returns>
 float Trainer::Divide(float n) {
 	return n / 2;
 }
 
-//could not map function to matrix
-//as it needs to stay a member function to access local variables
+/// <summary>
+/// Mutate Matrix - alter values depending on mutation rate and minor mutation rate
+/// </summary>
+/// <param name="m">lin::Matrix reference</param>
 void Trainer::Mutate(lin::Matrix &m){
 	std::random_device rd;
 	std::mt19937 gen(rd());
@@ -226,6 +279,12 @@ void Trainer::Mutate(lin::Matrix &m){
 }
 
 //Quick sort cars
+
+/// <summary>
+/// Quick sort algorithm applied to cars and networks 
+/// </summary>
+/// <param name="low">int, range minimum</param>
+/// <param name="high">int, range maximum</param>
 void Trainer::SortCars(int low, int high) {
 	if (low < high) {
 		//partitioning index
@@ -236,7 +295,13 @@ void Trainer::SortCars(int low, int high) {
 		SortCars(pi + 1, high);
 	}
 }
-//Partition for quick sort
+
+/// <summary>
+/// Partition used in car/network quick sort
+/// </summary>
+/// <param name="low">int, range minimum</param>
+/// <param name="high">int, range maximum</param>
+/// <returns></returns>
 int Trainer::Partition(int low, int high) {
 	float pivot = cars[high].GetFitness();
 	int i = (low - 1);
@@ -253,7 +318,11 @@ int Trainer::Partition(int low, int high) {
 	return (i + 1);
 }
 
-//save scene to txt (.sim) file
+/// <summary>
+/// Save trainer data to text (.sim) file 
+/// </summary>
+/// <param name="fileName">std::string fileName</param>
+/// <returns>bool, save success</returns>
 bool Trainer::SaveScene(std::string fileName) {
 	try {
 		if (currentGeneration < 2) throw(0);
@@ -304,7 +373,11 @@ bool Trainer::SaveScene(std::string fileName) {
 	}
 }
 
-//load from file (.sim)
+/// <summary>
+/// Load trainer data from text (.sim) file 
+/// </summary>
+/// <param name="fileName">std::string fileName</param>
+/// <returns>bool, load success</returns>
 bool Trainer::LoadScene(std::string fileName) {
 	try {
 		std::ifstream file;
@@ -380,7 +453,11 @@ bool Trainer::LoadScene(std::string fileName) {
 	}
 }
 
-//export to CSV
+/// <summary>
+/// Export trainer data to CSV
+/// </summary>
+/// <param name="fileName">std::string fileName </param>
+/// <returns>bool, export success</returns>
 bool Trainer::ExportData(std::string fileName) {
 	try {
 		if (SplitString(fileName, ".")[1] != "csv") throw(1);
@@ -423,7 +500,12 @@ bool Trainer::ExportData(std::string fileName) {
 	}
 }
 
-//convert float (ms) to time string 00:00:00:000
+
+/// <summary>
+/// Convert float(ms) to time string 00:00:00:000
+/// </summary>
+/// <param name="n">float, n</param>
+/// <returns>std::string time format 00:00:00:000</returns>
 std::string FloatToTime(float n) {
 	unsigned int ms = (n / 1000);
 	unsigned int sec = ms / 60;
@@ -438,7 +520,11 @@ std::string FloatToTime(float n) {
 	return stream.str();
 }
 
-//cap float to 2 dp
+/// <summary>
+/// Truncate float to 2 decimal points and convert to string
+/// </summary>
+/// <param name="n">float, n</param>
+/// <returns>std::string float to 2dp</returns>
 std::string TruncateFloat(float n) {
 	std::stringstream stream;
 	stream << std::fixed << std::setprecision(2) << n;

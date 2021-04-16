@@ -7,6 +7,9 @@
 #include "Label.h"
 #include "MainMenu.h"
 
+/// <summary>
+/// Overlay state types
+/// </summary>
 enum class NavItem {
 	None,
 	Options,
@@ -76,9 +79,17 @@ public:
 	void Update(sf::RenderWindow& window, sf::Event& event);
 	void UpdateData(std::string fps);
 	void Draw(sf::RenderTarget& window);
+
+	/// <summary>
+	/// Check if overlay is turned on
+	/// </summary>
 	inline bool IsDevOn() { return devOverlay; }
 
 	//toggle navigation
+
+	/// <summary>
+	/// Switch between overlay menu states
+	/// </summary>
 	inline void Switch(NavItem screen) {
 		(*optionElements.find("lbl_saveSuccess")).second->Hide();
 		if (currentState == screen) currentState = NavItem::None;
@@ -87,8 +98,18 @@ public:
 	}
 
 	//button functions
+	
+	/// <summary>
+	/// Next generation button functionality
+	/// </summary>
 	inline void NextGen() { trainer->NextGeneration(false); }
+	/// <summary>
+	/// Restart simulation button functionality
+	/// </summary>
 	inline void RestartSim() { trainer->ResetScene(); }
+	/// <summary>
+	/// Toggle show hide button functionality
+	/// </summary>
 	inline void ShowHide() {
 		if (devOverlay) {
 			devOverlay = false;
@@ -100,6 +121,9 @@ public:
 		}
 		(*optionElements.find("btn_showHide")).second->CenterText();
 	}
+	/// <summary>
+	/// Export to CSV button functionality
+	/// </summary>
 	inline void ExportToCSV() { 		
 		if (trainer->ExportData("data.csv")) {
 			(*optionElements.find("lbl_saveSuccess")).second->SetTextColor(sf::Color(33, 158, 44));
@@ -112,6 +136,9 @@ public:
 			(*optionElements.find("lbl_saveSuccess")).second->Show();
 		}
 	}
+	/// <summary>
+	/// Save button functionality
+	/// </summary>
 	inline void SaveSim() {
 		if (trainer->SaveScene("trainer.sim")) {
 			(*optionElements.find("lbl_saveSuccess")).second->SetTextColor(sf::Color(33, 158, 44));
@@ -124,11 +151,17 @@ public:
 			(*optionElements.find("lbl_saveSuccess")).second->Show();
 		}
 	}
+	/// <summary>
+	/// Open main menu button functionality
+	/// </summary>
 	inline void OpenMainMenu() {
 		currentState = NavItem::None;
 		trainer->Pause();
 		mainMenu->Show(true);
 	}
+	/// <summary>
+	/// Exit simulation button functionality
+	/// </summary>
 	inline void ExitSim() { exit = true; }
 };
 

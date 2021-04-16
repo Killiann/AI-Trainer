@@ -5,6 +5,9 @@
 #include <math.h>
 #include "SFML/Graphics.hpp"
 
+/// <summary>
+/// Track Piece Types
+/// </summary>
 enum class TrackType
 {
 	STRAIGHT,

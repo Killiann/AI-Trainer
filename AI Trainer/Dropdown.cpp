@@ -1,5 +1,13 @@
 #include "Dropdown.h"
 
+/// <summary>
+/// Initialise Dropdown
+/// </summary>
+/// <param name="ddPosition">sf::Vector2f, Dropdown position</param>
+/// <param name="ddSize">sf::Vector2f, Dropdown size</param>
+/// <param name="resource">ResourceManager* resource</param>
+/// <param name="ddText">std::string, Dropdown Text</param>
+
 Dropdown::Dropdown(sf::Vector2f ddPosition, sf::Vector2f ddSize, ResourceManager* resource, std::string ddText)
 	: UIElement(ddPosition, ddSize, resource) {
 	//dropdown arrow
@@ -18,6 +26,10 @@ Dropdown::Dropdown(sf::Vector2f ddPosition, sf::Vector2f ddSize, ResourceManager
 	SetTextString(ddText);
 }
 
+/// <summary>
+/// Add item to dropdown list
+/// </summary>
+/// <param name="itemName">std::string, Item Name</param>
 void Dropdown::AddItem(std::string itemName) {
 	sf::Vector2f itemSize = sf::Vector2f(size.x - 2.f, size.y - 10);
 	sf::Vector2f pos(background.getPosition().x + 1.f, (background.getPosition().y + size.y + ((items.size()) * (itemSize.y + 2.f))));
@@ -25,11 +37,19 @@ void Dropdown::AddItem(std::string itemName) {
 	items.push_back(newItem);
 }
 
+/// <summary>
+/// On Click Function - Toggle dropdown
+/// </summary>
 void Dropdown::OnClick() {
 	isOpen = isOpen ? false : true;
 	arrow.rotate(180);
 }
 
+/// <summary>
+/// Update Dropdown and items depending on state
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void Dropdown::Update(sf::RenderWindow& window, sf::Event& event) {
 	UIElement::Update(window, event);
 	
@@ -72,6 +92,10 @@ void Dropdown::Update(sf::RenderWindow& window, sf::Event& event) {
 	}
 }
 
+/// <summary>
+/// Draw Dropdown and items
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
 void Dropdown::Draw(sf::RenderTarget& window) {	
 	UIElement::Draw(window);
 
@@ -93,6 +117,13 @@ void Dropdown::operator=(Dropdown dd) {
 
 //dropdown item -------------
 
+/// <summary>
+/// Initialise Dropdown Item
+/// </summary>
+/// <param name="position">sf::Vector2f, dd item position</param>
+/// <param name="size">sf::Vector2f, dd item size</param>
+/// <param name="resource">Resource Manager</param>
+/// <param name="ddText">std::string, Button text</param>
 DropdownItem::DropdownItem(sf::Vector2f position, sf::Vector2f size, ResourceManager* resource, std::string ddText)
 	: UIElement(position, size, resource) {
 
@@ -114,6 +145,9 @@ void DropdownItem::operator=(DropdownItem i) {
 	selected = i.selected;
 }
 
+/// <summary>
+/// On click - toggle selected
+/// </summary>
 void DropdownItem::OnClick() {
 	selected ? Selected(false) : Selected(true);
 }

@@ -8,6 +8,9 @@
 
 class Track
 {
+	/// <summary>
+	/// Track grid guide
+	/// </summary>
 	enum TrackGuide {
 		Su,  //straight up			- 1
 		Sr,  //straight right		- 2 
@@ -39,8 +42,20 @@ class Track
 public:
 	Track(ResourceManager *resource, std::vector<CheckPoint> checkPoints, std::vector<std::vector<int>> grid, unsigned int trackW, unsigned int trackH);
 
+	/// <summary>
+	/// Get track shapes 
+	/// </summary>
+	/// <returns>std::vector<sf::ConvexShape>* track shapes</returns>
 	inline std::vector<sf::ConvexShape>* GetTrackShapes() { return &trackShapes; }
+	/// <summary>
+	/// Get checkpoint manager
+	/// </summary>
+	/// <returns>CheckPointManager*, checkpoint manager</returns>
 	inline CheckPointManager* GetCheckPoints() { return &cpManager; }
+	/// <summary>
+	/// Get track tile width
+	/// </summary>
+	/// <returns>int, tile size</returns>
 	inline int GetTileWidth() { return tileSize; }
 
 	void Draw(sf::RenderTarget& window, bool devOverview);

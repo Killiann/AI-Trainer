@@ -17,6 +17,10 @@ class Textbox : public UIElement
 
 	void OnClick();
 
+	/// <summary>
+	/// Toggle focused value
+	/// </summary>
+	/// <param name="focused">bool, new focused val</param>
 	inline void Focused(bool focused) {
 		isFocused = focused;
 		if (isFocused) {

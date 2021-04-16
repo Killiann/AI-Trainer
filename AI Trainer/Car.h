@@ -130,35 +130,100 @@ public:
 	void operator=(Car c);
 
 	//gets
+
+	/// <summary>
+	/// Get car ID
+	/// </summary>
+	/// <returns>int, car ID</returns>
 	inline int getID() { return ID; }
+	/// <summary>
+	/// Get line count used for vision
+	/// </summary>
+	/// <returns>int, line count</returns>
 	inline int GetLineCount() { return lineCount; }
+	/// <summary>
+	/// Get max line length used
+	/// </summary>
+	/// <returns>int, maximum line size</returns>
 	inline int GetMaxLineLength() { return lineLength; }
+	/// <summary>
+	/// Check if car is alive 
+	/// </summary>
+	/// <returns>bool, is alive</returns>
 	inline bool IsAlive() { return alive; }
+	/// <summary>
+	/// Check if car has passed start line
+	/// </summary>
+	/// <returns>bool, has passed start</returns>
 	inline bool HasStarted() { return checkPointTracker.Started(); }
+	/// <summary>
+	/// Check if car is selected
+	/// </summary>
+	/// <returns>bool, is selected</returns>
 	inline bool isSelected() { return selected; }
+	/// <summary>
+	/// Get car fitness level
+	/// </summary>
+	/// <returns>float, fitness</returns>
 	inline float GetFitness() { return fitness; }	
+	/// <summary>
+	/// Get car rotation (heading)
+	/// </summary>
+	/// <returns>float, rotation</returns>
 	inline float GetRotation() { return heading * (180.f / (float)M_PI); }		
 
+	/// <summary>
+	/// Get distances to sides of track (vision)
+	/// </summary>
+	/// <returns>std::vector<float> distances</returns>
 	inline std::vector<float> GetDistances() { return distances; }	
+	/// <summary>
+	/// Get current position of car
+	/// </summary>
+	/// <returns>sf::Vector2f, car position</returns>
 	inline sf::Vector2f getPosition() { return sf::Vector2f(position.x * scale, position.y * scale); }
+	/// <summary>
+	/// Get area of track to scan for finding distances to edges of track
+	/// </summary>
+	/// <returns>sf::RectangleShape, scan area</returns>
 	inline sf::RectangleShape getScanArea() { return scanArea; }
+	/// <summary>
+	/// Get global bounds of car
+	/// </summary>
+	/// <returns>sf::RectangleShape, global bounds</returns>
 	inline sf::RectangleShape getGlobalBounds() { return globalBounds; }
 
 	//toggle selection
+	
+	/// <summary>
+	/// Select car
+	/// </summary>
 	inline void Select() {
 		selected = true;
 		collisionBounds.setOutlineColor(sf::Color::Green);
 	}
+
+	/// <summary>
+	/// Deselect car
+	/// </summary>
 	inline void Deselect() {
 		selected = false;
 		collisionBounds.setOutlineColor(sf::Color::Red);
 	}			
 
+	/// <summary>
+	/// Get car vision (input for neural network)
+	/// </summary>
+	/// <returns>std::vector<float>, vision values (distances + absolute velocity)</returns>
 	inline std::vector<float> GetVision() {
 		std::vector<float> nnInput = distances;
 		nnInput.push_back(absVel / 30);
 		return nnInput;
 	}
+	/// <summary>
+	/// Set car inputs (taken from neural network)
+	/// </summary>
+	/// <param name="inputs"></param>
 	inline void SetInputs(std::vector<float> inputs) {
 		if (inputs.size() > 0) {
 			I_throttle = inputs[0];
@@ -170,7 +235,16 @@ public:
 	}	
 
 	//checkpoint management
+	
+	/// <summary>
+	/// Check if car has passed finish line
+	/// </summary>
+	/// <returns>bool, has finished</returns>
 	inline bool HasPassedFinish() { return passedFinish; }
+	/// <summary>
+	/// Get last lap time
+	/// </summary>
+	/// <returns>float, last lap time (ms)</returns>
 	inline float GetLastLap() { return checkPointTracker.GetLastLapTime(); }
 };
 

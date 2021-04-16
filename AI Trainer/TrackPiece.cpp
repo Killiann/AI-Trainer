@@ -1,5 +1,13 @@
 #include "TrackPiece.h"
 
+/// <summary>
+/// Initialise TrackPiece
+/// </summary>
+/// <param name="trackTexture">sf::Texture, trackTexture reference</param>
+/// <param name="tSize">int, tile size</param>
+/// <param name="gridPos">sf::Vector2f, grid position</param>
+/// <param name="trackType">TrackType, track type</param>
+/// <param name="rotation">float track piece rotation</param>
 TrackPiece::TrackPiece(sf::Texture& trackTexture, int tSize, sf::Vector2f gridPos, TrackType trackType, float rotation): tileSize(tSize){	
 	float xPos = tileSize * gridPos.x;
 	float yPos = tileSize * gridPos.y;
@@ -55,10 +63,22 @@ TrackPiece::TrackPiece(sf::Texture& trackTexture, int tSize, sf::Vector2f gridPo
 	}
 }
 
+/// <summary>
+/// Draw track piece
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
 void TrackPiece::Draw(sf::RenderTarget& window) {
 	window.draw(trackSprite);
 }
 
+/// <summary>
+/// Initialise corner piece
+/// </summary>
+/// <param name="startPos">int, start position</param>
+/// <param name="endPos">int, end position</param>
+/// <param name="rotation">float, piece rotation</param>
+/// <param name="xPos">float, x position</param>
+/// <param name="yPos">float, y position</param>
 void TrackPiece::InitCorner(int startPos, int endPos, float rotation, float xPos, float yPos) {
 	//resolution of corners
 	int innerRadiusDefinition = 10;
@@ -94,6 +114,12 @@ void TrackPiece::InitCorner(int startPos, int endPos, float rotation, float xPos
 	accessibleTrack.push_back(outer);
 }
 
+/// <summary>
+/// Transform vertices for shape
+/// </summary>
+/// <param name="transformable">sf::ConvexShape, transformable reference</param>
+/// <param name="pos">sf::Vector2f position</param>
+/// <param name="rotation">float, piece rotation</param>
 void TrackPiece::TransformVertices(sf::ConvexShape &transformable, sf::Vector2f pos, float rotation) {
 	transformable.setPosition(tileSize / 2.f, tileSize / 2.f);
 	transformable.setOrigin(tileSize / 2.f, tileSize / 2.f);
@@ -108,6 +134,10 @@ void TrackPiece::TransformVertices(sf::ConvexShape &transformable, sf::Vector2f 
 		transformable.setPoint(i, t.transformPoint(transformable.getPoint(i)));
 }
 
+/// <summary>
+/// Get collision shapes for track piece
+/// </summary>
+/// <returns>std::vector<sf::ConvexShape> list of shapes</returns>
 std::vector<sf::ConvexShape> TrackPiece::GetCollisionShapes() {
 	std::vector<sf::ConvexShape> allShapes;	
 	allShapes.reserve(innerBounds.size() + accessibleTrack.size());

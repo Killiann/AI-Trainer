@@ -1,5 +1,12 @@
 #include "CheckPoint.h"
 
+/// <summary>
+/// Initialise CheckPoint
+/// </summary>
+/// <param name="id">int, Checkpoint ID</param>
+/// <param name="pos">sf::Vector2f, Checkpoint position</param>
+/// <param name="pit">PosInTile position within tile</param>
+/// <param name="tex">sf::Texture* texture</param>
 CheckPoint::CheckPoint(int id, sf::Vector2f pos, PosInTile pit, sf::Texture* tex) : ID(id), position(pos), PIT(pit), texture(tex) {
 	isStart = ID == 0 ? true : false;
 
@@ -49,6 +56,11 @@ CheckPoint::CheckPoint(int id, sf::Vector2f pos, PosInTile pit, sf::Texture* tex
 	centerShape.setOrigin(5, 5);
 }
 
+/// <summary>
+/// Draw checkpoint
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
+/// <param name="isOverlay">Boolean, display overlay</param>
 void CheckPoint::Draw(sf::RenderTarget& window, bool isOverlay) {
 	window.draw(sprite);
 	if (isOverlay) {

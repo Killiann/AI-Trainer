@@ -5,10 +5,10 @@ namespace lin {
 	/// <summary>
 	/// Checks if point (P) lies to the Left of line (lA, lB)
 	/// </summary>
-	/// <param name="lA"></param>
-	/// <param name="lB"></param>
-	/// <param name="P"></param>
-	/// <returns></returns>
+	/// <param name="lA">Line point A</param>
+	/// <param name="lB">Line point B</param>
+	/// <param name="P"> Point P</param>
+	/// <returns>Boolean</returns>
 	bool isPointToLeft(sf::Vector2f lA, sf::Vector2f lB, sf::Vector2f P) {
 		return ((lB.x - lA.x) * (P.y - lA.y) - (P.x - lA.x) * (lB.y - lA.y)) > 0;
 	}
@@ -16,10 +16,10 @@ namespace lin {
 	/// <summary>
 	/// Checks if point (P) lies to the right of line (lA, lB)
 	/// </summary>
-	/// <param name="lA"></param>
-	/// <param name="lB"></param>
-	/// <param name="P"></param>
-	/// <returns></returns>
+	/// <param name="lA">Line point A</param>
+	/// <param name="lB">Line point B</param>
+	/// <param name="P">Point P</param>
+	/// <returns>Boolean</returns>
 	bool isPointToRight(sf::Vector2f lA, sf::Vector2f lB, sf::Vector2f P) {
 		return ((lB.x - lA.x) * (P.y - lA.y) - (P.x - lA.x) * (lB.y - lA.y)) < 0;
 	}
@@ -27,12 +27,12 @@ namespace lin {
 	/// <summary>
 	/// Check whether point (P) lies within rectangle (A, B, C, D)
 	/// </summary>
-	/// <param name="P"></param>
-	/// <param name="rA"></param>
-	/// <param name="rB"></param>
-	/// <param name="rC"></param>
-	/// <param name="rD"></param>
-	/// <returns></returns>
+	/// <param name="P">Point P</param>
+	/// <param name="rA">Rectangle point A</param>
+	/// <param name="rB">Rectangle point B</param>
+	/// <param name="rC">Rectangle point C</param>
+	/// <param name="rD">Rectangle point D</param>
+	/// <returns>Boolean</returns>
 	bool doesRectContainPoint(sf::Vector2f P, sf::Vector2f rA, sf::Vector2f rB, sf::Vector2f rC, sf::Vector2f rD) {
 		bool AD = isPointToLeft(rA, rD, P);
 		bool DC = isPointToLeft(rD, rC, P);
@@ -44,9 +44,9 @@ namespace lin {
 	/// <summary>
 	/// Checks whether point (P) lies within ConvexShape(s)
 	/// </summary>
-	/// <param name="P"></param>
-	/// <param name="shape"></param>
-	/// <returns></returns>
+	/// <param name="P">Point P</param>
+	/// <param name="S">Shape S</param>
+	/// <returns>Boolean</returns>
 	bool doesConvexShapeContainPoint(sf::Vector2f P, sf::ConvexShape S) {
 		bool res = true;
 		for (unsigned int i = 0; i < S.getPointCount(); ++i) {
@@ -69,23 +69,43 @@ namespace lin {
 	}
 
 	/// <summary>
-	/// return the input placed along a sigmoid curve (between 0 and 1)
+	/// Applies Sigmoid activation function to float n
 	/// </summary>
-	/// <param name="input"></param>
-	/// <returns></returns>
-	float act_sigmoid(float input) {
-		return 1.f / (1.f + std::pow(EULER, -input));
+	/// <param name="n">Float n</param>
+	/// <returns>Resulting Float</returns>
+	float act_sigmoid(float n) {
+		return 1.f / (1.f + std::pow(EULER, -n));
 	}
-	float act_leakyRelu(float input){
-		return std::max(input * 0.01f, input);
+	/// <summary>
+	/// Applies Leaky RELU activation function to float n
+	/// </summary>
+	/// <param name="n">Float n</param>
+	/// <returns>Resulting Float</returns>
+	float act_leakyRelu(float n){
+		return std::max(n * 0.01f, n);
 	}
-	float act_binary(float input) {
-		return input > 0 ? true : false;
+	/// <summary>
+	/// Applies Binary Step activation function to float n
+	/// </summary>
+	/// <param name="n">Float n</param>
+	/// <returns>Resulting Float</returns>
+	float act_binary(float n) {
+		return n > 0 ? true : false;
 	}
-	float act_tanh(float input) {
-		return std::tanh(input);
+	/// <summary>
+	/// Applies Tanh activation function to float n
+	/// </summary>
+	/// <param name="n">Float n</param>
+	/// <returns>Resulting Float</returns>
+	float act_tanh(float n) {
+		return std::tanh(n);
 	}
 
+	/// <summary>
+	/// Normalise Vector (Get Direction Vector)
+	/// </summary>
+	/// <param name="source">Vector</param>
+	/// <returns>Normalised Vector</returns>
 	sf::Vector2f Normalise(const sf::Vector2f& source) {
 		float length = sqrt((source.x * source.x) + (source.y * source.y));
 		if (length != 0)
@@ -94,8 +114,7 @@ namespace lin {
 			return source;
 	}
 
-	//MATRICES ==========================
-	
+	//MATRICES ==========================	
 	Matrix::Matrix(unsigned int r, unsigned int c) : rows(r), cols(c) {
 		for (unsigned int i = 0; i < rows; ++i) {
 			data.push_back(std::vector<float>(c));
@@ -108,8 +127,8 @@ namespace lin {
 	/// <summary>
 	/// Randomise all values in matrix
 	/// </summary>
-	/// <param name="min"></param>
-	/// <param name="max"></param>
+	/// <param name="min">Range minimum</param>
+	/// <param name="max">Range maximum</param>
 	void Matrix::Randomise(float min, float max) {
 		std::random_device rd;
 		std::mt19937 gen(rd());
@@ -123,9 +142,9 @@ namespace lin {
 	}
 	
 	/// <summary>
-	/// Multiply all values by  n
+	/// Multiply all values by float n
 	/// </summary>
-	/// <param name="n"></param>
+	/// <param name="n">Float n</param>
 	void Matrix::Scale(float n) {
 		for (unsigned int i= 0; i < rows; ++i) {
 			for (unsigned int j= 0 ; j < cols; ++j) {
@@ -137,7 +156,7 @@ namespace lin {
 	/// <summary>
 	/// Add n to all values in matrix
 	/// </summary>
-	/// <param name="n"></param>
+	/// <param name="n">Float n</param>
 	void Matrix::Add(float n) {
 		for (unsigned int i = 0; i < rows; ++i) {
 			for (unsigned int j = 0; j < cols; ++j) {
@@ -147,9 +166,9 @@ namespace lin {
 	}
 
 	/// <summary>
-	/// Add values in m2 to m1, matrices must have same dimensions
+	/// Add values in Matrix m2 to Matrix m1, matrices must have same dimensions
 	/// </summary>
-	/// <param name="m2"></param>
+	/// <param name="m2">Matrix m2</param>
 	void Matrix::Add(Matrix m2) {
 		if (m2.cols == cols && m2.rows == rows) {
 			for (unsigned int i = 0; i < rows; ++i) {
@@ -192,7 +211,7 @@ namespace lin {
 	/// <summary>
 	/// Map function f to every value in matrix
 	/// </summary>
-	/// <param name="f"></param>
+	/// <param name="f">Function F (float (f)(float n))</param>
 	void Matrix::Map(float (f)(float n)) {
 		for (unsigned int i = 0; i < rows; ++i) {
 			for (unsigned int j = 0; j < cols; ++j) {
@@ -204,7 +223,7 @@ namespace lin {
 	/// <summary>
 	/// Convert matrix to 1d vector
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>Newly generated Vector</returns>
 	std::vector<float> Matrix::ToVector() {
 		std::vector<float> returnVector;
 		for (unsigned int i = 0; i < rows; ++i) {
@@ -216,10 +235,10 @@ namespace lin {
 	}
 
 	/// <summary>
-	/// Convert vector to Matrix with 1 column
+	/// Convert vector V to Matrix with 1 column
 	/// </summary>
-	/// <param name="v"></param>
-	/// <returns></returns>
+	/// <param name="v">Vector of Floats V</param>
+	/// <returns>Newly generated Matrix</returns>
 	Matrix ToMatrix(std::vector<float> v) {
 		Matrix m(v.size(), 1);
 		for (unsigned int i = 0; i < v.size(); ++i) {
@@ -229,11 +248,11 @@ namespace lin {
 	}
 
 	/// <summary>
-	/// multiply matrix 1 with matrix 2, m1.cols must be equal to m2.rows
+	/// multiply Matrix m1 with Matrix m2, m1.cols must be equal to m2.rows
 	/// </summary>
-	/// <param name="m1"></param>
-	/// <param name="m2"></param>
-	/// <returns></returns>
+	/// <param name="m1">Matrix m1</param>
+	/// <param name="m2">Matrix m2</param>
+	/// <returns>Multiplication Result</returns>
 	Matrix MultiplyMatrices(Matrix m1, Matrix m2) {
 		if (m1.GetCols() == m2.GetRows()) {
 			Matrix result(m1.GetRows(), m2.GetCols());
@@ -254,7 +273,7 @@ namespace lin {
 	/// <summary>
 	/// Print matrix to console
 	/// </summary>
-	/// <param name="m"></param>
+	/// <param name="m">Matrix m</param>
 	void printMatrix(lin::Matrix m) {
 		std::vector<std::vector<float>> data = m.GetData();
 		std::cout << std::endl;

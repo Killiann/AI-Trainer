@@ -1,4 +1,13 @@
 #include "Track.h"
+
+/// <summary>
+/// Initialise Track
+/// </summary>
+/// <param name="resource">ResourceManager* resource</param>
+/// <param name="checkPoints">std::vector<CheckPoint> checkPoints</param>
+/// <param name="grid">std::vector<std::vector<in>> track grid</param>
+/// <param name="trackW">unsigned int, track width</param>
+/// <param name="trackH">unsigned int, track height</param>
 Track::Track(ResourceManager *resource, std::vector<CheckPoint> checkPoints, std::vector<std::vector<int>> grid, unsigned int trackW, unsigned int trackH) : gridVals(grid), trackGridH(trackH), trackGridW(trackW){
 	
 	cpManager = CheckPointManager(resource->GetCheckpointTexture(), checkPoints);
@@ -20,6 +29,11 @@ Track::Track(ResourceManager *resource, std::vector<CheckPoint> checkPoints, std
 	}
 }
 
+/// <summary>
+/// Draw track
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
+/// <param name="devOverview">bool, display overlay</param>
 void Track::Draw(sf::RenderTarget& window, bool devOverview) {
 	for (auto& t : trackPieces)
 		t.Draw(window);

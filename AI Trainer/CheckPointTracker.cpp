@@ -1,5 +1,9 @@
 #include "CheckPointTracker.h"
 
+/// <summary>
+/// Initialise CheckpointTracker 
+/// </summary>
+/// <param name="manager">CheckPointManager reference</param>
 CheckPointTracker::CheckPointTracker(CheckPointManager& manager) {
 	checkpoints = manager.GetCheckpoints();
 
@@ -10,12 +14,18 @@ CheckPointTracker::CheckPointTracker(CheckPointManager& manager) {
 	segments.emplace_back(checkpoints.size() - 1, checkpoints[checkpoints.size() - 1], checkpoints[0]);
 }
 
+/// <summary>
+/// Start Tracking time / passed checkpoints
+/// </summary>
 void CheckPointTracker::StartTracking() {
 	currentSegmentID = 0;
 	segmentClock.restart();
 	lapClock.restart();
 }
 
+/// <summary>
+/// Complete track segment
+/// </summary>
 void CheckPointTracker::CompleteSegment() {
 	if (!hasStarted) {
 		hasStarted = true;

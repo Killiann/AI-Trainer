@@ -1,5 +1,13 @@
 #include "Textbox.h"
 
+/// <summary>
+/// Initialise Textbox
+/// </summary>
+/// <param name="position">sf::Vector2f, textbox position</param>
+/// <param name="size">sf::Vector2f, textbox size</param>
+/// <param name="resource">ResourceManager* resource</param>
+/// <param name="isNumeric">Bool, Is textbox input limited to numeric values</param>
+/// <param name="maxVal">Int, Limit on numeric input</param>
 Textbox::Textbox(sf::Vector2f position, sf::Vector2f size, ResourceManager* resource, bool isNumeric = false, int maxVal = 0) : numeric(isNumeric) , UIElement(position, size, resource){	
 	max = maxVal;
 
@@ -13,11 +21,19 @@ Textbox::Textbox(sf::Vector2f position, sf::Vector2f size, ResourceManager* reso
 	SetTextColor(sf::Color(60, 60, 60));
 }
 
+/// <summary>
+/// Initialise Textbox - toggle focus
+/// </summary>
 void Textbox::OnClick() {
 	UIElement::OnClick();
 	Focused(isFocused ? false : true);
 }
 
+/// <summary>
+/// Update Textbox - handle user text input
+/// </summary>
+/// <param name="window">sf::Renderwindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void Textbox::Update(sf::RenderWindow& window, sf::Event& event) {
 	UIElement::Update(window, event);
 	if (!hidden) {
@@ -58,6 +74,10 @@ void Textbox::Update(sf::RenderWindow& window, sf::Event& event) {
 	}
 }
 
+/// <summary>
+/// Draw Textbox
+/// </summary>
+/// <param name="window">sf::RenderTarget</param>
 void Textbox::Draw(sf::RenderTarget& window) {
 	if (!hidden) {
 		window.draw(background);

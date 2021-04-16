@@ -1,5 +1,13 @@
 #include "Network.h"
-
+/// <summary>
+/// Initialise Neural Network
+/// </summary>
+/// <param name="inputLayer">int, number of input layer nodes</param>
+/// <param name="hiddenLayers">std::vector<int>, number of hidden layers and how many nodes per layer</param>
+/// <param name="outputLayer">int, number of output layer nodes</param>
+/// <param name="d">sf::FloatRect, position/size on screen</param>
+/// <param name="hlActivationID">int, hidden layer activation function ID</param>
+/// <param name="olActivationID">int, output layer activation function ID</param>
 Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer, sf::FloatRect d, int hlActivationID, int olActivationID) : dimensions(d) {
 	assert(hiddenLayers.size() > 0); //will not work with 0 hidden layers
 
@@ -52,6 +60,10 @@ Network::Network(int inputLayer, std::vector<int> hiddenLayers, int outputLayer,
 	SetupRendering();
 }
 
+/// <summary>
+/// Set weights of network
+/// </summary>
+/// <param name="newWeights">std::vector<lin::Matrix>, new weights</param>
 void Network::SetWeights(std::vector<lin::Matrix> newWeights) {
 	if (newWeights.size() == weights_hl.size() + 2) {
 		weights_ih = newWeights[0];
@@ -62,6 +74,10 @@ void Network::SetWeights(std::vector<lin::Matrix> newWeights) {
 	else std::cout << "Incorrect number of new weights for network.\n";
 }
 
+/// <summary>
+/// Set biases of network
+/// </summary>
+/// <param name="newBiases">std::vector<lin::Matrix>, new biases</param>
 void Network::SetBiases(std::vector<lin::Matrix> newBiases) {
 	if (newBiases.size() == biases_hl.size() + 1) {
 		biases_o = newBiases[0];
@@ -72,6 +88,10 @@ void Network::SetBiases(std::vector<lin::Matrix> newBiases) {
 	else std::cout << "Incorrect number of new biases for network.\n";
 }
 
+/// <summary>
+/// Get network weights
+/// </summary>
+/// <returns>std::vector<lin::Matrix> Network weights</returns>
 std::vector<lin::Matrix> Network::GetWeights() {
 	std::vector<lin::Matrix> ret;
 	ret.push_back(weights_ih);
@@ -82,6 +102,10 @@ std::vector<lin::Matrix> Network::GetWeights() {
 	return ret;
 }
 
+/// <summary>
+/// Get network biases
+/// </summary>
+/// <returns>std::vector<lin::Matrix> Network biases</returns>
 std::vector<lin::Matrix> Network::GetBiases() {
 	std::vector<lin::Matrix> ret;
 	ret.push_back(biases_o);
@@ -91,6 +115,11 @@ std::vector<lin::Matrix> Network::GetBiases() {
 	return ret;
 }
 
+/// <summary>
+/// Feed forward network
+/// </summary>
+/// <param name="inputs">std::vector<float>, Network input layer node values</param>
+/// <returns>std::vector<float>, Network output layer node values</returns>
 std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 	//convert inputs to matrix to use in multiplication
 	if (inputs.size() == nodes_i.GetRows()) {
@@ -123,6 +152,10 @@ std::vector<float> Network::FeedForward(std::vector<float> inputs) {
 
 //RENDERING ============================
 
+/// <summary>
+/// Draw network 
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
 void Network::Draw(sf::RenderTarget& window) {
 
 	for (auto& l : connectionLines)
@@ -140,6 +173,9 @@ void Network::Draw(sf::RenderTarget& window) {
 		window.draw(o);
 }
 
+/// <summary>
+/// Setup the graphics for the network
+/// </summary>
 void Network::SetupRendering() {
 	sf::CircleShape circle;
 	float radius = 7.5;
@@ -205,6 +241,10 @@ void Network::SetupRendering() {
 }
 
 //update colour of nodes
+
+/// <summary>
+/// Update node colours depending on values
+/// </summary>
 void Network::UpdateRender() {
 	//input nodes
 	for (unsigned int i = 0; i < inputNodes.size(); ++i) {
@@ -228,6 +268,14 @@ void Network::UpdateRender() {
 }
 
 //create weighted Line
+
+/// <summary>
+/// Draw line from point p1 to point p2
+/// </summary>
+/// <param name="p1">sf::Vector2f, Line point p1</param>
+/// <param name="p2">sf::Vector2f, Line point p2</param>
+/// <param name="weight">float, line thickness (weight)</param>
+/// <returns></returns>
 sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weight) {
 	sf::Color lineColor = weight < 0 ? sf::Color::Red : sf::Color::Green;
 	weight = weight / 2;
@@ -248,6 +296,10 @@ sf::VertexArray Network::CreateLine(sf::Vector2f p1, sf::Vector2f p2, float weig
 
 //SAVING / LOADING ============================
 
+/// <summary>
+/// Write network to file
+/// </summary>
+/// <param name="file">std::ofstream, file reference</param>
 void Network::SaveToFile(std::ofstream &file) {
 	//network details
 	file << nodes_i.GetRows() << " " << nodes_o.GetRows();
@@ -306,6 +358,12 @@ void Network::SaveToFile(std::ofstream &file) {
 	}
 }
 
+/// <summary>
+/// Split string with delimter 
+/// </summary>
+/// <param name="s">std::string s</param>
+/// <param name="delimiter">std::string delimiter</param>
+/// <returns>std::vector<std::string> vector of split substrings</returns>
 std::vector<std::string> SplitString(std::string s, std::string delimiter) {
 	std::vector<std::string> res;
 	size_t pos = 0;
@@ -319,6 +377,11 @@ std::vector<std::string> SplitString(std::string s, std::string delimiter) {
 	return res;
 }
 
+/// <summary>
+/// Load matrix from file
+/// </summary>
+/// <param name="file">std::ifstream file reference</param>
+/// <param name="m">lin::Matrix reference m to write to </param>
 void LoadMatrix(std::ifstream& file, lin::Matrix& m) {
 	std::string line;
 	std::getline(file, line);
@@ -334,6 +397,10 @@ void LoadMatrix(std::ifstream& file, lin::Matrix& m) {
 	}
 }
 
+/// <summary>
+/// Load Network from file
+/// </summary>
+/// <param name="file">std::ifstream& file reference</param>
 void Network::LoadFromFile(std::ifstream& file) {
 	
 	std::string line;	

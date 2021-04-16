@@ -14,6 +14,11 @@ void ForwardSubLayer(void* menu) { ((MainMenu*)menu)->SubHiddenLayer(); }
 void ForwardAddLayer(void* menu) { ((MainMenu*)menu)->AddHiddenLayer(); }
 void ForwardContinue(void* menu) { ((MainMenu*)menu)->CreateNewSim(); }
 
+/// <summary>
+/// Initialise Main Menu
+/// </summary>
+/// <param name="resource">ResourceManager* resource</param>
+/// <param name="t">Trainer* t</param>
 MainMenu::MainMenu(ResourceManager *resource, Trainer* t): resourceManager(resource), trainer(t) {
 	//find max available threads in system
 	maxThreads = std::thread::hardware_concurrency();
@@ -38,6 +43,10 @@ MainMenu::MainMenu(ResourceManager *resource, Trainer* t): resourceManager(resou
 }
 
 //initialise=================
+
+/// <summary>
+/// Initalise Navigation page
+/// </summary>
 void MainMenu::InitializeNavigation() {
 	//navigation 
 	float topPadding = 50;
@@ -68,6 +77,10 @@ void MainMenu::InitializeNavigation() {
 	navigationElements.emplace("btn_exitSim", std::make_shared<Button>(btn_exitSim));
 }
 
+
+/// <summary>
+/// Initialise New Simulation page
+/// </summary>
 void MainMenu::InitializeNewSimulation() {
 	//threads used
 	Label lbl_performance = Label(sf::Vector2f(position.x + padding, position.y + padding + marginTop), sf::Vector2f(190, rowHeight), resourceManager, "Performance:", 0.6);
@@ -149,6 +162,9 @@ void MainMenu::InitializeNewSimulation() {
 	UpdateSettings();
 }
 
+/// <summary>
+/// Initialise Settings on the New Simulation page
+/// </summary>
 void MainMenu::InitalizeSettings() {
 	//title
 	Label lbl_settingsHeader = Label(sf::Vector2f(position.x + padding + s_marginLeft, position.y + padding + marginTop), sf::Vector2f(150, 30), resourceManager, "Settings:", 0.6);
@@ -206,6 +222,12 @@ void MainMenu::InitalizeSettings() {
 }
 
 //update======================
+
+/// <summary>
+/// Global update - calls the relevant update method from here
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void MainMenu::Update(sf::RenderWindow& window, sf::Event& event) {
 	switch (currentState) {
 	case(MenuState::Navigation): NavigationState(window, event); break;
@@ -213,6 +235,11 @@ void MainMenu::Update(sf::RenderWindow& window, sf::Event& event) {
 	}
 }
 
+/// <summary>
+/// Update Navigation page
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void MainMenu::NavigationState(sf::RenderWindow& window, sf::Event& event) {
 	//main menu on load
 	for (auto&m : navigationElements) {
@@ -242,12 +269,21 @@ void MainMenu::NavigationState(sf::RenderWindow& window, sf::Event& event) {
 		window.close();
 }
 
+/// <summary>
+/// Update new Simulation page
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void MainMenu::NewSimulationState(sf::RenderWindow& window, sf::Event& event) {
 	for (const auto& m : newSimulationElements)
 		m.second->Update(window, event);
 	UpdateSettings();
 }
 
+
+/// <summary>
+/// Update Settings in new simulation page
+/// </summary>
 void MainMenu::UpdateSettings() {
 	//get thread/ car count values (limit)
 	std::string cpt_val = (*newSimulationElements.find("txt_carsPerThread")).second->GetText();
@@ -295,6 +331,11 @@ void MainMenu::UpdateSettings() {
 }
 
 //draw========================
+
+/// <summary>
+/// Draw Main Menu
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
 void MainMenu::Draw(sf::RenderTarget& window) {
 	if (!hidden) {
 		window.draw(background);
@@ -315,6 +356,10 @@ void MainMenu::Draw(sf::RenderTarget& window) {
 	}
 }
 
+
+/// <summary>
+///  Hide Main Menu
+/// </summary>
 void MainMenu::Hide() {
 	hidden = true;
 	for (auto& m : navigationElements)
@@ -323,6 +368,10 @@ void MainMenu::Hide() {
 		m.second->Hide();
 }
 
+/// <summary>
+/// Show Main Menu
+/// </summary>
+/// <param name="cont">Boolean, show the continue button or not</param>
 void MainMenu::Show(bool cont) {
 	//load continue button if applicable + reset
 	withContinue = cont;

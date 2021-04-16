@@ -1,5 +1,8 @@
 #include "ResourceManager.h"
 
+/// <summary>
+/// Initialise Resource Manager - loads all resources
+/// </summary>
 ResourceManager::ResourceManager() {
     //load textures
     std::cout << "Loading resources..images";    

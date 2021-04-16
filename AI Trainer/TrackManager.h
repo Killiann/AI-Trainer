@@ -16,6 +16,10 @@ public:
 	TrackManager() {}
 	TrackManager(ResourceManager* resource);
 	
+	/// <summary>
+	/// Get current track 
+	/// </summary>
+	/// <returns>Track& current track</returns>
 	inline Track& GetCurrentTrack() { return tracks[currentTrack]; }
 	Track& GetNextTrack() {
 		if (currentTrack == tracks.size() - 1) currentTrack = 0;

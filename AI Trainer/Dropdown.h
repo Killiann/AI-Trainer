@@ -6,6 +6,10 @@ class DropdownItem : public UIElement {
 
 	bool selected = false;
 
+	/// <summary>
+	/// Toggle selected
+	/// </summary>
+	/// <param name="sel">bool, new selected value</param>
 	inline void Selected(bool sel) {
 		selected = sel;
 		if (selected) {
@@ -16,6 +20,10 @@ class DropdownItem : public UIElement {
 		}
 	}
 
+	/// <summary>
+	/// Toggle hovering
+	/// </summary>
+	/// <param name="hovering">bool, new hover value</param>
 	inline void Hovering(bool hovering) {
 		isHovering = hovering;
 		hovering ? background.setOutlineColor(accentColor) : background.setOutlineColor(color);
@@ -38,6 +46,10 @@ class Dropdown : public UIElement
 	sf::Sprite arrow;
 	std::vector<DropdownItem> items;
 
+	/// <summary>
+	/// Change selected item ID
+	/// </summary>
+	/// <param name="itemID">int, new selected item</param>
 	inline void Select(int itemID) { selectedIndex = itemID; }
 
 	void OnClick();
@@ -45,11 +57,15 @@ class Dropdown : public UIElement
 public:
 	Dropdown(){}
 	Dropdown(sf::Vector2f ddPosition, sf::Vector2f ddSize, ResourceManager* resource, std::string ddText);
-
+	
 	void AddItem(std::string itemName);
 	void Update(sf::RenderWindow& window, sf::Event& event);
 	void Draw(sf::RenderTarget& window);
 
+	/// <summary>
+	/// Get current selected index
+	/// </summary>
+	/// <returns>int, selected index</returns>
 	inline int GetSelected() { return selectedIndex; }	
 
 	void operator=(Dropdown dd);

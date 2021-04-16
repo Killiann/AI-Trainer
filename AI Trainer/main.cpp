@@ -11,6 +11,10 @@
 
 #include "ThreadPool.h"
 
+/// <summary>
+/// Main loop, main thread of application
+/// </summary>
+/// <returns>exit code</returns>
 int main(){
     //window setup
     sf::ContextSettings settings;    

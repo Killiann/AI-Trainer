@@ -20,11 +20,20 @@ namespace lin {
 		sf::Vector2f p1;
 		sf::Vector2f p2;
 		Line() { A = B = C = 0.f; }
+		/// <summary>
+		/// Line contstructor - converts points to form Ax + By = C
+		/// </summary>
+		/// <param name="_p1">Line point 1</param>
+		/// <param name="_p2">Line point 2</param>
 		Line(sf::Vector2f _p1, sf::Vector2f _p2) : p1(_p1), p2(_p2) {
 			A = p2.y - p1.y;
 			B = p1.x - p2.x;
 			C = (A * p1.x) + (B * p1.y);
 		}
+		/// <summary>
+		/// Get length of line 
+		/// </summary>
+		/// <returns>Length of line</returns>
 		inline float GetLength() {
 			return std::sqrt((float)std::pow(p1.x - p2.x, 2) + (float)std::pow(p1.y - p2.y, 2));
 		}

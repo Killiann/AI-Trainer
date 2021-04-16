@@ -17,6 +17,9 @@ class MainMenu
 
 	std::vector<std::string> activationFuncs{ "Sigmoid", "Leaky RELU", "Binary Step", "Tanh" };
 
+	/// <summary>
+	/// Main menu state
+	/// </summary>
 	enum class MenuState {
 		Navigation,
 		NewSimulation,
@@ -85,6 +88,9 @@ class MainMenu
 
 	//update functions
 	void UpdateSettings();
+	/// <summary>
+	/// Update hidden layer elements on new simulation page
+	/// </summary>
 	inline void UpdateHLElements() {
 		for (unsigned int i = 0; i < maxHiddenLayers; ++i) {
 			(*newSimulationElements.find("lbl_layerCount_" + std::to_string(i))).second->Hide();
@@ -105,10 +111,17 @@ public:
 	void Show(bool withContinue = false);
 
 	//button actions
+	
+	/// <summary>
+	/// Open new simulation page
+	/// </summary>
 	inline void NewSim() { 
 		currentState = MenuState::NewSimulation; 
 		title.setString("Create new Trainer");
 	}
+	/// <summary>
+	/// Load previously saved simulation
+	/// </summary>
 	inline void LoadSim() {
 		if (trainer->LoadScene("trainer.sim")) {
 			Hide();
@@ -118,24 +131,40 @@ public:
 			(*navigationElements.find("lbl_error")).second->Show();
 		}
 	}
+	/// <summary>
+	/// Exit application
+	/// </summary>
 	inline void ExitApp() { exit = true; }
+	/// <summary>
+	/// Createnew simulation using user input settings
+	/// </summary>
 	inline void CreateNewSim() { 
 		std::vector<int> hlVec = hiddenLayerData;
 		hlVec.resize(hiddenLayers);
 		trainer->SetupTrainer(threadCount, carsPerThread, hlVec, hiddenFuncID, outputFuncID, mutationRate, mutationMinRate);
 		Hide();
 	}
+	/// <summary>
+	/// Continue running the simulation if there is one paused
+	/// </summary>
 	inline void ContinueSim() { 
 		trainer->Continue(); 
 		Hide();
 	}
 
 	//add/remove layers on simulation setup screen
+
+	/// <summary>
+	/// Add hidden layer UI element
+	/// </summary>
 	inline void AddHiddenLayer() { 
 		if (hiddenLayers < maxHiddenLayers) ++hiddenLayers; 
 		(*newSimulationElements.find("lbl_hiddenLayers")).second->SetTextString("Hidden Layers: " + std::to_string(hiddenLayers));
 		UpdateHLElements();
 	}
+	/// <summary>
+	/// Remove hidden layer UI Element
+	/// </summary>
 	inline void SubHiddenLayer() {
 		if (hiddenLayers > minHiddenLayers) --hiddenLayers;
 		(*newSimulationElements.find("lbl_hiddenLayers")).second->SetTextString("Hidden Layers: " + std::to_string(hiddenLayers));
@@ -143,6 +172,10 @@ public:
  	}	
 
 	//shared
+	
+	/// <summary>
+	/// Go back to navigation
+	/// </summary>
 	inline void Back() { 
 		currentState = MenuState::Navigation; 
 		title.setString("Car Controller Neural Net Trainer");

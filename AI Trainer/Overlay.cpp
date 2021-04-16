@@ -31,6 +31,12 @@ void ForwardOpExit(void* overlay) {
 	((Overlay*)overlay)->ExitSim();
 }
 
+/// <summary>
+/// Initialise Overlay
+/// </summary>
+/// <param name="resource">ResourceManager* resource</param>
+/// <param name="t">Trainer* t</param>
+/// <param name="menu">MainMenu* menu</param>
 Overlay::Overlay(ResourceManager* resource, Trainer* t, MainMenu* menu) : resourceManager(resource), trainer(t), mainMenu(menu){
 	background.setPosition(sf::Vector2f(position.x, position.y + navSize.y));
 	background.setSize(size);
@@ -45,6 +51,9 @@ Overlay::Overlay(ResourceManager* resource, Trainer* t, MainMenu* menu) : resour
 	InitData();
 }
 
+/// <summary>
+/// Initialise Options page
+/// </summary>
 void Overlay::InitOptions() {
 	//prompt
 	Label lbl_prompt = Label(sf::Vector2f(position.x + padding + 150 + 30, position.y + navSize.y + padding), sf::Vector2f(250, 100), resourceManager, "", 0.5);
@@ -92,7 +101,9 @@ void Overlay::InitOptions() {
 	Button btn_exit = Button(sf::Vector2f(position.x + padding, position.y + padding + navSize.y + btnMargin * 6), sf::Vector2f(150, 30), resourceManager, "Exit", ForwardOpExit, this);
 	optionElements.emplace("btn_exit", std::make_shared<Button>(btn_exit));
 }
-
+/// <summary>
+/// Initialise Data page
+/// </summary>
 void Overlay::InitData() {
 	//fps
 	Label lbl_fps = Label(sf::Vector2f(position.x + padding, position.y + padding + navSize.y), sf::Vector2f(dataLeftColW, dataRowHeight), resourceManager, "FPS: ", 0.5f);
@@ -173,6 +184,11 @@ void Overlay::InitData() {
 	dataElements.emplace("lbl_mutationRateMin_val", std::make_shared<Label>(lbl_mutationRateMin_val));
 }
 
+/// <summary>
+/// Update Overlay
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void Overlay::Update(sf::RenderWindow& window, sf::Event &event) {
 	if (exit) window.close();
 	//keep nav updating
@@ -185,12 +201,25 @@ void Overlay::Update(sf::RenderWindow& window, sf::Event &event) {
 }
 
 //helper
+
+/// <summary>
+/// Get index of string in vector of strings
+/// </summary>
+/// <param name="s">std::string, s</param>
+/// <param name="v">std::vector, v</param>
+/// <returns></returns>
 int GetStringIndex(std::string s, std::vector<std::string> v) {
 	for (unsigned int i = 0; i < v.size(); ++i) 
 		if (v[i] == s) return i;
 	return 0;
 }
 
+
+/// <summary>
+/// Update Options page
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void Overlay::UpdateOptions(sf::RenderWindow& window, sf::Event& event) {
 	for (auto& e : optionElements)
 		e.second->Update(window, event);
@@ -211,6 +240,11 @@ void Overlay::UpdateOptions(sf::RenderWindow& window, sf::Event& event) {
 }
 
 //gets called externally to fix timing issues with Event call in main loop
+
+/// <summary>
+/// Update Data page - called externally to handle timing issues
+/// </summary>
+/// <param name="fps">Float, frames per second</param>
 void Overlay::UpdateData(std::string fps) {
 	if (trainer->IsRunning() && currentState == NavItem::Data) {
 		TrainerData data = trainer->GetData();
@@ -230,6 +264,10 @@ void Overlay::UpdateData(std::string fps) {
 	}
 }
 
+/// <summary>
+/// Draw Overlay
+/// </summary>
+/// <param name="window">sf::RenderTargetr reference</param>
 void Overlay::Draw(sf::RenderTarget &window) {
 	if(currentState != NavItem::None)
 		window.draw(background);
@@ -248,6 +286,9 @@ void Overlay::Draw(sf::RenderTarget &window) {
 	}
 }
 
+/// <summary>
+/// Switch colour of navigation buttons on page switch
+/// </summary>
 void Overlay::SetNavColor() {
 	(*navElements.find("btn_data")).second->SetColor(sf::Color(40, 40, 40));
 	(*navElements.find("btn_settings")).second->SetColor(sf::Color(40, 40, 40));

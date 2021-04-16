@@ -1,5 +1,10 @@
 #include "TrackManager.h"
 
+
+/// <summary>
+/// Initialise Track Manager and setup track with checkpoints
+/// </summary>
+/// <param name="resource">ResourceManager* resource</param>
 TrackManager::TrackManager(ResourceManager* resource): resourceManager(resource){
     //track 1 setup
     std::vector<std::vector<int>> track1_grid = {
@@ -35,6 +40,11 @@ TrackManager::TrackManager(ResourceManager* resource): resourceManager(resource)
     tracks.push_back(track1);
 }
 
+/// <summary>
+/// Draw current Track
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
+/// <param name="displayOverlay">Boolean, display overlay</param>
 void TrackManager::DrawTrack(sf::RenderTarget& window, bool displayOverlay){
     tracks[currentTrack].Draw(window, displayOverlay);
 }

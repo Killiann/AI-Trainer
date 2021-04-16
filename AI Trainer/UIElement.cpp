@@ -1,5 +1,11 @@
 #include "UIElement.h"
 
+/// <summary>
+/// Initialise UIElement
+/// </summary>
+/// <param name="pos">sf::Vector2f, Element position</param>
+/// <param name="s">sf::Vector2f, Element size</param>
+/// <param name="resource">ResourceManager* resource</param>
 UIElement::UIElement(sf::Vector2f pos, sf::Vector2f s, ResourceManager* resource) : resourceManager(resource), position(pos), size(s){
 	font = resourceManager->GetRobotoRegular();
 
@@ -22,6 +28,11 @@ UIElement::UIElement(sf::Vector2f pos, sf::Vector2f s, ResourceManager* resource
 	arrowCursor = resourceManager->GetArrowCursor();
 }
 
+/// <summary>
+/// Update UIElement - handle click and hover events
+/// </summary>
+/// <param name="window">sf::RenderWindow reference</param>
+/// <param name="event">sf::Event reference</param>
 void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
 	if (!hidden) {
 		//if (onScreen) {
@@ -69,6 +80,10 @@ void UIElement::Update(sf::RenderWindow& window, sf::Event& event) {
 	}
 }
 
+/// <summary>
+/// Draw UI Element 
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
 void UIElement::Draw(sf::RenderTarget& window) {
 	if (!hidden) {
 		window.draw(background);

@@ -1,6 +1,17 @@
 #include "InputManager.h"
 
+/// <summary>
+/// Initialise InputManager
+/// </summary>
+/// <param name="t">Trainer* t</param>
+/// <param name="o">Overlay* o</param>
 InputManager::InputManager(Trainer* t, Overlay* o) : trainer(t), overlay(o){}
+
+/// <summary>
+/// Update InputManager
+/// </summary>
+/// <param name="event">sf::Event reference</param>
+/// <param name="mouseCoords">sf::Vector2f, mouse coordinates</param>
 void InputManager::UpdateUIControls(sf::Event event, sf::Vector2f mouseCoords) {
     if (event.type == sf::Event::MouseButtonPressed){
         //select cars

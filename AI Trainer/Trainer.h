@@ -15,6 +15,9 @@
 std::string FloatToTime(float n);
 std::string TruncateFloat(float n);
 
+/// <summary>
+/// Trainer data structure
+/// </summary>
 struct TrainerData {
 	TrainerData() {}
 	unsigned int generationSize = 0;
@@ -107,16 +110,44 @@ public:
 
 	static float Divide(float n);
 
+	/// <summary>
+	/// Check if trainer is running
+	/// </summary>
+	/// <returns>bool, is trainer running</returns>
 	inline bool IsRunning() { return running; }
+	/// <summary>
+	/// Get current cars
+	/// </summary>
+	/// <returns>std::vector<Car>&, cars</returns>
 	inline std::vector<Car>& GetCars() { return cars; }
+	/// <summary>
+	/// Get current car ID
+	/// </summary>
+	/// <returns>int, selected car ID</returns>
 	inline int GetCurrentID() { return currentId; }
+	/// <summary>
+	/// Set current car ID
+	/// </summary>
+	/// <param name="newID">int, new selected car ID</param>
 	inline void SetCurrentID(int newID) { currentId = newID; }
+	/// <summary>
+	/// Reset trainer scene
+	/// </summary>
 	inline void ResetScene() { if (generationSize > 0) NewScene(); else std::cout << "Could not reset scene."; }
 	
+	/// <summary>
+	/// Pause trainer if running
+	/// </summary>
 	inline void Pause() { running = false; }
+	/// <summary>
+	/// Continue if paused
+	/// </summary>
 	inline void Continue() { running = true; }	
 
-	//get data for UI
+	/// <summary>
+	/// get data for UI on overlay
+	/// </summary>
+	/// <returns>TrainerData, relevant data</returns>
 	inline TrainerData GetData() {
 		TrainerData tData;
 		tData.generationSize = generationSize;

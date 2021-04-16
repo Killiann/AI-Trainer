@@ -11,6 +11,14 @@ constexpr const T& clamp(const T& v, const T& lo, const T& hi)
 	return (v < lo) ? lo : (hi < v) ? hi : v;
 }
 
+
+/// <summary>
+/// Initialise Car
+/// </summary>
+/// <param name="id">int, Car ID</param>
+/// <param name="pos">sf::Vector2f, car position</param>
+/// <param name="resource">ResourceManager* resource</param>
+/// <param name="trk">Track* trk</param>
 Car::Car(int id, sf::Vector2f pos, ResourceManager *resource, Track* trk)
 	:ID(id), track(trk){
 
@@ -78,6 +86,10 @@ Car::Car(int id, sf::Vector2f pos, ResourceManager *resource, Track* trk)
 	collisionBounds.setOutlineThickness(1.f);		
 }
 
+/// <summary>
+/// Calculate physics per frame
+/// </summary>
+/// <param name="dt">float, dt</param>
 void Car::DoPhysics(float dt) {
 	float sn = std::sin(heading);
 	float cs = std::cos(heading);
@@ -158,6 +170,12 @@ void Car::DoPhysics(float dt) {
 	position.y += velocity.y * dt;
 }
 
+/// <summary>
+/// Apply smooth steering so that wheels don't snap
+/// </summary>
+/// <param name="steerInput">float, steer input</param>
+/// <param name="dt">float, dt</param>
+/// <returns>float, new steer value</returns>
 float Car::ApplySmoothSteer(float steerInput, float dt) {
 	float steer_l = 0;
 
@@ -173,12 +191,21 @@ float Car::ApplySmoothSteer(float steerInput, float dt) {
 	return steer_l;
 }
 
+/// <summary>
+/// Apply safe steer so that wheels cannot turn too much when going at faster speeds
+/// </summary>
+/// <param name="steerInput"></param>
+/// <returns></returns>
 float Car::ApplySafeSteer(float steerInput) {	
 	float avel = (float)std::min(absVel, 90.f);
 	float steer_l = steerInput * (1.f - (avel / 4000.f));
 	return steer_l;
 }
 
+/// <summary>
+/// Update car 
+/// </summary>
+/// <param name="dt">float, dt</param>
 void Car::Update(float dt) {
 	if (alive) {
 		scanArea.setPosition(position.x * scale, position.y * scale);
@@ -214,6 +241,11 @@ void Car::Update(float dt) {
 	}	
 }
 
+/// <summary>
+/// Draw Car
+/// </summary>
+/// <param name="window">sf::RenderTarget reference</param>
+/// <param name="devOverlay">bool, display overlay</param>
 void Car::Draw(sf::RenderTarget& window, bool devOverlay){
 	
 	//dev mode below car
@@ -285,6 +317,9 @@ void Car::Draw(sf::RenderTarget& window, bool devOverlay){
 	}
 }
 
+/// <summary>
+/// Add skid marks when drifting
+/// </summary>
 void Car::addSkidMarks() {
 	//temp skid func
 	sf::Sprite temp1;	
@@ -308,7 +343,9 @@ void Car::addSkidMarks() {
 	skidMarks.push_back(temp1);	
 }
 
-//calculate distances to the edges of the track, the car's 'vision'
+/// <summary>
+/// calculate distances to the edges of the track, the car's 'vision'
+/// </summary>
 void Car::CalculateDistances() {
 	distanceLines.clear();
 	distances.clear();
@@ -379,6 +416,11 @@ void Car::CalculateDistances() {
 	}	
 }
 
+/// <summary>
+/// Check if the car contains point P
+/// </summary>
+/// <param name="P">sf::Vector2f point P</param>
+/// <returns>Bool, true if car contains point</returns>
 bool Car::containsPoint(sf::Vector2f P) {
 	sf::Vector2f A = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(0));
 	sf::Vector2f B = collisionBounds.getTransform().transformPoint(collisionBounds.getPoint(1));
@@ -388,6 +430,9 @@ bool Car::containsPoint(sf::Vector2f P) {
 	return lin::doesRectContainPoint(P, A, B, C, D);
 }
 
+/// <summary>
+/// Handle checkpoint progress
+/// </summary>
 void Car::CheckPointHandling() {
 	if (passedFinish) passedFinish = false;
 	if (globalBounds.getGlobalBounds().intersects(nextCheckpointBounds)) {
@@ -399,6 +444,10 @@ void Car::CheckPointHandling() {
 	}
 }
 
+/// <summary>
+/// Check if car is on track
+/// </summary>
+/// <returns></returns>
 bool Car::IsOnTrack() {
 	bool onTrack = false;
 	sf::Vector2f pos = sf::Vector2f(position.x * scale, position.y * scale);
@@ -416,6 +465,10 @@ bool Car::IsOnTrack() {
 	return onTrack;
 }
 
+/// <summary>
+/// Calculate fitness of car - used in Genetic Algorithm
+/// </summary>
+/// <returns>float, fitness value</returns>
 float Car::CalculateFitness() {
 	//uses the amount of checkpoints crossed + distance to next checkpoint to calculate fitness
 	if (checkPointTracker.Started()) {

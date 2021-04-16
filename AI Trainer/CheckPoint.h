@@ -31,8 +31,21 @@ public:
 	CheckPoint(){}
 	CheckPoint(int ID, sf::Vector2f pos, PosInTile pit, sf::Texture* texture);	
 
+	/// <summary>
+	/// Get global bounds of checkpoint
+	/// </summary>
+	/// <returns>sf::FloatRect bounds</returns>
 	inline sf::FloatRect getGlobalBounds() { return collisionRect.getGlobalBounds(); }
+
+	/// <summary>
+	/// Get checkpoint ID
+	/// </summary>
+	/// <returns>int, ID</returns>
 	inline int getID() { return ID; }
+	/// <summary>
+	/// Get center point of checkpoint
+	/// </summary>
+	/// <returns>sf::Vector2f, center point</returns>
 	inline sf::Vector2f GetCenter() { return center; }
 
 	void Draw(sf::RenderTarget& window, bool isOverlay);
