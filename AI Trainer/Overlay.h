@@ -18,11 +18,11 @@ class Overlay
 	//prompt info
 	std::vector<std::string> optionButtonIDS{ "btn_nextGen", "btn_restart", "btn_showHide", "btn_export", "btn_save", "btn_mainMenu", "btn_exit" };
 	std::vector<std::string> promptMessages = {
-		"Skip to next generation -shortcut=2",
-		"Restart simulation without saving -shortcut=0",
+		"Skip to next generation",
+		"Restart simulation without saving",
 		"Toggle overlay",
 		"Export data to CSV file",
-		"Save simulation -shortcut=S",
+		"Save simulation",
 		"Go to Main Menu",
 		"Exit application"
 	};
